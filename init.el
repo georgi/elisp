@@ -15,7 +15,9 @@
 (require 'windmove)
 (require 'dired-single)
 (require 'paren)
+(require 'git)
 (require 'vc-svn)
+(require 'vc-git)
 (require 'hippie-exp)
 (require 'abbrev)
 (require 'snippet)
@@ -30,7 +32,7 @@
 (load "completions")
 (load "find-tags-file")
 (load "imenu-from-pattern")
-(load "rinari-find-model")
+(load "rinari-extensions")
 (load "move-lines")
 
 
@@ -54,6 +56,9 @@
 (setq session-initialize t)
 (setq standard-indent 2)
 (setq use-file-dialog t)
+
+;; Rinari
+(setq ffip-find-options "-not -regex '.*vendor.*'")
 
 ;; Cua
 (cua-mode t)
@@ -124,9 +129,6 @@
 ;; ********************************************************************************
 ;; Git
 ;;
-(add-to-list 'load-path "/usr/share/doc/git-core/contrib/emacs")
-(require 'vc-git)
-(require 'git)
 (autoload 'git-blame-mode "git-blame" "Minor mode for incremental blame for Git." t)
 
 
@@ -150,30 +152,32 @@
 ;;
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
-(add-hook 'ruby-mode-hook
-          (lambda()
-	    (require 'rinari)
-	    (require 'ruby-electric)
-	    (require 'inflections)
-            (rinari-launch)
-            (ruby-electric-mode t)
-            (make-local-variable 'tags-file-name)
-            (set (make-local-variable 'tab-width) 2)
-            (set (make-local-variable 'hippie-expand-try-functions-list)
-                 '(try-expand-abbrev
-                   try-expand-dabbrev
-                   try-expand-tag))
-            (setq local-abbrev-table ruby-mode-abbrev-table)
-            (case (rinari-whats-my-type)
-              (:model      (setq local-abbrev-table rails-model-abbrev-table))
-              (:controller (setq local-abbrev-table rails-controller-abbrev-table))
-              (:functional (setq local-abbrev-table ruby-test-abbrev-table))
-              (:unit (setq local-abbrev-table ruby-test-abbrev-table)))
-            (define-key ruby-mode-map (kbd "<tab>") 'indent-and-complete)
-            (define-key ruby-mode-map (kbd "<C-menu>")
-              (imenu-from-pattern "class \\([[:alnum:].]+\\)"
-                                  "def \\([[:alnum:].]+\\)"))
-            ))
+(add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))  
+(add-hook 'ruby-mode-hook 'ruby-mode-on-init)
+
+(defun ruby-mode-on-init ()
+  (lambda()
+    (require 'rinari)
+    (require 'ruby-electric)
+    (require 'inflections)
+    (rinari-launch)
+    (ruby-electric-mode t)
+    (make-local-variable 'tags-file-name)
+    (set (make-local-variable 'tab-width) 2)
+    (set (make-local-variable 'hippie-expand-try-functions-list)
+	 '(try-expand-abbrev
+	   try-expand-dabbrev
+	   try-expand-tag))
+    (setq local-abbrev-table ruby-mode-abbrev-table)
+    (case (rinari-whats-my-type)
+      (:model      (setq local-abbrev-table rails-model-abbrev-table))
+      (:controller (setq local-abbrev-table rails-controller-abbrev-table))
+      (:functional (setq local-abbrev-table ruby-test-abbrev-table))
+      (:unit (setq local-abbrev-table ruby-test-abbrev-table)))
+    (define-key ruby-mode-map (kbd "<tab>") 'indent-and-complete)
+    (define-key ruby-mode-map (kbd "<C-menu>")
+      (imenu-from-pattern "class \\([[:alnum:].]+\\)"
+			  "def \\([[:alnum:].]+\\)"))))
 
 
 
@@ -182,38 +186,37 @@
 ;;
 (autoload 'rhtml-mode "rhtml-mode" "RHTML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.rhtml$" . rhtml-mode))
-(add-hook 'rhtml-mode-hook
-          (lambda ()
-            (abbrev-mode nil)
-            (make-local-variable 'tags-file-name)
-            (setq local-abbrev-table rhtml-mode-abbrev-table)
-            (set (make-local-variable 'hippie-expand-try-functions-list)
-                 '(try-expand-abbrev
-                   try-expand-dabbrev
-                   try-expand-tag))
-            (define-key rhtml-mode-map (kbd "<tab>") 'indent-and-complete)
-            ))
+(add-hook 'rhtml-mode-hook 'rhtml-mode-hook-on-init)
+(add-hook 'abbrev-expand-functions 'abbrev-in-rhtml-mode)
 
-(add-hook 'abbrev-expand-functions
-          (lambda (fn)
-            (if (rhtml-erb-tag-region)
-                ()
-              (funcall fn))))
+(defun rhtml-mode-on-init ()
+  (abbrev-mode nil)
+  (make-local-variable 'tags-file-name)
+  (setq local-abbrev-table rhtml-mode-abbrev-table)
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-tag))
+  (define-key rhtml-mode-map (kbd "<tab>") 'indent-and-complete))
+
+(defun abbrev-in-rhtml-mode (fn)
+  (if (rhtml-erb-tag-region)
+      ()
+    (funcall fn)))
 
 
 
 ;; ********************************************************************************
 ;; IRB Mode
 ;;
-(add-hook 'inferior-ruby-mode-hook
-          (lambda()
-            (set (make-local-variable 'hippie-expand-try-functions-list)
-                 '(try-expand-abbrev
-                   try-expand-dabbrev
-                   try-expand-tag))
-            (define-key inferior-ruby-mode-map (kbd "<tab>") 'indent-and-complete)
-            ))
+(add-hook 'inferior-ruby-mode-hook 'inferior-ruby-mode-on-init)
 
+(defun inferior-ruby-mode-on-init ()
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-tag))
+  (define-key inferior-ruby-mode-map (kbd "<tab>") 'indent-and-complete))
 
 
 
@@ -223,20 +226,23 @@
 (setq js2-basic-offset 4)
 (setq js2-bounce-indent-flag nil)
 (setq js2-highlight-level 4)
+
 (autoload 'js2-mode "js2" "Javascript 2 Mode" t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-(add-hook 'js2-mode-hook
-          (lambda()
-            (make-local-variable 'tags-file-name)
-            (set (make-local-variable 'hippie-expand-try-functions-list)
-                 '(try-expand-abbrev
-                   try-expand-dabbrev
-                   try-expand-tag))
-            (define-key js2-mode-map (kbd "<tab>") 'indent-and-complete)
-            (define-key js2-mode-map (kbd "<C-menu>") 
-              (imenu-from-pattern "\\b\\([[:alnum:].$]+\\) *[=:] *function" 
-                                  "function \\([[:alnum:].]+\\)"))
-            ))
+(add-hook 'js2-mode-hook 'js2-mode-on-init)
+
+(defun js2-mode-on-init ()
+  (make-local-variable 'tags-file-name)
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-javascript-dom-function
+	 try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-tag))
+  (define-key js2-mode-map (kbd "<tab>") 'indent-and-complete)
+  (define-key js2-mode-map (kbd "<C-menu>") 
+    (imenu-from-pattern "\\b\\([[:alnum:].$]+\\) *[=:] *function" 
+			"function \\([[:alnum:].]+\\)")))
+
 
 
 
@@ -245,62 +251,71 @@
 ;;
 (autoload 'as3-mode "as3-mode" "Actionscript 3 Mode." t)
 (add-to-list 'auto-mode-alist '("\\.as$" . as3-mode))
-(setenv "CLASSPATH" (concat "/home/matti/elisp/flyparse/lib/flyparse_parsers.jar:" (getenv "CLASSPATH")))
-(add-hook 'as3-mode-hook
-          (lambda()
-            (make-local-variable 'tags-file-name)
-            (set (make-local-variable 'hippie-expand-try-functions-list)
-                 '(try-expand-abbrev
-                   try-expand-dabbrev
-                   try-expand-tag))
-            (define-key as3-mode-map (kbd "<tab>") 'indent-and-complete)
-            (define-key as3-mode-map (kbd "<C-menu>") 'javascript-imenu)
-            ))
+(add-hook 'as3-mode-hook 'as3-mode-on-init)
+
+(setenv "CLASSPATH" 
+	(concat "/home/matti/elisp/flyparse/lib/flyparse_parsers.jar:" 
+		(getenv "CLASSPATH")))
+
+(defun as3-mode-on-init ()
+  (make-local-variable 'tags-file-name)
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-tag))
+  (define-key as3-mode-map (kbd "<tab>") 'indent-and-complete)
+  (define-key as3-mode-map (kbd "<C-menu>") 'javascript-imenu))
+  
 
 
 
 ;; ********************************************************************************
 ;; Emacs-Lips Mode
 ;;
-(add-hook 'emacs-lisp-mode-hook
-          (lambda()
-            (set (make-local-variable 'hippie-expand-try-functions-list)
-                 '(try-expand-abbrev
-                   try-expand-dabbrev
-                   try-complete-lisp-symbol))
-            (define-key emacs-lisp-mode-map (kbd "<tab>") 'indent-and-complete)
-            (define-key emacs-lisp-mode-map (kbd "<C-menu>") 'imenu)
-            ))
+(add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-hook)
+
+(defun emacs-lisp-mode-on-init ()
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-complete-lisp-symbol))
+  (define-key emacs-lisp-mode-map (kbd "<tab>") 'indent-and-complete)
+  (define-key emacs-lisp-mode-map (kbd "<C-menu>") 'imenu))
+
+
+
 
 
 ;; ********************************************************************************
 ;; HTML Mode
 ;;
 (add-to-list 'auto-mode-alist '("\\.html\\'" . html-mode))
-(add-hook 'html-mode-hook
-          (lambda()
-            (set (make-local-variable 'hippie-expand-try-functions-list)
-                 '(try-expand-abbrev
-                   try-expand-dabbrev
-                   try-expand-tag))
-            (define-key html-mode-map (kbd "<tab>") 'indent-and-complete)))
+(add-hook 'html-mode-hook 'html-mode-hook)
+
+(defun html-mode-on-init ()
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-tag))
+  (define-key html-mode-map (kbd "<tab>") 'indent-and-complete))
 
 
 
 ;; ********************************************************************************
 ;; CSS Mode
 ;;
-(add-hook 'css-mode-hook
-          (lambda()
-            (setq cssm-indent-level 4)
-            (setq cssm-indent-function #'cssm-c-style-indenter)
-            (set (make-local-variable 'hippie-expand-try-functions-list)
-                 '(try-expand-css-property 
-                   try-expand-dabbrev))
-            (define-key cssm-mode-map (kbd "<tab>") 'indent-and-complete)
-            (define-key cssm-mode-map (kbd "<C-menu>")
-              (imenu-from-pattern "\\(.*\\) \{"))
-            ))
+(add-hook 'css-mode-hook 'css-mode-on-init)
+
+(defun css-mode-on-init ()
+  (setq cssm-indent-level 4)
+  (setq cssm-indent-function #'cssm-c-style-indenter)
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-css-property 
+	 try-expand-dabbrev))
+  (define-key cssm-mode-map (kbd "<tab>") 'indent-and-complete)
+  (define-key cssm-mode-map (kbd "<C-menu>")
+    (imenu-from-pattern "\\(.*\\) \{")))
+
 
 
 
@@ -328,15 +343,24 @@
 (setq ecb-use-speedbar-instead-native-tree-buffer nil)
 (setq ecb-windows-width 0.2)
 
-(add-hook 'ecb-activate-hook
-          (lambda ()
-            (setq ecb-directories-menu-user-extension 
-                  '(("SVN"
-                     (ecb-dir-popup-svn-status "Status"))))
-            (tree-buffer-defpopup-command ecb-dir-popup-svn-status
-              "Check status of directory."
-              (svn-status (tree-node->data node))
-              (switch-buffer "*svn-status*"))))
+(add-hook 'ecb-activate-hook 'ecb-on-activate)
+
+(defun ecb-on-activate ()
+  (setq ecb-directories-menu-user-extension 
+	'(("SVN"
+	   (ecb-dir-popup-svn-status "Status"))
+	  ("Git"
+	   (ecb-dir-popup-git-status "Status"))))
+
+  (tree-buffer-defpopup-command ecb-dir-popup-svn-status
+    "Check status of directory."
+    (svn-status (tree-node->data node))
+    (switch-to-buffer "*svn-status*"))
+
+  (tree-buffer-defpopup-command ecb-dir-popup-git-status
+    "Check status of directory."
+    (git-status (tree-node->data node))
+    (switch-to-buffer "*git-status*")))
 
 
 
@@ -344,13 +368,15 @@
 ;; Dired
 ;;
 (setq dired-listing-switches "-l")
-(add-hook 'dired-load-hook
-          (lambda ()
-            (define-key dired-mode-map [return] 'joc-dired-single-buffer)
-            (define-key dired-mode-map [mouse-1] 'joc-dired-single-buffer-mouse)
-            (define-key dired-mode-map (kbd "<C-up>")
-              (function
-               (lambda nil (interactive) (joc-dired-single-buffer ".."))))))
+
+(defun dired-on-load ()
+  (define-key dired-mode-map [return] 'joc-dired-single-buffer)
+  (define-key dired-mode-map [mouse-1] 'joc-dired-single-buffer-mouse)
+  (define-key dired-mode-map (kbd "<C-up>")
+    (function
+     (lambda nil (interactive) (joc-dired-single-buffer "..")))))
+
+(add-hook 'dired-load-hook 'dired-on-load)
 
 
 
@@ -363,10 +389,9 @@
         ("\\.[Cc]+[Pp]*\\'"     .       "g++ -Wall %f -lm -o %n")
         ("\\.java$"             .       "javac %f")
 	("_spec\\.rb$"          .       "spec %f")
-	("\\.rb$"               .       "ruby %f")
+	("\\.rb$"               .       "ruby %f")8
         (emacs-lisp-mode        .       (emacs-lisp-byte-compile))
         (html-mode              .       (browse-url-of-buffer))
-        (html-helper-mode       .       (browse-url-of-buffer))
         (haskell-mode           .       "ghc -o %n %f")))
 
 
@@ -392,7 +417,7 @@
 (global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
 (global-set-key (kbd "<f6>") 'ibuffer)
 (global-set-key (kbd "<f7>") 'svn-status)
-(global-set-key (kbd "<f8>") 'flymake-goto-next-error)
+(global-set-key (kbd "<f8>") 'git-status)
 (global-set-key (kbd "<f9>") 'smart-compile)
 (global-set-key (kbd "<f11>") 'toggle-fullscreen)
 
@@ -416,10 +441,8 @@
 ;; Tags search
 (global-set-key (kbd "M-/") 'tags-search)
 
-
-;; Alacarte Menu
-(global-set-key (kbd "<M-menu>") 'alacarte-execute-menu-command)
-
+;; Menubar
+(global-set-key (kbd "<M-menu>") 'menu-bar-open)
 
 ;; Buffers
 (global-set-key (kbd "<menu>") 'ido-switch-buffer)
@@ -444,6 +467,7 @@
 (global-set-key (kbd "C-c j") 'rinari-find-javascript)
 (global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
 (global-set-key (kbd "C-c t") 'rinari-find-test)
+(global-set-key (kbd "C-x b") 'rinari-browse-url)
 (global-set-key (kbd "C-x t") 'rinari-test)
 (global-set-key (kbd "C-x r") 'rinari-rake)
 (global-set-key (kbd "C-x c") 'rinari-console)
