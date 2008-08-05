@@ -38,6 +38,7 @@
 (load "imenu-from-pattern")
 (load "rinari-extensions")
 (load "move-lines")
+(load "window-management")
 
 
 
@@ -138,7 +139,7 @@
 
 ;; ********************************************************************************
 ;; RI
-(setq ri-ruby-script "~/elisp/ruby/ri-emacs.rb")
+(setq ri-ruby-script (expand-file-name "~/elisp/ruby/ri-emacs.rb"))
 (autoload 'ri "~/elisp/ruby/ri-ruby.el" nil t)
 
 
@@ -159,25 +160,24 @@
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))  
 
 (defun ruby-mode-on-init ()
-  (lambda()
-    (rinari-launch)
-    (ruby-electric-mode t)
-    (make-local-variable 'tags-file-name)
-    (set (make-local-variable 'tab-width) 2)
-    (set (make-local-variable 'hippie-expand-try-functions-list)
-	 '(try-expand-abbrev
-	   try-expand-dabbrev
-	   try-expand-tag))
-    (setq local-abbrev-table ruby-mode-abbrev-table)
-    (case (rinari-whats-my-type)
-      (:model      (setq local-abbrev-table rails-model-abbrev-table))
-      (:controller (setq local-abbrev-table rails-controller-abbrev-table))
-      (:functional (setq local-abbrev-table ruby-test-abbrev-table))
-      (:unit (setq local-abbrev-table ruby-test-abbrev-table)))
-    (define-key ruby-mode-map (kbd "<tab>") 'indent-and-complete)
-    (define-key ruby-mode-map (kbd "<C-menu>")
-      (imenu-from-pattern "class \\([[:alnum:].]+\\)"
-			  "def \\([[:alnum:].]+\\)"))))
+  (rinari-launch)
+  (ruby-electric-mode t)
+  (make-local-variable 'tags-file-name)
+  (set (make-local-variable 'tab-width) 2)
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-tag))
+  (setq local-abbrev-table ruby-mode-abbrev-table)
+  (case (rinari-whats-my-type)
+    (:model      (setq local-abbrev-table rails-model-abbrev-table))
+    (:controller (setq local-abbrev-table rails-controller-abbrev-table))
+    (:functional (setq local-abbrev-table ruby-test-abbrev-table))
+    (:unit (setq local-abbrev-table ruby-test-abbrev-table)))
+  (define-key ruby-mode-map (kbd "<tab>") 'indent-and-complete)
+  (define-key ruby-mode-map (kbd "<C-menu>")
+    (imenu-from-pattern "class \\([[:alnum:].]+\\)"
+			"def \\([[:alnum:].]+\\)")))
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init)
 
@@ -254,7 +254,7 @@
 (add-to-list 'auto-mode-alist '("\\.as$" . as3-mode))
 
 (setenv "CLASSPATH" 
-	(concat "/home/matti/elisp/flyparse/lib/flyparse_parsers.jar:" 
+	(concat (expand-file-name "~/elisp/flyparse/lib/flyparse_parsers.jar:" )
 		(getenv "CLASSPATH")))
 
 (defun as3-mode-on-init ()
@@ -366,12 +366,14 @@
 ;;
 (setq dired-listing-switches "-l")
 
+(defun joc-dired-up-directory()
+  (interactive)
+  (joc-dired-single-buffer ".."))
+
 (defun dired-on-load ()
   (define-key dired-mode-map [return] 'joc-dired-single-buffer)
   (define-key dired-mode-map [mouse-1] 'joc-dired-single-buffer-mouse)
-  (define-key dired-mode-map (kbd "<C-up>")
-    (function
-     (lambda nil (interactive) (joc-dired-single-buffer "..")))))
+  (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory))
 
 (add-hook 'dired-load-hook 'dired-on-load)
 
@@ -427,6 +429,8 @@
 (global-set-key (kbd "<M-down>") 'windmove-down)
 (global-set-key (kbd "<M-left>") 'windmove-left)
 (global-set-key (kbd "<M-right>") 'windmove-right)
+(global-set-key (kbd "<s-up>") 'window-resize-up)
+(global-set-key (kbd "<s-down>") 'window-resize-down)
 
 
 ;; Tags search
@@ -450,14 +454,12 @@
 
 ;; Rinari
 (global-set-key (kbd "C-c f") 'find-file-in-project)
-(global-set-key (kbd "C-c C-f m") 'rinari-find-model)
-(global-set-key (kbd "C-c C-f v") 'rinari-find-view)
-(global-set-key (kbd "C-c C-f c") 'rinari-find-controller)
-(global-set-key (kbd "C-c C-f e") 'rinari-find-environment)
-(global-set-key (kbd "C-c C-f i") 'rinari-find-migration)
-(global-set-key (kbd "C-c C-f j") 'rinari-find-javascript)
-(global-set-key (kbd "C-c C-f s") 'rinari-find-stylesheet)
-(global-set-key (kbd "C-c C-f t") 'rinari-find-test)
+(global-set-key (kbd "C-c m") 'rinari-find-model)
+(global-set-key (kbd "C-c v") 'rinari-find-view)
+(global-set-key (kbd "C-c c") 'rinari-find-controller)
+(global-set-key (kbd "C-c j") 'rinari-find-javascript)
+(global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
+(global-set-key (kbd "C-c t") 'rinari-find-test)
 (global-set-key (kbd "C-c C-g m") (rinari-script-key-hook "generate" "model"))
 (global-set-key (kbd "C-c C-g i") (rinari-script-key-hook "generate" "migration"))
 (global-set-key (kbd "C-c C-g c") (rinari-script-key-hook "generate" "controller"))
@@ -470,14 +472,14 @@
 (global-set-key (kbd "C-c C-d a") (rinari-script-key-hook "destroy" "mailer"))
 (global-set-key (kbd "C-c C-d o") (rinari-script-key-hook "destroy" "observer"))
 (global-set-key (kbd "C-c C-d r") (rinari-script-key-hook "destroy" "resource"))
-(global-set-key (kbd "C-c b") 'rinari-browse-url)
-(global-set-key (kbd "C-c t") 'rinari-test)
-(global-set-key (kbd "C-c r") 'rinari-rake)
-(global-set-key (kbd "C-c c") 'rinari-console)
-(global-set-key (kbd "C-c s") 'rinari-sql)
-(global-set-key (kbd "C-c w") 'rinari-web-server)
-(global-set-key (kbd "C-c b") 'rinari-browse-url)
-(global-set-key (kbd "C-c g") 'rinari-rgrep)
+(global-set-key (kbd "C-x b") 'rinari-browse-url)
+(global-set-key (kbd "C-x t") 'rinari-test)
+(global-set-key (kbd "C-x r") 'rinari-rake)
+(global-set-key (kbd "C-x c") 'rinari-console)
+(global-set-key (kbd "C-x s") 'rinari-sql)
+(global-set-key (kbd "C-x w") 'rinari-web-server)
+(global-set-key (kbd "C-x b") 'rinari-browse-url)
+(global-set-key (kbd "C-x g") 'rinari-rgrep)
 
 
 
