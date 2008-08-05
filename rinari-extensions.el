@@ -33,3 +33,13 @@ with `rinari-browse-url-func' which defaults to `browse-url'."
 	 (base (concat (or rails-base-url "localhost:3000") "/" route))
 	 (url (read-from-minibuffer "url: " (concat base "/"))))
     (eval (list rinari-browse-url-func url))))
+
+(defun rinari-run-script (script type)
+  (let ((default-directory (or (rinari-root) default-directory))
+	(name (read-from-minibuffer (format "%s %s: " script type))))
+    (shell-command (format "./script/%s %s %s" script type name) "*Rails-Command*")))
+
+(defmacro rinari-script-key-hook (script type)
+  `(lambda ()
+     (interactive)
+     (rinari-run-script ,script ,type)))

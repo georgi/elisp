@@ -21,6 +21,10 @@
 (require 'hippie-exp)
 (require 'abbrev)
 (require 'snippet)
+(require 'etags)
+(require 'rinari)
+(require 'ruby-electric)
+(require 'inflections)
 
 
 ;; ********************************************************************************
@@ -153,13 +157,9 @@
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))  
-(add-hook 'ruby-mode-hook 'ruby-mode-on-init)
 
 (defun ruby-mode-on-init ()
   (lambda()
-    (require 'rinari)
-    (require 'ruby-electric)
-    (require 'inflections)
     (rinari-launch)
     (ruby-electric-mode t)
     (make-local-variable 'tags-file-name)
@@ -179,6 +179,7 @@
       (imenu-from-pattern "class \\([[:alnum:].]+\\)"
 			  "def \\([[:alnum:].]+\\)"))))
 
+(add-hook 'ruby-mode-hook 'ruby-mode-on-init)
 
 
 ;; ********************************************************************************
@@ -186,8 +187,6 @@
 ;;
 (autoload 'rhtml-mode "rhtml-mode" "RHTML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.rhtml$" . rhtml-mode))
-(add-hook 'rhtml-mode-hook 'rhtml-mode-hook-on-init)
-(add-hook 'abbrev-expand-functions 'abbrev-in-rhtml-mode)
 
 (defun rhtml-mode-on-init ()
   (abbrev-mode nil)
@@ -204,19 +203,21 @@
       ()
     (funcall fn)))
 
+(add-hook 'rhtml-mode-hook 'rhtml-mode-on-init)
+(add-hook 'abbrev-expand-functions 'abbrev-in-rhtml-mode)
 
 
 ;; ********************************************************************************
 ;; IRB Mode
 ;;
-(add-hook 'inferior-ruby-mode-hook 'inferior-ruby-mode-on-init)
-
 (defun inferior-ruby-mode-on-init ()
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
 	 try-expand-dabbrev
 	 try-expand-tag))
   (define-key inferior-ruby-mode-map (kbd "<tab>") 'indent-and-complete))
+
+(add-hook 'inferior-ruby-mode-hook 'inferior-ruby-mode-on-init)
 
 
 
@@ -226,24 +227,24 @@
 (setq js2-basic-offset 4)
 (setq js2-bounce-indent-flag nil)
 (setq js2-highlight-level 4)
+(setq js2-mode-show-overlay nil)
 
 (autoload 'js2-mode "js2" "Javascript 2 Mode" t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-(add-hook 'js2-mode-hook 'js2-mode-on-init)
 
 (defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
   (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-javascript-dom-function
-	 try-expand-abbrev
-	 try-expand-dabbrev
+       '(try-expand-abbrev
+	 try-expand-dabbrev	 
+	 try-expand-javascript-symbol	 
 	 try-expand-tag))
   (define-key js2-mode-map (kbd "<tab>") 'indent-and-complete)
   (define-key js2-mode-map (kbd "<C-menu>") 
     (imenu-from-pattern "\\b\\([[:alnum:].$]+\\) *[=:] *function" 
 			"function \\([[:alnum:].]+\\)")))
 
-
+(add-hook 'js2-mode-hook 'js2-mode-on-init)
 
 
 ;; ********************************************************************************
@@ -251,7 +252,6 @@
 ;;
 (autoload 'as3-mode "as3-mode" "Actionscript 3 Mode." t)
 (add-to-list 'auto-mode-alist '("\\.as$" . as3-mode))
-(add-hook 'as3-mode-hook 'as3-mode-on-init)
 
 (setenv "CLASSPATH" 
 	(concat "/home/matti/elisp/flyparse/lib/flyparse_parsers.jar:" 
@@ -266,14 +266,13 @@
   (define-key as3-mode-map (kbd "<tab>") 'indent-and-complete)
   (define-key as3-mode-map (kbd "<C-menu>") 'javascript-imenu))
   
+(add-hook 'as3-mode-hook 'as3-mode-on-init)
 
 
 
 ;; ********************************************************************************
 ;; Emacs-Lips Mode
 ;;
-(add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-hook)
-
 (defun emacs-lisp-mode-on-init ()
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
@@ -282,7 +281,7 @@
   (define-key emacs-lisp-mode-map (kbd "<tab>") 'indent-and-complete)
   (define-key emacs-lisp-mode-map (kbd "<C-menu>") 'imenu))
 
-
+(add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init)
 
 
 
@@ -290,7 +289,6 @@
 ;; HTML Mode
 ;;
 (add-to-list 'auto-mode-alist '("\\.html\\'" . html-mode))
-(add-hook 'html-mode-hook 'html-mode-hook)
 
 (defun html-mode-on-init ()
   (set (make-local-variable 'hippie-expand-try-functions-list)
@@ -304,8 +302,6 @@
 ;; ********************************************************************************
 ;; CSS Mode
 ;;
-(add-hook 'css-mode-hook 'css-mode-on-init)
-
 (defun css-mode-on-init ()
   (setq cssm-indent-level 4)
   (setq cssm-indent-function #'cssm-c-style-indenter)
@@ -316,6 +312,7 @@
   (define-key cssm-mode-map (kbd "<C-menu>")
     (imenu-from-pattern "\\(.*\\) \{")))
 
+(add-hook 'css-mode-hook 'css-mode-on-init)
 
 
 
@@ -343,8 +340,6 @@
 (setq ecb-use-speedbar-instead-native-tree-buffer nil)
 (setq ecb-windows-width 0.2)
 
-(add-hook 'ecb-activate-hook 'ecb-on-activate)
-
 (defun ecb-on-activate ()
   (setq ecb-directories-menu-user-extension 
 	'(("SVN"
@@ -361,6 +356,8 @@
     "Check status of directory."
     (git-status (tree-node->data node))
     (switch-to-buffer "*git-status*")))
+
+(add-hook 'ecb-activate-hook 'ecb-on-activate)
 
 
 
@@ -384,15 +381,10 @@
 ;; Smart Compile
 ;;
 (require 'smart-compile)
-(setq smart-compile-alist
-      '(("\\.c\\'"              .       "gcc -Wall %f -lm -o %n")
-        ("\\.[Cc]+[Pp]*\\'"     .       "g++ -Wall %f -lm -o %n")
-        ("\\.java$"             .       "javac %f")
-	("_spec\\.rb$"          .       "spec %f")
-	("\\.rb$"               .       "ruby %f")8
-        (emacs-lisp-mode        .       (emacs-lisp-byte-compile))
-        (html-mode              .       (browse-url-of-buffer))
-        (haskell-mode           .       "ghc -o %n %f")))
+(add-to-list 'smart-compile-alist '("^Rakefile$"  . "rake -f %f"))
+(add-to-list 'smart-compile-alist '("_spec\\.rb$" . "spec %f"))
+(add-to-list 'smart-compile-alist '(haskell-mode  . "ghc -o %n %f"))
+
 
 
 ;; ********************************************************************************
@@ -403,7 +395,6 @@
   (interactive)
   (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
                          '(2 "_NET_WM_STATE_FULLSCREEN" 0)))
-
 
 
 
@@ -459,22 +450,34 @@
 
 ;; Rinari
 (global-set-key (kbd "C-c f") 'find-file-in-project)
-(global-set-key (kbd "C-c m") 'rinari-find-model)
-(global-set-key (kbd "C-c v") 'rinari-find-view)
-(global-set-key (kbd "C-c c") 'rinari-find-controller)
-(global-set-key (kbd "C-c e") 'rinari-find-environment)
-(global-set-key (kbd "C-c i") 'rinari-find-migration)
-(global-set-key (kbd "C-c j") 'rinari-find-javascript)
-(global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
-(global-set-key (kbd "C-c t") 'rinari-find-test)
-(global-set-key (kbd "C-x b") 'rinari-browse-url)
-(global-set-key (kbd "C-x t") 'rinari-test)
-(global-set-key (kbd "C-x r") 'rinari-rake)
-(global-set-key (kbd "C-x c") 'rinari-console)
-(global-set-key (kbd "C-x s") 'rinari-sql)
-(global-set-key (kbd "C-x w") 'rinari-web-server)
-(global-set-key (kbd "C-x b") 'rinari-browse-url)
-(global-set-key (kbd "C-x g") 'rinari-rgrep)
+(global-set-key (kbd "C-c C-f m") 'rinari-find-model)
+(global-set-key (kbd "C-c C-f v") 'rinari-find-view)
+(global-set-key (kbd "C-c C-f c") 'rinari-find-controller)
+(global-set-key (kbd "C-c C-f e") 'rinari-find-environment)
+(global-set-key (kbd "C-c C-f i") 'rinari-find-migration)
+(global-set-key (kbd "C-c C-f j") 'rinari-find-javascript)
+(global-set-key (kbd "C-c C-f s") 'rinari-find-stylesheet)
+(global-set-key (kbd "C-c C-f t") 'rinari-find-test)
+(global-set-key (kbd "C-c C-g m") (rinari-script-key-hook "generate" "model"))
+(global-set-key (kbd "C-c C-g i") (rinari-script-key-hook "generate" "migration"))
+(global-set-key (kbd "C-c C-g c") (rinari-script-key-hook "generate" "controller"))
+(global-set-key (kbd "C-c C-g a") (rinari-script-key-hook "generate" "mailer"))
+(global-set-key (kbd "C-c C-g o") (rinari-script-key-hook "generate" "observer"))
+(global-set-key (kbd "C-c C-g r") (rinari-script-key-hook "generate" "resource"))
+(global-set-key (kbd "C-c C-d m") (rinari-script-key-hook "destroy" "model"))
+(global-set-key (kbd "C-c C-d i") (rinari-script-key-hook "destroy" "migration"))
+(global-set-key (kbd "C-c C-d c") (rinari-script-key-hook "destroy" "controller"))
+(global-set-key (kbd "C-c C-d a") (rinari-script-key-hook "destroy" "mailer"))
+(global-set-key (kbd "C-c C-d o") (rinari-script-key-hook "destroy" "observer"))
+(global-set-key (kbd "C-c C-d r") (rinari-script-key-hook "destroy" "resource"))
+(global-set-key (kbd "C-c b") 'rinari-browse-url)
+(global-set-key (kbd "C-c t") 'rinari-test)
+(global-set-key (kbd "C-c r") 'rinari-rake)
+(global-set-key (kbd "C-c c") 'rinari-console)
+(global-set-key (kbd "C-c s") 'rinari-sql)
+(global-set-key (kbd "C-c w") 'rinari-web-server)
+(global-set-key (kbd "C-c b") 'rinari-browse-url)
+(global-set-key (kbd "C-c g") 'rinari-rgrep)
 
 
 
