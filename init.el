@@ -10,21 +10,11 @@
 ;; ********************************************************************************
 ;; Require libraries
 ;;
-(require 'alacarte)
-(require 'find-recursive)
 (require 'windmove)
-(require 'dired-single)
 (require 'paren)
 (require 'git)
 (require 'vc-svn)
 (require 'vc-git)
-(require 'hippie-exp)
-(require 'abbrev)
-(require 'snippet)
-(require 'etags)
-(require 'rinari)
-(require 'ruby-electric)
-(require 'inflections)
 
 
 ;; ********************************************************************************
@@ -36,7 +26,6 @@
 (load "completions")
 (load "find-tags-file")
 (load "imenu-from-pattern")
-(load "rinari-extensions")
 (load "move-lines")
 (load "window-management")
 
@@ -63,6 +52,11 @@
 (setq use-file-dialog t)
 
 ;; Rinari
+(require 'rinari)
+(require 'inflections)
+
+(load "rinari-extensions")
+
 (setq ffip-find-options "-not -regex '.*vendor.*'")
 
 ;; Cua
@@ -144,6 +138,23 @@
 
 
 ;; ********************************************************************************
+;; Text Mode
+;;
+(define-key text-mode-map (kbd "<tab") 'indent-and-complete)
+
+(defun text-mode-on-init ()
+  (flyspell-mode 1)
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-ispell)))
+
+(add-hook 'text-mode-hook 'text-mode-on-init)
+
+(setq message-tab-body-function 'indent-and-complete)
+
+
+;; ********************************************************************************
 ;; Python Mode
 ;;
 (autoload 'python-mode "python-mode" "Python Mode." t)
@@ -155,6 +166,8 @@
 ;; ********************************************************************************
 ;; Ruby Mode
 ;;
+(require 'ruby-electric)
+
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))  
@@ -174,6 +187,7 @@
     (:controller (setq local-abbrev-table rails-controller-abbrev-table))
     (:functional (setq local-abbrev-table ruby-test-abbrev-table))
     (:unit (setq local-abbrev-table ruby-test-abbrev-table)))
+  (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
   (define-key ruby-mode-map (kbd "<tab>") 'indent-and-complete)
   (define-key ruby-mode-map (kbd "<C-menu>")
     (imenu-from-pattern "class \\([[:alnum:].]+\\)"
@@ -199,7 +213,7 @@
   (define-key rhtml-mode-map (kbd "<tab>") 'indent-and-complete))
 
 (defun abbrev-in-rhtml-mode (fn)
-  (if (rhtml-erb-tag-region)
+  (if (and (boundp 'rhtml-erb-tag-region) (rhtml-erb-tag-region))
       ()
     (funcall fn)))
 
@@ -269,6 +283,23 @@
 (add-hook 'as3-mode-hook 'as3-mode-on-init)
 
 
+;; ********************************************************************************
+;; Haxe Mode
+;;
+(autoload 'haxe-mode "haxe-mode" "Haxe Mode." t)
+(add-to-list 'auto-mode-alist '("\\.hx$" . haxe-mode))
+
+(defun haxe-mode-on-init ()
+  (make-local-variable 'tags-file-name)
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-tag))
+  (define-key haxe-mode-map (kbd "<tab>") 'indent-and-complete))
+  
+(add-hook 'haxe-mode-hook 'haxe-mode-on-init)
+
+
 
 ;; ********************************************************************************
 ;; Emacs-Lips Mode
@@ -313,6 +344,20 @@
     (imenu-from-pattern "\\(.*\\) \{")))
 
 (add-hook 'css-mode-hook 'css-mode-on-init)
+
+
+;; ********************************************************************************
+;; C Mode
+;;
+(defun c-mode-on-init ()
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-dabbrev-all-buffers
+	 try-expand-tag))
+  (define-key c-mode-map (kbd "<tab>") 'indent-and-complete))
+
+(add-hook 'c-mode-hook 'c-mode-on-init)
 
 
 
@@ -360,20 +405,61 @@
 (add-hook 'ecb-activate-hook 'ecb-on-activate)
 
 
+;; ********************************************************************************
+;; Gnus
+;;
+(require 'gnus)
+(require 'reportmail)
+(require 'bbdb)
+(require 'bbdb-vcard-import)
+
+(bbdb-initialize)
+
+(setq gnus-select-method '(nntp "news.gmane.org"))
+
+(add-to-list 'gnus-secondary-select-methods 
+	     '(nnimap "gmail"
+		      (nnimap-address "imap.gmail.com")
+		      (nnimap-server-port 993)
+		      (nnimap-stream ssl)))
+
+(setq gnus-novice-user nil)
+
+(setq message-send-mail-function 
+      'smtpmail-send-it
+      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+      smtpmail-auth-credentials '(("smtp.gmail.com" 587 "matti.georgi@gmail.com" nil))
+      smtpmail-default-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+      smtpmail-local-domain "localhost")
+
+(setq gnus-invalid-group-regexp "[:`'\"]\\|^$")
+
+(setq user-full-name "Matthias Georgi")
+(setq user-mail-address "matti.georgi@gmail.com")
+      
+
+
 
 ;; ********************************************************************************
 ;; Dired
 ;;
+(require 'dired-single)
+(require 'gnus-dired)
+
 (setq dired-listing-switches "-l")
 
 (defun joc-dired-up-directory()
   (interactive)
   (joc-dired-single-buffer ".."))
 
+(define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
+(define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
+(define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
+
 (defun dired-on-load ()
-  (define-key dired-mode-map [return] 'joc-dired-single-buffer)
-  (define-key dired-mode-map [mouse-1] 'joc-dired-single-buffer-mouse)
-  (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory))
+  (gnus-dired-mode 1))
 
 (add-hook 'dired-load-hook 'dired-on-load)
 
@@ -385,6 +471,8 @@
 (require 'smart-compile)
 (add-to-list 'smart-compile-alist '("^Rakefile$"  . "rake -f %f"))
 (add-to-list 'smart-compile-alist '("_spec\\.rb$" . "spec %f"))
+(add-to-list 'smart-compile-alist '("\\.scm$"     . "scheme %f"))
+(add-to-list 'smart-compile-alist '("\\.hx$"      . "haxe compile.hxml"))
 (add-to-list 'smart-compile-alist '(haskell-mode  . "ghc -o %n %f"))
 
 
@@ -398,7 +486,7 @@
   (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
                          '(2 "_NET_WM_STATE_FULLSCREEN" 0)))
 
-
+(toggle-fullscreen)
 
 ;; ********************************************************************************
 ;; Global Key Bindings
@@ -412,7 +500,9 @@
 (global-set-key (kbd "<f7>") 'svn-status)
 (global-set-key (kbd "<f8>") 'git-status)
 (global-set-key (kbd "<f9>") 'smart-compile)
+(global-set-key (kbd "<f10>") 'gnus)
 (global-set-key (kbd "<f11>") 'toggle-fullscreen)
+(global-set-key (kbd "<f12>") 'tool-bar-mode)
 
 ;; Help keys
 (global-set-key (kbd "C-h C-h") 'html-help)
@@ -485,6 +575,5 @@
 
 ;; ********************************************************************************
 ;; Start emacs server
-(toggle-fullscreen)
 (server-start)
 

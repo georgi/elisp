@@ -1,6 +1,13 @@
 ;; ********************************************************************************
 ;; Completion
 ;;
+(require 'cl)
+(require 'hippie-exp)
+(require 'abbrev)
+(require 'snippet)
+(require 'etags)
+(require 'ispell)
+
 (load "javascript-symbols")
 
 (defun he-word-beginning ()
@@ -32,13 +39,25 @@
 (defun try-expand-tag (old)
   (if (not tags-file-name)
       (setq tags-file-name (find-tags-file)))
-  (try-expand-collection old 'tags-complete-tag))
+  (if tags-file-name
+       (try-expand-collection old 'tags-complete-tag)))
 
 (defun try-expand-css-property (old)
   (try-expand-collection old cssm-properties))
 
 (defun try-expand-javascript-symbol (old)
   (try-expand-collection old javascript-symbols))
+
+(defun try-expand-ispell (old)
+  (try-expand-collection old 'ispell-complete))
+
+(defun ispell-complete (string predicate what)
+  "Completion function for ispell."
+  (let ((completions (lookup-words (concat string "*"))))
+    (if predicate
+	(remove-if-not predicate completions)
+      completions)))
+
 
 (defun indent-and-complete ()
   "Indent line and complete"

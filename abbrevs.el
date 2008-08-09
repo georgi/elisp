@@ -1,3 +1,5 @@
+(require 'snippet)
+
 (defun merge-abbrev-tables (old new)
   (if old
       (mapatoms 
