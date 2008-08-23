@@ -25,12 +25,21 @@
 (defun ruby-help ()
   "Open ruby documentation for word under the point"
   (interactive)
-  (browse-url (search-site-url  "ruby-doc.org" "" 
+  (browse-url (search-site-url  "ruby-doc.org" "/" 
                                 (thing-at-point 'symbol))))
 
 (defun rails-help ()
   "Open rails documentation for word under the point"
   (interactive)
-  (browse-url (search-site-url  "api.rubyonrails.org" "" 
+  (browse-url (search-site-url  "api.rubyonrails.org" "/" 
                                 (thing-at-point 'symbol))))
 
+
+;; ********************************************************************************
+;; Dictionary lookup
+
+(defun dictionary-lookup ()
+  (interactive)
+  (browse-url
+   (format "http://dict.leo.org?search=%s"
+           (url-hexify-string (read-string "Search word: " (current-word))))))

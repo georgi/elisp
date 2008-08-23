@@ -1,6 +1,7 @@
 ;; ********************************************************************************
 ;; Find TAGS file recursively
 ;;
+(require 'cl)
 
 (defun find-tags-file ()
   "recursively searches each parent directory for a file named `tags' and returns the
@@ -9,7 +10,7 @@ not visiting a file"
   (labels
       ((find-tags-file-r (path)
          (let* ((parent (file-name-directory path))
-                (file (concat parent "tags")))
+                (file (concat parent "TAGS")))
            (cond
              ((file-exists-p file) (throw 'found-it file))
              ((string= "/" parent) (throw 'found-it nil))
@@ -45,7 +46,7 @@ not visiting a file"
   (nth 5 (file-attributes file)))
 
 (defun tags-table-append (tags-file file)
-  (call-process "ctags" nil nil nil "-a" "-f" tags-file file))
+  (call-process "ctags" nil nil nil "-e" "-a" "-f" tags-file file))
 
 (defun update-tags-table ()
   "Update tags table with recent changes."
@@ -64,13 +65,13 @@ not visiting a file"
   (let* ((tags-file (read-file-name "tags table: "))
 	 (default-directory (file-name-directory tags-file)))
     (if (file-exists-p "exclude.tags")
-	(shell-command "ctags --exclude=@exclude.tags -R")
-      (shell-command "ctags -R"))))
+	(shell-command "ctags -e --exclude=@exclude.tags -R")
+      (shell-command "ctags -e -R"))))
 
 
 (defun update-tags ()
   (let ((tags-file (find-tags-file)))
-    (if tags-file
+    (when tags-file
 	(tags-table-append tags-file buffer-file-name))))
 
 (add-hook 'after-save-hook 'update-tags)

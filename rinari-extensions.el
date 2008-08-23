@@ -1,6 +1,8 @@
 ;; rinari-extensions.el - modifications and extensions to rinari
 ;;
 
+(defvar rails-base-url)
+
 ;; modified to not auto generate model
 (defun rinari-find-model ()
   "Go to the most logical model given the current location."
@@ -10,7 +12,6 @@
       (:model (rinari-find-file))
       (:unit (toggle-buffer))
       (t (let ((obj (rinari-whats-my-object)))
-           (message (format "%S" obj))
            (if obj
                (or (rinari-open :model (singularize-string obj))
                    (rinari-open :model (pluralize-string obj))
@@ -18,9 +19,24 @@
              (rinari-find-file)))))))
 
 
+(defun rinari-find-controller-or-select()
+  "Find controller or select controller file"
+  (interactive)
+  (or (rinari-find-controller)
+      (string-match "_controller" buffer-file-name)
+      (let ((default-directory (concat (rinari-root) "app/controllers/")))
+	(rinari-find-file))))
+
+(defun rinari-find-view-or-select()
+  "Find view or select controller file"
+  (interactive)
+  (or (rinari-find-view)
+      (let ((default-directory (concat (rinari-root) "app/views/")))
+	(rinari-find-file))))
+
 
 ;; modified to use project-specific base url from variable rails-base-url.
-;; also discarded non-restful urls, instead it just takes the controller path.
+;; also discards non-restful urls, instead just take the controller path.
 (defun rinari-browse-url ()
   "Browse the url of the current view, controller, test, or model
 with `rinari-browse-url-func' which defaults to `browse-url'."
@@ -37,7 +53,8 @@ with `rinari-browse-url-func' which defaults to `browse-url'."
 (defun rinari-run-script (script type)
   (let ((default-directory (or (rinari-root) default-directory))
 	(name (read-from-minibuffer (format "%s %s: " script type))))
-    (shell-command (format "./script/%s %s %s" script type name) "*Rails-Command*")))
+    (shell-command (format "./script/%s %s %s" script type name) "*Rails-Command*")
+    (rinari-open (intern (concat ":" type)) name)))
 
 (defmacro rinari-script-key-hook (script type)
   `(lambda ()

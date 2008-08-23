@@ -7,8 +7,18 @@
 (require 'snippet)
 (require 'etags)
 (require 'ispell)
+(require 'dropdown-list)
+
+(eval-when-compile (require 'css-mode))
 
 (load "javascript-symbols")
+
+(setq dabbrev--abbrev-char-regexp "\\sw\\|\\s_")
+
+(defun he-symbol-beginning ()
+  (save-excursion
+    (skip-syntax-backward "w_")
+    (point)))
 
 (defun he-word-beginning ()
   (let ((p
@@ -19,28 +29,65 @@
 
 (defun try-expand-collection (old collection)
   (unless  old
-    (he-init-string (he-word-beginning) (point))
+    (he-init-string (he-symbol-beginning) (point))
     (setq he-expand-list (sort
                           (all-completions he-search-string collection) 'string-lessp)))
+  (try-expand-completion old))
 
-  (while (and he-expand-list 
-	      (he-string-member (car he-expand-list) he-tried-table))
-    (setq he-expand-list (cdr he-expand-list)))
+(defun try-expand-completion (old)
+  (if (> (length he-expand-list) 3)
+      (let ((idx (dropdown-list he-expand-list)))
+	(he-substitute-string (nth idx he-expand-list)))
+ 
+    (while (and he-expand-list 
+		(he-string-member (car he-expand-list) he-tried-table))
+      (setq he-expand-list (cdr he-expand-list)))
 
-  (if (null he-expand-list)
+    (if (null he-expand-list)
       (progn
         (when old (he-reset-string))
         ())
 
-    (he-substitute-string (car he-expand-list))
-    (setq he-expand-list (cdr he-expand-list))
-    t))
+      (he-substitute-string (car he-expand-list))
+      (setq he-expand-list (cdr he-expand-list))
+      t)))
+
+(defun find-all-dabbrev-expansions (abbrev)
+  (let ((all-expansions nil)
+	expansion)
+    (save-excursion
+      (while (setq expansion (he-dabbrev-search abbrev nil))
+	(unless (member expansion all-expansions)
+	  (setq all-expansions (cons expansion all-expansions))))
+      (while (setq expansion (he-dabbrev-search abbrev t))
+	(unless (member expansion all-expansions)
+	  (setq all-expansions (cons expansion all-expansions))))
+    all-expansions)))
+
+(defun try-expand-dabbrev (old)
+  (unless old
+    (he-init-string (he-symbol-beginning) (point))
+    (setq he-expand-list (sort (find-all-dabbrev-expansions he-search-string) 'string-lessp)))
+  (try-expand-completion old))
+
+(defun try-expand-abbrev (old)
+  (expand-abbrev))
 
 (defun try-expand-tag (old)
   (if (not tags-file-name)
       (setq tags-file-name (find-tags-file)))
   (if tags-file-name
        (try-expand-collection old 'tags-complete-tag)))
+
+(defun try-complete-lisp-symbol (old)
+  (he-init-string (he-symbol-beginning) (point))
+  (setq he-expand-list (sort (all-completions 
+			      he-search-string obarray
+			      (function (lambda (sym)
+					  (or (boundp sym)
+					      (fboundp sym)
+					      (symbol-plist sym))))) 'string-lessp))
+  (try-expand-completion old))
 
 (defun try-expand-css-property (old)
   (try-expand-collection old cssm-properties))
@@ -71,6 +118,3 @@
     (hippie-expand nil))
 
    ((indent-for-tab-command))))
-
-(defun try-expand-abbrev (old)
-  (expand-abbrev))
