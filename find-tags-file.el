@@ -4,7 +4,7 @@
 (require 'cl)
 
 (defun find-tags-file ()
-  "recursively searches each parent directory for a file named `tags' and returns the
+  "recursively searches each parent directory for a file named `TAGS' and returns the
 path to that file or nil if a tags file is not found. Returns nil if the buffer is
 not visiting a file"
   (labels
@@ -13,7 +13,7 @@ not visiting a file"
                 (file (concat parent "TAGS")))
            (cond
              ((file-exists-p file) (throw 'found-it file))
-             ((string= "/" parent) (throw 'found-it nil))
+             ((equal path parent) (throw 'found-it nil))
              (t (find-tags-file-r (directory-file-name parent)))))))
 
     (if (buffer-file-name)

@@ -3,11 +3,19 @@
 ;;
 (add-to-list 'load-path "~/elisp/")
 (add-to-list 'load-path "~/elisp/bbdb")
+(add-to-list 'load-path "~/elisp/cedet-common")
+(add-to-list 'load-path "~/elisp/cedet-contrib")
+(add-to-list 'load-path "~/elisp/cogre")
+(add-to-list 'load-path "~/elisp/ecb")
+(add-to-list 'load-path "~/elisp/ede")
+(add-to-list 'load-path "~/elisp/eieio")
 (add-to-list 'load-path "~/elisp/flyparse")
 (add-to-list 'load-path "~/elisp/git")
 (add-to-list 'load-path "~/elisp/js2-mode")
 (add-to-list 'load-path "~/elisp/rhtml")
 (add-to-list 'load-path "~/elisp/ruby")
+(add-to-list 'load-path "~/elisp/semantic")
+(add-to-list 'load-path "~/elisp/speedbar")
 
 
 ;; ********************************************************************************
@@ -103,6 +111,7 @@
 (global-hl-line-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
+(menu-bar-mode nil)
 
 ;; Scrolling
 (scroll-bar-mode nil)
@@ -406,7 +415,7 @@
 ;; ********************************************************************************
 ;; XML Mode
 ;;
-(autoload 'nxml-mode "xml-mode" "XML Mode" t)
+(autoload 'nxml-mode "nxml-mode" "XML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.xml$" . nxml-mode))
 
 
@@ -522,16 +531,12 @@
 
 
 ;; ********************************************************************************
-;; Toggle fullscreen in X11
+;; Toggle fullscreen
 
-(defun toggle-fullscreen ()
-  "Toggle between fullscreen and partial screen display on X11"
+(defun fullscreen()
   (interactive)
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-                         '(2 "_NET_WM_STATE_FULLSCREEN" 0)))
-
-(toggle-fullscreen)
-(menu-bar-mode nil)
+  (set-frame-parameter nil 'fullscreen
+		       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
 
 
 ;; ********************************************************************************
@@ -583,6 +588,7 @@
 
 ;; Buffers
 (global-set-key (kbd "<menu>") 'ido-switch-buffer)
+(global-set-key (kbd "<apps>") 'ido-switch-buffer)
 (global-set-key (kbd "C-w") (lambda () (interactive) (kill-buffer (buffer-name))))
 
 (global-set-key (kbd "<C-prior>") 'cycle-buffer-prev)

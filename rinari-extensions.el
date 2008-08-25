@@ -3,6 +3,15 @@
 
 (defvar rails-base-url)
 
+(defun rinari-root (&optional dir)
+  (or dir (setq dir default-directory))
+  (if (file-exists-p (concat dir "config/environment.rb"))
+      dir
+    (let ((parent (file-name-directory dir)))
+      (unless (equal parent dir)
+	(rinari-root parent)))))
+
+
 ;; modified to not auto generate model
 (defun rinari-find-model ()
   "Go to the most logical model given the current location."
