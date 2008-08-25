@@ -61,7 +61,7 @@
 (setq session-initialize t)
 (setq standard-indent 2)
 (setq use-file-dialog t)
-
+(setq tags-revert-without-query t)
 
 ;; Rinari
 (require 'rinari)
@@ -252,6 +252,9 @@
 (defun rhtml-mode-on-init ()
   (abbrev-mode nil)
   (make-local-variable 'tags-file-name)
+  (set-face-attribute 'erb-delim-face nil :background "#000")
+  (set-face-attribute 'erb-face nil :background "#333")
+  (set-face-attribute 'erb-out-delim-face nil :foreground "red")
   (setq local-abbrev-table rhtml-mode-abbrev-table)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
@@ -426,7 +429,7 @@
 (setq ecb-expand-methods-switch-off-auto-expand nil)
 (setq ecb-history-sort-method nil)
 (setq ecb-kill-buffer-clears-history (quote auto))
-(setq ecb-layout-name "leftright2")
+(setq ecb-layout-name "left2")
 (setq ecb-layout-window-sizes nil)
 (setq ecb-options-version "2.32")
 (setq ecb-primary-secondary-mouse-buttons 'mouse-1--C-mouse-1)
@@ -435,6 +438,10 @@
 (setq ecb-tip-of-the-day nil)
 (setq ecb-use-speedbar-instead-native-tree-buffer nil)
 (setq ecb-windows-width 0.2)
+(setq ecb-compile-window-height 20)
+(setq ecb-kill-buffer-clears-history nil)
+(setq ecb-layout-window-sizes nil)
+
 
 (defun ecb-on-activate ()
   (setq ecb-directories-menu-user-extension 
@@ -533,10 +540,22 @@
 ;; ********************************************************************************
 ;; Toggle fullscreen
 
-(defun fullscreen()
+(defun fs()
   (interactive)
   (set-frame-parameter nil 'fullscreen
 		       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
+
+
+
+;; ********************************************************************************
+;; Faces
+;;
+(require 'color-theme)
+(color-theme-dark-laptop)
+
+(set-face-attribute 'dropdown-list-face nil :background "#333" :foreground "#fff")
+(set-face-attribute 'hl-line nil :background "#333")
+
 
 
 ;; ********************************************************************************
