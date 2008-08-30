@@ -550,8 +550,6 @@
 ;; ********************************************************************************
 ;; Faces
 ;;
-;; (require 'color-theme)
-;; (color-theme-standard)
 
 (set-face-attribute 'dropdown-list-face nil 
 		    :background "#eee" 
