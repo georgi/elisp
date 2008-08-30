@@ -37,6 +37,7 @@
 (load "completions")
 (load "find-tags-file")
 (load "imenu-from-pattern")
+(load "js2")
 (load "move-lines")
 (load "window-management")
 
@@ -62,6 +63,7 @@
 (setq standard-indent 2)
 (setq use-file-dialog t)
 (setq tags-revert-without-query t)
+
 
 ;; Rinari
 (require 'rinari)
@@ -252,9 +254,9 @@
 (defun rhtml-mode-on-init ()
   (abbrev-mode nil)
   (make-local-variable 'tags-file-name)
-  (set-face-attribute 'erb-delim-face nil :background "#000")
-  (set-face-attribute 'erb-face nil :background "#333")
-  (set-face-attribute 'erb-out-delim-face nil :foreground "red")
+  (set-face-attribute 'erb-delim-face nil :background "#fff")
+  (set-face-attribute 'erb-face nil :background "#fff")
+  (set-face-attribute 'erb-out-delim-face nil :foreground "#933")
   (setq local-abbrev-table rhtml-mode-abbrev-table)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
@@ -290,16 +292,14 @@
 ;;
 (eval-when-compile (require 'js2-mode))
 
-(setq js2-basic-offset 4)
-(setq js2-bounce-indent-flag nil)
-(setq js2-highlight-level 4)
-(setq js2-mode-show-overlay nil)
-
-(autoload 'js2-mode "js2" "Javascript 2 Mode" t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 (defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
+  (setq js2-basic-offset 4)
+  (setq js2-bounce-indent-flag nil)
+  (setq js2-highlight-level 4)
+  (setq js2-mode-show-overlay nil)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
 	 try-expand-dabbrev
@@ -550,12 +550,76 @@
 ;; ********************************************************************************
 ;; Faces
 ;;
-(require 'color-theme)
-(color-theme-dark-laptop)
+;; (require 'color-theme)
+;; (color-theme-standard)
 
-(set-face-attribute 'dropdown-list-face nil :background "#333" :foreground "#fff")
-(set-face-attribute 'hl-line nil :background "#333")
+(set-face-attribute 'dropdown-list-face nil 
+		    :background "#eee" 
+		    :foreground "#000")
 
+(set-face-attribute 'hl-line nil 
+		    :background "#f3f3f3")
+
+(set-face-attribute 'default nil 
+		    :foreground "#333")
+
+(set-face-attribute 'vertical-border nil 
+		    :foreground "#ccc")
+
+(set-face-attribute 'region nil
+		    :background "#efe")
+
+(set-face-attribute 'mode-line nil 
+		    :foreground "#333" 
+		    :background "#eee"
+		    :box '(:line-width 1 :color "#ccc"))
+
+(set-face-attribute 'mode-line-inactive nil 
+		    :foreground "#666" 
+		    :background "#eee"
+		    :box '(:line-width 1 :color "#ccc"))
+
+(set-face-attribute 'mode-line-buffer-id nil
+		    :foreground "#666" 
+		    :background "#eee")
+
+(set-face-attribute 'mode-line-highlight nil 
+		    :foreground "#009" 
+		    :background "#eee" 
+		    :box '(:line-width 1 :color "#ccc"))
+
+
+
+;; Tabbar
+(tabbar-mode t)
+
+(set-face-attribute 'tabbar-default nil
+		    :height 1.0
+		    :background "#eee"
+		    :foreground "#333" 
+		    :inherit 'default)
+
+(set-face-attribute 'tabbar-selected nil
+		    :foreground "#39f" 
+		    :background "#fff"
+		    :weight 'bold
+		    :box '(:line-width 1 :color "#fff" :style released-button))
+
+(set-face-attribute 'tabbar-unselected nil
+		    :foreground "#666" 
+		    :box '(:line-width 1 :color "#eee"))
+
+(set-face-attribute 'tabbar-button nil
+		    :foreground "#666" 
+		    :box '(:line-width 1 :color "#eee"))
+
+
+(defun tab-label (tab)
+  (if tabbar--buffer-show-groups
+      (format " [%s] " (tabbar-tab-tabset tab))
+    (format " %s " (tabbar-tab-value tab))))
+
+(setq tabbar-tab-label-function 'tab-label)
 
 
 ;; ********************************************************************************
@@ -610,8 +674,11 @@
 (global-set-key (kbd "<apps>") 'ido-switch-buffer)
 (global-set-key (kbd "C-w") (lambda () (interactive) (kill-buffer (buffer-name))))
 
-(global-set-key (kbd "<C-prior>") 'cycle-buffer-prev)
-(global-set-key (kbd "<C-next>") 'cycle-buffer-next)
+
+(global-set-key (kbd "<C-M-prior>") 'tabbar-backward-group)
+(global-set-key (kbd "<C-M-next>") 'tabbar-forward-group)
+(global-set-key (kbd "<C-prior>") 'tabbar-backward-tab)
+(global-set-key (kbd "<C-next>") 'tabbar-forward-tab)
 
 (global-set-key (kbd "<C-M-up>") 'move-line-up)
 (global-set-key (kbd "<C-M-down>") 'move-line-down)

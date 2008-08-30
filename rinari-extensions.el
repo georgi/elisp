@@ -5,11 +5,13 @@
 
 (defun rinari-root (&optional dir)
   (or dir (setq dir default-directory))
-  (if (file-exists-p (concat dir "config/environment.rb"))
-      dir
-    (let ((parent (file-name-directory dir)))
-      (unless (equal parent dir)
-	(rinari-root parent)))))
+  (if dir
+      (if (file-exists-p (concat dir "config/environment.rb"))
+	  dir
+	(let* ((dir (directory-file-name dir))
+	       (parent (file-name-directory dir)))
+	  (if (and parent (not (equal parent dir)))
+	    (rinari-root parent))))))
 
 
 ;; modified to not auto generate model
