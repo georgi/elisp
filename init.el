@@ -176,6 +176,21 @@
 ;; (add-hook 'text-mode-hook 'text-mode-on-init)
 
 
+;; ********************************************************************************
+;; Markdown Mode
+;;
+(defun markdown-mode-on-init ()
+  (define-key markdown-mode-map (kbd "<tab>") 'indent-and-complete)
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-ispell)))
+
+(add-hook 'markdown-mode-hook 'markdown-mode-on-init)
+(autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+
+
 
 ;; ********************************************************************************
 ;; Message Mode
@@ -312,12 +327,12 @@
 
 
 ;; ********************************************************************************
-;; Actionscript Mode
+;; Actionscript 3 Mode
 ;;
 (eval-when-compile (require 'as3-mode))
 
 (autoload 'as3-mode "as3-mode" "Actionscript 3 Mode." t)
-(add-to-list 'auto-mode-alist '("\\.as$" . as3-mode))
+;; (add-to-list 'auto-mode-alist '("\\.as$" . as3-mode))
 
 (setenv "CLASSPATH" 
 	(concat (expand-file-name "~/elisp/flyparse/lib/flyparse_parsers.jar:" )
@@ -332,6 +347,36 @@
   (define-key as3-mode-map (kbd "<tab>") 'indent-and-complete))
   
 (add-hook 'as3-mode-hook 'as3-mode-on-init)
+
+
+;; ********************************************************************************
+;; Actionscript Mode
+;;
+
+(eval-when-compile (require 'actionscript-mode))
+
+(autoload 'actionscript-mode "actionscript-mode" "Actionscript Mode." t)
+(add-to-list 'auto-mode-alist '("\\.as$" . actionscript-mode))
+
+(defun actionscript-mode-on-init ()
+  (make-local-variable 'tags-file-name)
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-tag))
+  (define-key actionscript-mode-map (kbd "<tab>") 'indent-and-complete))
+  
+(add-hook 'actionscript-mode-hook 'actionscript-mode-on-init)
+
+(load "ani-fcsh")
+
+(setq *fcsh-path* "fcsh")
+(setq *fcsh-mxmlc-output-path* "")
+
+(defun compile-mxmlc ()
+  (interactive)
+  (or *fcsh-compile-active* fcsh-compile)
+  (call-interactively 'compile))
 
 
 ;; ********************************************************************************
@@ -420,6 +465,7 @@
 ;;
 (autoload 'nxml-mode "nxml-mode" "XML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.xml$" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.mxml$" . nxml-mode))
 
 
 
@@ -534,6 +580,8 @@
 (add-to-list 'smart-compile-alist '("\\.scm$"     . "scheme %f"))
 (add-to-list 'smart-compile-alist '("\\.hx$"      . "haxe compile.hxml"))
 (add-to-list 'smart-compile-alist '(haskell-mode  . "ghc -o %n %f"))
+(add-to-list 'smart-compile-alist '("\\.mxml$"    . (compile-mxmlc)))
+(add-to-list 'smart-compile-alist '("\\.as$"      . (compile-mxmlc)))
 
 
 

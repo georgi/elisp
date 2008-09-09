@@ -3,6 +3,8 @@
 
 (defvar rails-base-url)
 
+(add-to-list 'rinari-subdirs '(:migration . "db/migrate/*\.rb$"))
+
 (defun rinari-root (&optional dir)
   (or dir (setq dir default-directory))
   (if dir

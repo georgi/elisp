@@ -44,9 +44,7 @@
       (setq he-expand-list (cdr he-expand-list)))
 
     (if (null he-expand-list)
-      (progn
         (when old (he-reset-string))
-        ())
 
       (he-substitute-string (car he-expand-list))
       (setq he-expand-list (cdr he-expand-list))
