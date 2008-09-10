@@ -114,6 +114,7 @@
 (show-paren-mode t)
 (transient-mark-mode t)
 (menu-bar-mode nil)
+(tabbar-mode t)
 
 ;; Scrolling
 (scroll-bar-mode nil)
@@ -599,65 +600,90 @@
 ;; Faces
 ;;
 
+(set-face-attribute 'default nil 
+		    :foreground "#999"
+		    :background "#000")
+
+(set-face-attribute 'fringe nil 
+		    :background "#000")
+
 (set-face-attribute 'dropdown-list-face nil 
-		    :background "#eee" 
-		    :foreground "#000")
+		    :background "#333" 
+		    :foreground "#fff")
 
 (set-face-attribute 'hl-line nil 
-		    :background "#f3f3f3")
+		    :foreground "#fff")
 
-(set-face-attribute 'default nil 
-		    :foreground "#333")
 
 (set-face-attribute 'vertical-border nil 
-		    :foreground "#ccc")
+		    :foreground "#333")
 
 (set-face-attribute 'region nil
-		    :background "#efe")
+		    :background "#222")
 
 (set-face-attribute 'mode-line nil 
-		    :foreground "#333" 
-		    :background "#eee"
-		    :box '(:line-width 1 :color "#ccc"))
+		    :foreground "#ccc" 
+		    :background "#333"
+		    :box '(:line-width 1 :color "#333"))
 
 (set-face-attribute 'mode-line-inactive nil 
 		    :foreground "#666" 
-		    :background "#eee"
-		    :box '(:line-width 1 :color "#ccc"))
+		    :background "#222"
+		    :box '(:line-width 1 :color "#333"))
 
 (set-face-attribute 'mode-line-buffer-id nil
-		    :foreground "#666" 
-		    :background "#eee")
+		    :foreground "#ccc" 
+		    :background "#333")
 
 (set-face-attribute 'mode-line-highlight nil 
-		    :foreground "#009" 
-		    :background "#eee" 
-		    :box '(:line-width 1 :color "#ccc"))
-
-
-
-;; Tabbar
-(tabbar-mode t)
+		    :foreground "#ccc" 
+		    :background "#333" 
+		    :box '(:line-width 1 :color "#444"))
 
 (set-face-attribute 'tabbar-default nil
 		    :height 1.0
-		    :background "#eee"
-		    :foreground "#333" 
+		    :background "#333"
+		    :foreground "#ccc" 
 		    :inherit 'default)
 
 (set-face-attribute 'tabbar-selected nil
-		    :foreground "#39f" 
-		    :background "#fff"
+		    :foreground "#ccc" 
+		    :background "#444"
 		    :weight 'bold
-		    :box '(:line-width 1 :color "#fff" :style released-button))
+		    :box '(:line-width 1 :color "#666" :style released-button))
 
 (set-face-attribute 'tabbar-unselected nil
 		    :foreground "#666" 
-		    :box '(:line-width 1 :color "#eee"))
+		    :box '(:line-width 1 :color "#666"))
 
 (set-face-attribute 'tabbar-button nil
 		    :foreground "#666" 
-		    :box '(:line-width 1 :color "#eee"))
+		    :box '(:line-width 1 :color "#666"))
+
+(set-face-attribute 'font-lock-builtin-face nil
+		    :foreground "#c99")
+
+(set-face-attribute 'font-lock-keyword-face nil
+		    :foreground "#99c")
+
+(set-face-attribute 'font-lock-function-name-face nil
+		    :foreground "#9cc")
+
+(set-face-attribute 'font-lock-variable-name-face nil
+		    :foreground "#acc")
+
+(set-face-attribute 'font-lock-comment-face nil
+		    :foreground "#aa9")
+
+(set-face-attribute 'font-lock-string-face nil
+		    :foreground "#fcc")
+
+(set-face-attribute 'cursor nil
+		    :background "#999")
+
+(set-face-attribute 'dropdown-list-selection-face nil
+		    :background "#666")
+
 
 
 (defun tab-label (tab)
