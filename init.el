@@ -602,82 +602,80 @@
 ;;
 
 (set-face-attribute 'default nil 
-		    :foreground "#999"
-		    :background "#000")
-
-(set-face-attribute 'fringe nil 
-		    :background "#000")
-
-(set-face-attribute 'dropdown-list-face nil 
-		    :background "#333" 
-		    :foreground "#fff")
+		    :foreground "#333"
+		    :background "#fff")
 
 (set-face-attribute 'hl-line nil 
-		    :foreground "#fff")
+		    :foreground "000"
+		    :background "#ffffff")
 
+(set-face-attribute 'fringe nil 
+		    :background "#e9e9e9")
+
+(set-face-attribute 'dropdown-list-face nil  
+		    :foreground "#000"
+		    :background "#fff")
 
 (set-face-attribute 'vertical-border nil 
 		    :foreground "#333")
 
 (set-face-attribute 'region nil
-		    :background "#222")
+		    :background "#fcc")
 
 (set-face-attribute 'mode-line nil 
-		    :foreground "#ccc" 
-		    :background "#333"
-		    :box '(:line-width 1 :color "#333"))
+		    :foreground "#666" 
+		    :background "#ddd"
+		    :box '(:line-width 1 :color "#999"))
 
 (set-face-attribute 'mode-line-inactive nil 
 		    :foreground "#666" 
-		    :background "#222"
-		    :box '(:line-width 1 :color "#333"))
+		    :background "#eee"
+		    :box '(:line-width 1 :color "#ccc"))
 
 (set-face-attribute 'mode-line-buffer-id nil
-		    :foreground "#ccc" 
-		    :background "#333")
+		    :foreground "#111" 
+		    :background "#ddd")
 
 (set-face-attribute 'mode-line-highlight nil 
-		    :foreground "#ccc" 
-		    :background "#333" 
+		    :foreground "#333" 
+		    :background "#ccc" 
 		    :box '(:line-width 1 :color "#444"))
 
 (set-face-attribute 'tabbar-default nil
 		    :height 1.0
-		    :background "#333"
-		    :foreground "#ccc" 
+		    :foreground "#333" 
+		    :background "#ddd"
 		    :inherit 'default)
 
 (set-face-attribute 'tabbar-selected nil
-		    :foreground "#ccc" 
-		    :background "#444"
+		    :foreground "#333" 
+		    :background "#ccc"
 		    :weight 'bold
-		    :box '(:line-width 1 :color "#666" :style released-button))
+		    :box '(:line-width 1 :color "#ccc" :style released-button))
 
 (set-face-attribute 'tabbar-unselected nil
-		    :foreground "#666" 
-		    :box '(:line-width 1 :color "#666"))
+		    :foreground "#666")
 
 (set-face-attribute 'tabbar-button nil
-		    :foreground "#666" 
-		    :box '(:line-width 1 :color "#666"))
+		    :foreground "#666")
 
 (set-face-attribute 'font-lock-builtin-face nil
-		    :foreground "#c99")
+		    :foreground "#96c")
 
 (set-face-attribute 'font-lock-keyword-face nil
-		    :foreground "#99c")
+		    :foreground "#009")
 
 (set-face-attribute 'font-lock-function-name-face nil
-		    :foreground "#9cc")
+		    :foreground "#090")
 
 (set-face-attribute 'font-lock-variable-name-face nil
-		    :foreground "#acc")
+		    :foreground "#099")
 
 (set-face-attribute 'font-lock-comment-face nil
-		    :foreground "#aa9")
+		    :foreground "#696")
 
 (set-face-attribute 'font-lock-string-face nil
-		    :foreground "#fcc")
+		    :foreground "#c93")
 
 (set-face-attribute 'cursor nil
 		    :background "#999")
