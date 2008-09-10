@@ -620,7 +620,7 @@
 		    :foreground "#333")
 
 (set-face-attribute 'region nil
-		    :background "#fcc")
+		    :background "#ffe")
 
 (set-face-attribute 'mode-line nil 
 		    :foreground "#666" 
