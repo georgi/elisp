@@ -27,6 +27,8 @@
 (require 'vc-svn)
 (require 'vc-git)
 (require 'tabbar)
+(require 'cedet)
+(require 'ecb)
 
 
 ;; ********************************************************************************
@@ -738,10 +740,17 @@
 (global-set-key (kbd "M-1") 'delete-other-windows)
 (global-set-key (kbd "M-2") 'split-window-vertically)
 (global-set-key (kbd "M-3") 'split-window-horizontally)
+
 (global-set-key (kbd "<M-up>") 'windmove-up)
 (global-set-key (kbd "<M-down>") 'windmove-down)
 (global-set-key (kbd "<M-left>") 'windmove-left)
 (global-set-key (kbd "<M-right>") 'windmove-right)
+
+(global-set-key (kbd "ESC <up>") 'windmove-up)
+(global-set-key (kbd "ESC <down>") 'windmove-down)
+(global-set-key (kbd "ESC <left>") 'windmove-left)
+(global-set-key (kbd "ESC <right>") 'windmove-right)
+
 (global-set-key (kbd "<s-up>") 'window-resize-up)
 (global-set-key (kbd "<s-down>") 'window-resize-down)
 
