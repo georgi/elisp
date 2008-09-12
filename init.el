@@ -158,10 +158,21 @@
 ;;
 (require 'outline)
 
-(setq outline-minor-mode-prefix (kbd "C-."))
-
+(define-key outline-minor-mode-map (kbd "M-s") 'show-all)
+(define-key outline-minor-mode-map (kbd "C-M-s") 'hide-leaves)
+(define-key outline-minor-mode-map (kbd "<C-M-left>") 'hide-subtree)
+(define-key outline-minor-mode-map (kbd "<C-M-right>") 'show-subtree)
 (define-key outline-minor-mode-map (kbd "<C-up>") 'outline-previous-heading)
 (define-key outline-minor-mode-map (kbd "<C-down>") 'outline-next-heading)
+
+
+;; ********************************************************************************
+;; Twitter
+;;
+(autoload 'twitter-get-friends-timeline "twitter" nil t)
+(autoload 'twitter-status-edit "twitter" nil t)
+(global-set-key "\C-xt" 'twitter-get-friends-timeline)
+(add-hook 'twitter-status-edit-mode-hook 'longlines-mode)
 
 
 ;; ********************************************************************************
@@ -603,38 +614,42 @@
 
 (set-face-attribute 'default nil 
 		    :foreground "#333"
-		    :background "#fff")
-
-(set-face-attribute 'hl-line nil 
-		    :foreground "000"
 		    :background "#ffffff")
 
+(set-face-attribute 'hl-line nil 
+		    :background "#fff")
+
 (set-face-attribute 'fringe nil 
-		    :background "#e9e9e9")
+		    :background "#fff")
+
+(set-face-attribute 'cursor nil
+		    :background "#000")
 
 (set-face-attribute 'dropdown-list-face nil  
 		    :foreground "#000"
-		    :background "#fff")
+		    :background "#eef")
+
+(set-face-attribute 'dropdown-list-selection-face nil
+		    :background "#fcc")
 
 (set-face-attribute 'vertical-border nil 
-		    :foreground "#333")
+		    :foreground "#eee")
 
 (set-face-attribute 'region nil
 		    :background "#ffe")
 
 (set-face-attribute 'mode-line nil 
 		    :foreground "#666" 
-		    :background "#ddd"
-		    :box '(:line-width 1 :color "#999"))
+		    :background "#eee"
+		    :box '(:line-width 1 :color "#eee"))
 
 (set-face-attribute 'mode-line-inactive nil 
-		    :foreground "#666" 
-		    :background "#eee"
-		    :box '(:line-width 1 :color "#ccc"))
+		    :foreground "#999" 
+		    :background "#fff"
+		    :box '(:line-width 1 :color "#fff"))
 
 (set-face-attribute 'mode-line-buffer-id nil
-		    :foreground "#111" 
-		    :background "#ddd")
+		    :foreground "#111")
 
 (set-face-attribute 'mode-line-highlight nil 
 		    :foreground "#333" 
@@ -644,23 +659,25 @@
 (set-face-attribute 'tabbar-default nil
 		    :height 1.0
 		    :foreground "#333" 
-		    :background "#ddd"
+		    :background "#fff"
 		    :inherit 'default)
 
 (set-face-attribute 'tabbar-selected nil
-		    :foreground "#333" 
-		    :background "#ccc"
+		    :foreground "#0af" 
+		    :background "#e9e9e9"
 		    :weight 'bold
-		    :box '(:line-width 1 :color "#ccc" :style released-button))
+		    :box '(:line-width 1 :color "#fff" :style released-button))
 
 (set-face-attribute 'tabbar-unselected nil
-		    :foreground "#666")
+		    :foreground "#666"
+		    :box '(:line-width 1 :color "#fff"))
 
 (set-face-attribute 'tabbar-button nil
-		    :foreground "#666")
+		    :foreground "#666"
+		    :box '(:line-width 1 :color "#fff"))
 
 (set-face-attribute 'font-lock-builtin-face nil
-		    :foreground "#96c")
+		    :foreground "#909")
 
 (set-face-attribute 'font-lock-keyword-face nil
 		    :foreground "#009")
@@ -672,16 +689,11 @@
 		    :foreground "#099")
 
 (set-face-attribute 'font-lock-comment-face nil
-		    :foreground "#696")
+		    :foreground "#c90")
 
 (set-face-attribute 'font-lock-string-face nil
 		    :foreground "#c93")
 
-(set-face-attribute 'cursor nil
-		    :background "#999")
-
-(set-face-attribute 'dropdown-list-selection-face nil
-		    :background "#666")
 
 
 
@@ -698,7 +710,7 @@
 ;;
 
 ;; F keys
-(global-set-key (kbd "<f1>") 'ri)
+(global-set-key (kbd "<f1>") 'shell)
 (global-set-key (kbd "<f2>") 'grep)
 (global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
 (global-set-key (kbd "<f6>") 'ibuffer)
