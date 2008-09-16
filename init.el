@@ -12,6 +12,7 @@
 (add-to-list 'load-path "~/elisp/flyparse")
 (add-to-list 'load-path "~/elisp/git")
 (add-to-list 'load-path "~/elisp/js2-mode")
+(add-to-list 'load-path "~/elisp/nxml-mode")
 (add-to-list 'load-path "~/elisp/rhtml")
 (add-to-list 'load-path "~/elisp/ruby")
 (add-to-list 'load-path "~/elisp/semantic")
@@ -29,7 +30,6 @@
 (require 'tabbar)
 (require 'cedet)
 (require 'ecb)
-
 
 ;; ********************************************************************************
 ;; Load my own elisp stuff
@@ -66,6 +66,7 @@
 (setq standard-indent 2)
 (setq use-file-dialog t)
 (setq tags-revert-without-query t)
+(setq tab-width 4)
 
 
 ;; Rinari
@@ -347,7 +348,7 @@
 (eval-when-compile (require 'as3-mode))
 
 (autoload 'as3-mode "as3-mode" "Actionscript 3 Mode." t)
-;; (add-to-list 'auto-mode-alist '("\\.as$" . as3-mode))
+(add-to-list 'auto-mode-alist '("\\.as$" . as3-mode))
 
 (setenv "CLASSPATH" 
 	(concat (expand-file-name "~/elisp/flyparse/lib/flyparse_parsers.jar:" )
@@ -371,7 +372,7 @@
 (eval-when-compile (require 'actionscript-mode))
 
 (autoload 'actionscript-mode "actionscript-mode" "Actionscript Mode." t)
-(add-to-list 'auto-mode-alist '("\\.as$" . actionscript-mode))
+;; (add-to-list 'auto-mode-alist '("\\.as$" . actionscript-mode))
 
 (defun actionscript-mode-on-init ()
   (make-local-variable 'tags-file-name)
@@ -431,7 +432,7 @@
 ;; ********************************************************************************
 ;; HTML Mode
 ;;
-(add-to-list 'auto-mode-alist '("\\.html\\'" . html-mode))
+;; (add-to-list 'auto-mode-alist '("\\.html\\'" . html-mode))
 
 (defun html-mode-on-init ()
   (set (make-local-variable 'hippie-expand-try-functions-list)
@@ -478,10 +479,23 @@
 ;; ********************************************************************************
 ;; XML Mode
 ;;
+
+(setq rng-schema-locating-file-schema-file "~/elisp/nxml-mode/schema/schemas.xml")
+
 (autoload 'nxml-mode "nxml-mode" "XML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.xml$" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.mxml$" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.html$" . nxml-mode))
 
+(defun nxml-mode-on-init ()
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-rng
+		 try-expand-abbrev
+		 try-expand-dabbrev
+		 try-expand-tag))
+  (define-key nxml-mode-map (kbd "<tab>") 'indent-and-complete))
+
+(add-hook 'nxml-mode-hook 'nxml-mode-on-init)
 
 
 ;; ********************************************************************************
@@ -525,46 +539,11 @@
 
 
 ;; ********************************************************************************
-;; Gnus
-;;
-(require 'gnus)
-(require 'bbdb)
-(require 'bbdb-vcard-import)
-
-(bbdb-initialize)
-
-(setq gnus-select-method '(nntp "news.gmane.org"))
-
-(add-to-list 'gnus-secondary-select-methods 
-	     '(nnimap "gmail"
-		      (nnimap-address "imap.gmail.com")
-		      (nnimap-server-port 993)
-		      (nnimap-stream ssl)))
-
-(setq gnus-novice-user nil)
-
-(setq message-send-mail-function 
-      'smtpmail-send-it
-      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-      smtpmail-auth-credentials '(("smtp.gmail.com" 587 "matti.georgi@gmail.com" nil))
-      smtpmail-default-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587
-      smtpmail-local-domain "localhost")
-
-(setq gnus-invalid-group-regexp "[:`'\"]\\|^$")
-
-(setq user-full-name "Matthias Georgi")
-(setq user-mail-address "matti.georgi@gmail.com")
-      
-
-
-
-;; ********************************************************************************
 ;; Dired
 ;;
 (require 'dired)
 (require 'dired-single)
+(require 'wdired)
 
 (setq dired-listing-switches "-l")
 
@@ -575,9 +554,7 @@
 (define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
 (define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
 (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
-
-(defun dired-on-load ()
-  (gnus-dired-mode 1))
+(define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
 
 (add-hook 'dired-load-hook 'dired-on-load)
 
@@ -619,7 +596,7 @@
 		    :background "#ffffff")
 
 (set-face-attribute 'hl-line nil 
-		    :background "#fff")
+		    :background "#ffc")
 
 (set-face-attribute 'fringe nil 
 		    :background "#fff")
@@ -638,7 +615,7 @@
 		    :foreground "#eee")
 
 (set-face-attribute 'region nil
-		    :background "#ffe")
+		    :background "#fcc")
 
 (set-face-attribute 'mode-line nil 
 		    :foreground "#666" 
@@ -764,8 +741,6 @@
 ;; Buffers
 (global-set-key (kbd "<menu>") 'ido-switch-buffer)
 (global-set-key (kbd "<apps>") 'ido-switch-buffer)
-(global-set-key (kbd "C-w") (lambda () (interactive) (kill-buffer (buffer-name))))
-
 
 (global-set-key (kbd "<C-M-prior>") 'tabbar-backward-group)
 (global-set-key (kbd "<C-M-next>") 'tabbar-forward-group)

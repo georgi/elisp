@@ -3,6 +3,7 @@
 
   <uri pattern="*.xsl" typeId="XSLT"/>
   <uri pattern="*.html" typeId="XHTML"/>
+  <uri pattern="*.rhtml" typeId="XHTML"/>
   <uri pattern="*.rng" typeId="RELAX NG"/>
   <uri pattern="*.rdf" typeId="RDF"/>
   

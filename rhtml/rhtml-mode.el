@@ -46,7 +46,7 @@
 (require 'rhtml-sgml-hacks) ;; indent erb with sgml
 
 (define-derived-mode rhtml-mode
-  html-mode "RHTML"
+  nxml-mode "RHTML"
   "Embedded Ruby Mode (RHTML)"
   (interactive)
   (abbrev-mode)

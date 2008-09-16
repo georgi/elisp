@@ -71,6 +71,9 @@
 (defun try-expand-abbrev (old)
   (expand-abbrev))
 
+(defun try-expand-rng (old)
+  (rng-complete))
+
 (defun try-expand-tag (old)
   (if (not tags-file-name)
       (setq tags-file-name (find-tags-file)))
@@ -112,7 +115,10 @@
    ((and (boundp 'snippet) snippet)
     (snippet-next-field))
 
-   ((looking-at "\\_>")
+;;;    ((boundp 'nxml-completion-hook)
+;;;     (nxml-complete))
+
+   ((looking-at "\\_>")    
     (hippie-expand nil))
 
    ((indent-for-tab-command))))
