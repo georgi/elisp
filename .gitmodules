@@ -1,3 +1,6 @@
 [submodule "flyparse"]
 	path = flyparse
 	url = git://github.com/aemoncannon/flyparse-mode.git
+[submodule "as3-mode"]
+	path = as3-mode
+	url = git://github.com/aemoncannon/as3-mode.git
