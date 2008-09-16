@@ -1,0 +1,3 @@
+[submodule "flyparse"]
+	path = flyparse
+	url = git://github.com/aemoncannon/flyparse-mode.git
