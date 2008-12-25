@@ -49,7 +49,7 @@
 
 (snippet-with-abbrev-table 
  'rhtml-mode-abbrev-table 
- ("%"       . "<% $. -%>")
+ ("%"       . "<% $. %>")
  ("%%"      . "<%= $. %>")
  ("%for"    . "<% for $${elem} in $${list} %>$.<% end %>$>")
  ("%h"      . "<%=h $${@item} %>")

@@ -4,3 +4,6 @@
 [submodule "as3-mode"]
 	path = as3-mode
 	url = git://github.com/aemoncannon/as3-mode.git
+[submodule "anything-config"]
+	path = anything-config
+	url = git://repo.or.cz/anything-config.git

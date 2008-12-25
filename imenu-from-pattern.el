@@ -14,6 +14,9 @@
 	(goto-char (cdr (nth (dropdown-list (mapcar 'car list)) list))))))
 
 
+(dropdown-list (mapcar 'car (imenu--make-index-alist)))
+
+
 (defun show-javascript-menu ()
   (interactive)
   (menu-from-pattern "[ .]+\\([[:alnum:]_]+\\) *[=:] *function *\\((.*)\\)" 

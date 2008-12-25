@@ -2,6 +2,8 @@
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/elisp/")
+(add-to-list 'load-path "~/elisp/anything-config")
+(add-to-list 'load-path "~/elisp/as3-mode")
 (add-to-list 'load-path "~/elisp/bbdb")
 (add-to-list 'load-path "~/elisp/cedet-common")
 (add-to-list 'load-path "~/elisp/cedet-contrib")
@@ -12,11 +14,13 @@
 (add-to-list 'load-path "~/elisp/flyparse")
 (add-to-list 'load-path "~/elisp/git")
 (add-to-list 'load-path "~/elisp/js2-mode")
+(add-to-list 'load-path "~/elisp/mozrepl")
 (add-to-list 'load-path "~/elisp/nxml-mode")
 (add-to-list 'load-path "~/elisp/rhtml")
 (add-to-list 'load-path "~/elisp/ruby")
 (add-to-list 'load-path "~/elisp/semantic")
 (add-to-list 'load-path "~/elisp/speedbar")
+(add-to-list 'load-path "~/elisp/yasnippet")
 
 
 ;; ********************************************************************************
@@ -29,26 +33,12 @@
 (require 'vc-git)
 (require 'tabbar)
 (require 'cedet)
-(require 'ecb)
-
-;; ********************************************************************************
-;; Load my own elisp stuff
-;;
-(load "abbrevs")
-(load "browser-help")
-(load "buffer-cycle")
-(load "completions")
-(load "find-tags-file")
-(load "imenu-from-pattern")
-(load "js2")
-(load "move-lines")
-(load "window-management")
-
 
 
 ;; ********************************************************************************
 ;; Variables
 ;;
+
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq x-select-enable-clipboard t)
 (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
@@ -68,6 +58,20 @@
 (setq tags-revert-without-query t)
 (setq tab-width 4)
 
+
+;; ********************************************************************************
+;; Anything
+;;
+
+(require 'anything)
+(require 'anything-config)
+(require 'anything-rcodetools)
+
+(setq rct-get-all-methods-command "PAGER=cat fri -l")
+
+(setq anything-sources
+      (list anything-c-source-locate
+	    anything-c-source-tracker-search))
 
 ;; Rinari
 (require 'rinari)
@@ -103,6 +107,7 @@
 (setq ido-case-fold t)
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere nil)
+(load "ido-goto-symbol")
 
 ;; I-Menu
 (setq imenu-auto-rescan t)
@@ -117,7 +122,7 @@
 (global-hl-line-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
-(menu-bar-mode nil)
+(menu-bar-mode t)
 (tabbar-mode t)
 
 ;; Scrolling
@@ -129,11 +134,29 @@
 (setq woman-fill-column 80)
 (setq woman-use-own-frame nil)
 
+
+;; ********************************************************************************
+;; Load my own elisp stuff
+;;
+(load "abbrevs")
+(load "browser-help")
+(load "completions")
+(load "find-tags-file")
+(load "imenu-from-pattern")
+(load "js2")
+(load "move-lines")
+(load "theme")
+(load "window-management")
+
+
+
+
 ;; ********************************************************************************
 ;; Autoloads
 ;;
 (autoload 'worklog "worklog" "Work log" t)
 (autoload 'rdebug "rdebug" "Ruby Debug" t)
+(autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
 
 
 ;; ********************************************************************************
@@ -156,18 +179,6 @@
 (setq ri-ruby-script (expand-file-name "~/elisp/ruby/ri-emacs.rb"))
 (autoload 'ri "~/elisp/ruby/ri-ruby.el" nil t)
 
-;; ********************************************************************************
-;; Outline
-;;
-(require 'outline)
-
-(define-key outline-minor-mode-map (kbd "M-s") 'show-all)
-(define-key outline-minor-mode-map (kbd "C-M-s") 'hide-leaves)
-(define-key outline-minor-mode-map (kbd "<C-M-left>") 'hide-subtree)
-(define-key outline-minor-mode-map (kbd "<C-M-right>") 'show-subtree)
-(define-key outline-minor-mode-map (kbd "<C-up>") 'outline-previous-heading)
-(define-key outline-minor-mode-map (kbd "<C-down>") 'outline-next-heading)
-
 
 ;; ********************************************************************************
 ;; Twitter
@@ -176,20 +187,6 @@
 (autoload 'twitter-status-edit "twitter" nil t)
 (global-set-key "\C-xt" 'twitter-get-friends-timeline)
 (add-hook 'twitter-status-edit-mode-hook 'longlines-mode)
-
-
-;; ********************************************************************************
-;; Text Mode
-;;
-;; (define-key text-mode-map (kbd "<tab>") 'indent-and-complete)
-
-;; (defun text-mode-on-init ()
-;;   (set (make-local-variable 'hippie-expand-try-functions-list)
-;;        '(try-expand-abbrev
-;; 	 try-expand-dabbrev
-;; 	 try-expand-ispell)))
-
-;; (add-hook 'text-mode-hook 'text-mode-on-init)
 
 
 ;; ********************************************************************************
@@ -207,24 +204,6 @@
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 
-
-;; ********************************************************************************
-;; Message Mode
-;;
-(defun message-mode-on-init ()
-  (flyspell-mode t)
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-ispell)))
-
-
-(add-hook 'message-mode-hook 'message-mode-on-init)
-
-(setq message-tab-body-function 'indent-and-complete)
-
-
-
 ;; ********************************************************************************
 ;; Python Mode
 ;;
@@ -239,6 +218,9 @@
 ;;
 (require 'ruby-electric)
 
+(setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
+
+
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))  
@@ -246,9 +228,6 @@
 (defun ruby-mode-on-init ()
   (rinari-launch)
   (ruby-electric-mode t)
-
-  (outline-minor-mode t)
-  (setq outline-regexp " *\\(def \\|class\\|module\\)")
 
   (make-local-variable 'tags-file-name)
 
@@ -268,7 +247,7 @@
 
   (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
   (define-key ruby-mode-map (kbd "<tab>") 'indent-and-complete)
-  (define-key ruby-mode-map (kbd "<C-menu>") 'show-ruby-menu)
+  (define-key ruby-mode-map (kbd "<return>") 'newline-and-indent)
   )
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init)
@@ -327,6 +306,7 @@
 
 (defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
+  (moz-minor-mode 1)
   (setq js2-basic-offset 4)
   (setq js2-bounce-indent-flag nil)
   (setq js2-highlight-level 4)
@@ -336,10 +316,10 @@
 	 try-expand-dabbrev
 	 try-expand-javascript-symbol	 
 	 try-expand-tag))
-  (define-key js2-mode-map (kbd "<tab>") 'indent-and-complete)
-  (define-key js2-mode-map (kbd "<C-menu>") 'show-javascript-menu))
+  (define-key js2-mode-map (kbd "<tab>") 'indent-and-complete))
 
 (add-hook 'js2-mode-hook 'js2-mode-on-init)
+
 
 
 ;; ********************************************************************************
@@ -352,6 +332,7 @@
 
 (setenv "CLASSPATH" 
 	(concat (expand-file-name "~/elisp/flyparse/lib/flyparse_parsers.jar:" )
+		(expand-file-name "~/elisp/flyparse/antlr-3.1.jar:")
 		(getenv "CLASSPATH")))
 
 (defun as3-mode-on-init ()
@@ -416,7 +397,7 @@
 
 
 ;; ********************************************************************************
-;; Emacs-Lips Mode
+;; Emacs-Lisp Mode
 ;;
 (defun emacs-lisp-mode-on-init ()
   (set (make-local-variable 'hippie-expand-try-functions-list)
@@ -490,9 +471,9 @@
 (defun nxml-mode-on-init ()
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-rng
-		 try-expand-abbrev
-		 try-expand-dabbrev
-		 try-expand-tag))
+	 try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-tag))
   (define-key nxml-mode-map (kbd "<tab>") 'indent-and-complete))
 
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
@@ -501,10 +482,14 @@
 ;; ********************************************************************************
 ;; ECB
 ;;
+(require 'ecb)
+
 (setq ecb-expand-methods-switch-off-auto-expand nil)
 (setq ecb-history-sort-method nil)
 (setq ecb-kill-buffer-clears-history (quote auto))
-(setq ecb-layout-name "left2")
+;; (setq ecb-layout-name "left13")
+;; (setq ecb-layout-name "leftright3")
+(setq ecb-layout-name "leftright2")
 (setq ecb-layout-window-sizes nil)
 (setq ecb-options-version "2.32")
 (setq ecb-primary-secondary-mouse-buttons 'mouse-1--C-mouse-1)
@@ -513,29 +498,18 @@
 (setq ecb-tip-of-the-day nil)
 (setq ecb-use-speedbar-instead-native-tree-buffer nil)
 (setq ecb-windows-width 0.2)
+(setq ecb-window-sync nil)
 (setq ecb-compile-window-height 20)
 (setq ecb-kill-buffer-clears-history nil)
 (setq ecb-layout-window-sizes nil)
+(setq ecb-auto-activate t)
+(setq ecb-auto-compatibility-check nil)
+(setq ecb-auto-update-methods-after-save nil)
 
+(defun ecb-after-dir-change(old dir)
+  (joc-dired-magic-buffer dir))
 
-(defun ecb-on-activate ()
-  (setq ecb-directories-menu-user-extension 
-	'(("SVN"
-	   (ecb-dir-popup-svn-status "Status"))
-	  ("Git"
-	   (ecb-dir-popup-git-status "Status"))))
-
-  (tree-buffer-defpopup-command ecb-dir-popup-svn-status
-    "Check status of directory."
-    (svn-status (tree-node->data node))
-    (switch-to-buffer "*svn-status*"))
-
-  (tree-buffer-defpopup-command ecb-dir-popup-git-status
-    "Check status of directory."
-    (git-status (tree-node->data node))
-    (switch-to-buffer "*git-status*")))
-
-(add-hook 'ecb-activate-hook 'ecb-on-activate)
+(add-hook 'ecb-after-directory-change-hook 'ecb-after-dir-change)
 
 
 ;; ********************************************************************************
@@ -544,8 +518,6 @@
 (require 'dired)
 (require 'dired-single)
 (require 'wdired)
-
-(setq dired-listing-switches "-l")
 
 (defun joc-dired-up-directory()
   (interactive)
@@ -557,6 +529,9 @@
 (define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
 
 (add-hook 'dired-load-hook 'dired-on-load)
+
+(setq dired-listing-switches "-l")
+ 
 
 
 
@@ -587,95 +562,6 @@
 
 
 
-;; ********************************************************************************
-;; Faces
-;;
-
-(set-face-attribute 'default nil 
-		    :foreground "#333"
-		    :background "#ffffff")
-
-(set-face-attribute 'hl-line nil 
-		    :background "#ffc")
-
-(set-face-attribute 'fringe nil 
-		    :background "#fff")
-
-(set-face-attribute 'cursor nil
-		    :background "#000")
-
-(set-face-attribute 'dropdown-list-face nil  
-		    :foreground "#000"
-		    :background "#eef")
-
-(set-face-attribute 'dropdown-list-selection-face nil
-		    :background "#fcc")
-
-(set-face-attribute 'vertical-border nil 
-		    :foreground "#eee")
-
-(set-face-attribute 'region nil
-		    :background "#fcc")
-
-(set-face-attribute 'mode-line nil 
-		    :foreground "#666" 
-		    :background "#eee"
-		    :box '(:line-width 1 :color "#eee"))
-
-(set-face-attribute 'mode-line-inactive nil 
-		    :foreground "#999" 
-		    :background "#fff"
-		    :box '(:line-width 1 :color "#fff"))
-
-(set-face-attribute 'mode-line-buffer-id nil
-		    :foreground "#111")
-
-(set-face-attribute 'mode-line-highlight nil 
-		    :foreground "#333" 
-		    :background "#ccc" 
-		    :box '(:line-width 1 :color "#444"))
-
-(set-face-attribute 'tabbar-default nil
-		    :height 1.0
-		    :foreground "#333" 
-		    :background "#fff"
-		    :inherit 'default)
-
-(set-face-attribute 'tabbar-selected nil
-		    :foreground "#0af" 
-		    :background "#e9e9e9"
-		    :weight 'bold
-		    :box '(:line-width 1 :color "#fff" :style released-button))
-
-(set-face-attribute 'tabbar-unselected nil
-		    :foreground "#666"
-		    :box '(:line-width 1 :color "#fff"))
-
-(set-face-attribute 'tabbar-button nil
-		    :foreground "#666"
-		    :box '(:line-width 1 :color "#fff"))
-
-(set-face-attribute 'font-lock-builtin-face nil
-		    :foreground "#909")
-
-(set-face-attribute 'font-lock-keyword-face nil
-		    :foreground "#009")
-
-(set-face-attribute 'font-lock-function-name-face nil
-		    :foreground "#090")
-
-(set-face-attribute 'font-lock-variable-name-face nil
-		    :foreground "#099")
-
-(set-face-attribute 'font-lock-comment-face nil
-		    :foreground "#c90")
-
-(set-face-attribute 'font-lock-string-face nil
-		    :foreground "#c93")
-
-
-
-
 (defun tab-label (tab)
   (if tabbar--buffer-show-groups
       (format " [%s] " (tabbar-tab-tabset tab))
@@ -683,6 +569,10 @@
 
 (setq tabbar-tab-label-function 'tab-label)
 
+(defun indent-buffer ()
+  (interactive)
+  (save-excursion
+    (indent-region (point-min) (point-max) nil)))
 
 ;; ********************************************************************************
 ;; Global Key Bindings
@@ -698,12 +588,7 @@
 (global-set-key (kbd "<f9>") 'smart-compile)
 (global-set-key (kbd "<f10>") 'ecb-toggle-ecb-windows)
 (global-set-key (kbd "<f11>") 'ecb-toggle-compile-window)
-(global-set-key (kbd "<f12>") 
-		(lambda () (interactive) 
-		  (if menu-bar-mode
-		      (menu-bar-mode nil)
-		    (menu-bar-mode t) 
-		    (menu-bar-open))))
+(global-set-key (kbd "<f12>") 'indent-buffer)
 
 ;; Help keys
 (global-set-key (kbd "C-h C-d") 'dictionary-lookup)
@@ -740,6 +625,7 @@
 
 ;; Buffers
 (global-set-key (kbd "<menu>") 'ido-switch-buffer)
+(global-set-key (kbd "<C-menu>") 'ido-goto-symbol)
 (global-set-key (kbd "<apps>") 'ido-switch-buffer)
 
 (global-set-key (kbd "<C-M-prior>") 'tabbar-backward-group)
@@ -752,6 +638,8 @@
 
 (global-set-key (kbd "<M-S-up>") 'copy-line-up)
 (global-set-key (kbd "<M-S-down>") 'copy-line-down)
+
+(global-set-key (kbd "<M-SPC>") 'anything)
 
 ;; Rinari
 (global-set-key (kbd "C-c f") 'find-file-in-project)
