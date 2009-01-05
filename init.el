@@ -4,13 +4,6 @@
 (add-to-list 'load-path "~/elisp/")
 (add-to-list 'load-path "~/elisp/anything-config")
 (add-to-list 'load-path "~/elisp/as3-mode")
-(add-to-list 'load-path "~/elisp/bbdb")
-(add-to-list 'load-path "~/elisp/cedet-common")
-(add-to-list 'load-path "~/elisp/cedet-contrib")
-(add-to-list 'load-path "~/elisp/cogre")
-(add-to-list 'load-path "~/elisp/ecb")
-(add-to-list 'load-path "~/elisp/ede")
-(add-to-list 'load-path "~/elisp/eieio")
 (add-to-list 'load-path "~/elisp/flyparse")
 (add-to-list 'load-path "~/elisp/git")
 (add-to-list 'load-path "~/elisp/js2-mode")
@@ -32,8 +25,6 @@
 (require 'vc-svn)
 (require 'vc-git)
 (require 'tabbar)
-(require 'cedet)
-
 
 ;; ********************************************************************************
 ;; Variables
@@ -223,6 +214,7 @@
 
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
+(add-to-list 'auto-mode-alist  '("\\.ru$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))  
 
 (defun ruby-mode-on-init ()
@@ -482,38 +474,39 @@
 ;; ********************************************************************************
 ;; ECB
 ;;
-(require 'ecb)
+;; (require 'ecb)
 
-(setq ecb-expand-methods-switch-off-auto-expand nil)
-(setq ecb-history-sort-method nil)
-(setq ecb-kill-buffer-clears-history (quote auto))
+;; (setq ecb-expand-methods-switch-off-auto-expand nil)
+;; (setq ecb-history-sort-method nil)
+;; (setq ecb-kill-buffer-clears-history (quote auto))
 ;; (setq ecb-layout-name "left13")
 ;; (setq ecb-layout-name "leftright3")
-(setq ecb-layout-name "leftright2")
-(setq ecb-layout-window-sizes nil)
-(setq ecb-options-version "2.32")
-(setq ecb-primary-secondary-mouse-buttons 'mouse-1--C-mouse-1)
-(setq ecb-show-sources-in-directories-buffer (quote never))
-(setq ecb-sources-perform-read-only-check 'unless-remote)
-(setq ecb-tip-of-the-day nil)
-(setq ecb-use-speedbar-instead-native-tree-buffer nil)
-(setq ecb-windows-width 0.2)
-(setq ecb-window-sync nil)
-(setq ecb-compile-window-height 20)
-(setq ecb-kill-buffer-clears-history nil)
-(setq ecb-layout-window-sizes nil)
-(setq ecb-auto-activate t)
-(setq ecb-auto-compatibility-check nil)
-(setq ecb-auto-update-methods-after-save nil)
+;; (setq ecb-layout-name "leftright2")
+;; (setq ecb-layout-window-sizes nil)
+;; (setq ecb-options-version "2.32")
+;; (setq ecb-primary-secondary-mouse-buttons 'mouse-1--C-mouse-1)
+;; (setq ecb-show-sources-in-directories-buffer (quote never))
+;; (setq ecb-sources-perform-read-only-check 'unless-remote)
+;; (setq ecb-tip-of-the-day nil)
+;; (setq ecb-use-speedbar-instead-native-tree-buffer nil)
+;; (setq ecb-windows-width 0.2)
+;; (setq ecb-window-sync nil)
+;; (setq ecb-compile-window-height 20)
+;; (setq ecb-kill-buffer-clears-history nil)
+;; (setq ecb-layout-window-sizes nil)
+;; (setq ecb-auto-activate t)
+;; (setq ecb-auto-compatibility-check nil)
+;; (setq ecb-auto-update-methods-after-save nil)
 
-(defun ecb-after-dir-change(old dir)
-  (joc-dired-magic-buffer dir))
+;; (defun ecb-after-dir-change(old dir)
+;;   (joc-dired-magic-buffer dir))
 
-(add-hook 'ecb-after-directory-change-hook 'ecb-after-dir-change)
+;; (add-hook 'ecb-after-directory-change-hook 'ecb-after-dir-change)
+;; (add-hook 'after-save-hook 'ecb-rebuild-methods-buffer)
 
 
 ;; ********************************************************************************
-;; Dired
+;; dired
 ;;
 (require 'dired)
 (require 'dired-single)
@@ -551,11 +544,16 @@
 (add-to-list 'smart-compile-alist '("\\.as$"      . (compile-mxmlc)))
 
 
+;; ********************************************************************************
+;; Speedbar
+(setq speedbar-show-unknown-files t)
+
+
 
 ;; ********************************************************************************
 ;; Toggle fullscreen
 
-(defun fs()
+(defun toggle-fullscreen()
   (interactive)
   (set-frame-parameter nil 'fullscreen
 		       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
@@ -586,8 +584,8 @@
 (global-set-key (kbd "<f7>") 'svn-status)
 (global-set-key (kbd "<f8>") 'git-status)
 (global-set-key (kbd "<f9>") 'smart-compile)
-(global-set-key (kbd "<f10>") 'ecb-toggle-ecb-windows)
-(global-set-key (kbd "<f11>") 'ecb-toggle-compile-window)
+(global-set-key (kbd "<f10>") 'speedbar)
+(global-set-key (kbd "<f11>") 'toggle-fullscreen)
 (global-set-key (kbd "<f12>") 'indent-buffer)
 
 ;; Help keys
@@ -625,8 +623,9 @@
 
 ;; Buffers
 (global-set-key (kbd "<menu>") 'ido-switch-buffer)
-(global-set-key (kbd "<C-menu>") 'ido-goto-symbol)
 (global-set-key (kbd "<apps>") 'ido-switch-buffer)
+(global-set-key (kbd "<C-menu>") 'ido-goto-symbol)
+(global-set-key (kbd "<C-apps>") 'ido-goto-symbol)
 
 (global-set-key (kbd "<C-M-prior>") 'tabbar-backward-group)
 (global-set-key (kbd "<C-M-next>") 'tabbar-forward-group)
@@ -669,10 +668,4 @@
 (global-set-key (kbd "C-x w") 'rinari-web-server)
 (global-set-key (kbd "C-x b") 'rinari-browse-url)
 (global-set-key (kbd "C-x g") 'rinari-rgrep)
-
-
-
-;; ********************************************************************************
-;; Start emacs server
-(server-start)
 
