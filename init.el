@@ -4,7 +4,6 @@
 (add-to-list 'load-path "~/elisp/")
 (add-to-list 'load-path "~/elisp/anything-config")
 (add-to-list 'load-path "~/elisp/as3-mode")
-(add-to-list 'load-path "~/elisp/cogre")
 (add-to-list 'load-path "~/elisp/flyparse")
 (add-to-list 'load-path "~/elisp/git")
 (add-to-list 'load-path "~/elisp/js2-mode")
@@ -20,18 +19,12 @@
 ;; ********************************************************************************
 ;; Require libraries
 ;;
-(require 'windmove)
 (require 'paren)
-(require 'git)
-(require 'vc-svn)
-(require 'vc-git)
 (require 'tabbar)
-
 
 ;; ********************************************************************************
 ;; Variables
 ;;
-
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq x-select-enable-clipboard t)
 (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
@@ -56,23 +49,13 @@
 ;; Anything
 ;;
 
-(require 'anything)
+(require 'anything "anything")
 (require 'anything-config)
-(require 'anything-rcodetools)
-
-(setq rct-get-all-methods-command "PAGER=cat fri -l")
+;; (require 'anything-rcodetools)
 
 (setq anything-sources
       (list anything-c-source-locate
 	    anything-c-source-tracker-search))
-
-;; Rinari
-(require 'rinari)
-(require 'inflections)
-
-(load "rinari-extensions")
-
-(setq ffip-find-options "-not -regex '.*vendor.*'")
 
 ;; Cua
 (cua-mode t)
@@ -115,8 +98,8 @@
 (global-hl-line-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
-(menu-bar-mode t)
 (tabbar-mode t)
+(menu-bar-mode nil)
 
 ;; Scrolling
 (scroll-bar-mode nil)
@@ -135,7 +118,7 @@
 (load "browser-help")
 (load "completions")
 (load "find-tags-file")
-(load "imenu-from-pattern")
+(load "menu-from-pattern")
 (load "js2")
 (load "move-lines")
 (load "theme")
@@ -150,7 +133,7 @@
 (autoload 'worklog "worklog" "Work log" t)
 (autoload 'rdebug "rdebug" "Ruby Debug" t)
 (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
-
+(autoload 'git-status "git" "Git")
 
 ;; ********************************************************************************
 ;; Session
@@ -185,6 +168,8 @@
 ;; ********************************************************************************
 ;; Markdown Mode
 ;;
+(eval-when-compile (require 'markdown-mode))
+
 (defun markdown-mode-on-init ()
   (define-key markdown-mode-map (kbd "<tab>") 'indent-and-complete)
   (set (make-local-variable 'hippie-expand-try-functions-list)
@@ -200,6 +185,7 @@
 ;; ********************************************************************************
 ;; Python Mode
 ;;
+
 (autoload 'python-mode "python-mode" "Python Mode." t)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
@@ -209,16 +195,23 @@
 ;; ********************************************************************************
 ;; Ruby Mode
 ;;
-(require 'ruby-electric)
+
+(require 'rinari)
+(require 'rinari-extensions)
 
 (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
-
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
+(add-to-list 'auto-mode-alist  '("\\.ru$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))  
 
 (defun ruby-mode-on-init ()
+  (require 'ruby-electric)
+  (require 'inflections)
+
+  (setq ffip-find-options "-not -regex '.*vendor.*'")
+
   (rinari-launch)
   (ruby-electric-mode t)
 
@@ -295,7 +288,7 @@
 ;;
 (eval-when-compile (require 'js2-mode))
 
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode-proxy))
 
 (defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
@@ -473,7 +466,7 @@
 
 
 ;; ********************************************************************************
-;; Dired
+;; dired
 ;;
 (require 'dired)
 (require 'dired-single)
@@ -511,6 +504,11 @@
 (add-to-list 'smart-compile-alist '("\\.as$"      . (compile-mxmlc)))
 
 
+;; ********************************************************************************
+;; Speedbar
+(setq speedbar-show-unknown-files t)
+
+
 
 ;; ********************************************************************************
 ;; Toggle fullscreen
@@ -541,7 +539,6 @@
 (global-set-key (kbd "<f2>") 'grep)
 (global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
 (global-set-key (kbd "<f6>") 'ibuffer)
-(global-set-key (kbd "<f7>") 'svn-status)
 (global-set-key (kbd "<f8>") 'git-status)
 (global-set-key (kbd "<f9>") 'smart-compile)
 (global-set-key (kbd "<f10>") 'speedbar)
@@ -561,6 +558,8 @@
 (global-set-key (kbd "M-2") 'split-window-vertically)
 (global-set-key (kbd "M-3") 'split-window-horizontally)
 
+(require 'windmove)
+
 (global-set-key (kbd "<M-up>") 'windmove-up)
 (global-set-key (kbd "<M-down>") 'windmove-down)
 (global-set-key (kbd "<M-left>") 'windmove-left)
@@ -579,12 +578,13 @@
 (global-set-key (kbd "M-/") 'tags-search)
 
 ;; Menubar
-(global-set-key (kbd "<M-menu>") 'menu-bar-open)
+(global-set-key (kbd "<M-menu>") 'menu-bar-mode)
 
 ;; Buffers
 (global-set-key (kbd "<menu>") 'ido-switch-buffer)
-(global-set-key (kbd "<C-menu>") 'ido-goto-symbol)
 (global-set-key (kbd "<apps>") 'ido-switch-buffer)
+(global-set-key (kbd "<C-menu>") 'ido-goto-symbol)
+(global-set-key (kbd "<C-apps>") 'ido-goto-symbol)
 
 (global-set-key (kbd "<C-M-prior>") 'tabbar-backward-group)
 (global-set-key (kbd "<C-M-next>") 'tabbar-forward-group)
@@ -627,4 +627,27 @@
 (global-set-key (kbd "C-x w") 'rinari-web-server)
 (global-set-key (kbd "C-x b") 'rinari-browse-url)
 (global-set-key (kbd "C-x g") 'rinari-rgrep)
+
+
+(defvar default-font-size 8)
+(defvar default-font-name "Bitstream Vera Sans Mono")
+
+(defun set-default-font-size()
+  (set-default-font (format "%s-%s" default-font-name default-font-size)))
+
+(defun decrease-font-size()
+  (interactive)
+  (decf default-font-size)
+  (set-default-font-size))
+
+(defun increase-font-size()
+  (interactive)
+  (incf default-font-size)
+  (set-default-font-size))
+
+(global-set-key (kbd "C--") 'decrease-font-size)
+(global-set-key (kbd "C-=") 'increase-font-size)
+
+(set-default-font-size)
+
 

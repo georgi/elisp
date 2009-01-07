@@ -73,3 +73,6 @@ with `rinari-browse-url-func' which defaults to `browse-url'."
   `(lambda ()
      (interactive)
      (rinari-run-script ,script ,type)))
+
+
+(provide 'rinari-extensions)

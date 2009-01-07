@@ -1,4 +1,4 @@
-;; imenu-from-pattern.el - Create dropdown menu from regexep pattern
+;; menu-from-pattern.el - Create dropdown menu from regexep pattern
 ;;  
 
 (defun menu-from-pattern (&rest patterns)
@@ -12,9 +12,6 @@
     (when (> (length list) 0)
 	(setq list (sort list (lambda (x y) (string< (car x) (car y)))))
 	(goto-char (cdr (nth (dropdown-list (mapcar 'car list)) list))))))
-
-
-(dropdown-list (mapcar 'car (imenu--make-index-alist)))
 
 
 (defun show-javascript-menu ()
