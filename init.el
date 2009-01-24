@@ -1,19 +1,19 @@
 ;; ********************************************************************************
 ;; Load Path
 ;;
-(add-to-list 'load-path "~/elisp/")
-(add-to-list 'load-path "~/elisp/anything-config")
-(add-to-list 'load-path "~/elisp/as3-mode")
-(add-to-list 'load-path "~/elisp/flyparse")
-(add-to-list 'load-path "~/elisp/git")
-(add-to-list 'load-path "~/elisp/js2-mode")
-(add-to-list 'load-path "~/elisp/mozrepl")
-(add-to-list 'load-path "~/elisp/nxml-mode")
-(add-to-list 'load-path "~/elisp/rhtml")
-(add-to-list 'load-path "~/elisp/ruby")
-(add-to-list 'load-path "~/elisp/semantic")
-(add-to-list 'load-path "~/elisp/speedbar")
-(add-to-list 'load-path "~/elisp/yasnippet")
+(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/.emacs.d/anything-config")
+(add-to-list 'load-path "~/.emacs.d/as3-mode")
+(add-to-list 'load-path "~/.emacs.d/flyparse")
+(add-to-list 'load-path "~/.emacs.d/git")
+(add-to-list 'load-path "~/.emacs.d/js2-mode")
+(add-to-list 'load-path "~/.emacs.d/mozrepl")
+(add-to-list 'load-path "~/.emacs.d/nxml-mode")
+(add-to-list 'load-path "~/.emacs.d/rhtml")
+(add-to-list 'load-path "~/.emacs.d/ruby")
+(add-to-list 'load-path "~/.emacs.d/semantic")
+(add-to-list 'load-path "~/.emacs.d/speedbar")
+(add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 
 ;; ********************************************************************************
@@ -99,7 +99,6 @@
 (show-paren-mode t)
 (transient-mark-mode t)
 (tabbar-mode t)
-(menu-bar-mode nil)
 
 ;; Scrolling
 (scroll-bar-mode nil)
@@ -288,7 +287,7 @@
 ;;
 (eval-when-compile (require 'js2-mode))
 
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode-proxy))
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 (defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
@@ -399,7 +398,8 @@
 ;; ********************************************************************************
 ;; HTML Mode
 ;;
-;; (add-to-list 'auto-mode-alist '("\\.html\\'" . html-mode))
+(add-to-list 'auto-mode-alist  '("\\.html$" . html-mode))
+(add-to-list 'auto-mode-alist  '("\\.liquid$" . html-mode))  
 
 (defun html-mode-on-init ()
   (set (make-local-variable 'hippie-expand-try-functions-list)
@@ -452,7 +452,7 @@
 (autoload 'nxml-mode "nxml-mode" "XML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.xml$" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.mxml$" . nxml-mode))
-(add-to-list 'auto-mode-alist '("\\.html$" . nxml-mode))
+;; (add-to-list 'auto-mode-alist '("\\.html$" . nxml-mode))
 
 (defun nxml-mode-on-init ()
   (set (make-local-variable 'hippie-expand-try-functions-list)
@@ -469,21 +469,22 @@
 ;; dired
 ;;
 (require 'dired)
-(require 'dired-single)
+;; (require 'dired-single)
 (require 'wdired)
+(require 'sunrise-commander)
 
-(defun joc-dired-up-directory()
-  (interactive)
-  (joc-dired-single-buffer ".."))
+;; (defun joc-dired-up-directory()
+;;   (interactive)
+;;   (joc-dired-single-buffer ".."))
 
-(define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
-(define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
-(define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
+;; (define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
+;; (define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
+;; (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
+
 (define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
 
-(add-hook 'dired-load-hook 'dired-on-load)
-
 (setq dired-listing-switches "-l")
+(setq dired-omit-files "^\\.")
  
 
 
@@ -506,9 +507,9 @@
 
 ;; ********************************************************************************
 ;; Speedbar
+(require 'sr-speedbar)
+
 (setq speedbar-show-unknown-files t)
-
-
 
 ;; ********************************************************************************
 ;; Toggle fullscreen
@@ -535,13 +536,14 @@
 ;;
 
 ;; F keys
-(global-set-key (kbd "<f1>") 'shell)
+(global-set-key (kbd "<f1>") 'eshell)
 (global-set-key (kbd "<f2>") 'grep)
-(global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
+;; (global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
+(global-set-key (kbd "<f5>") 'sunrise)
 (global-set-key (kbd "<f6>") 'ibuffer)
 (global-set-key (kbd "<f8>") 'git-status)
 (global-set-key (kbd "<f9>") 'smart-compile)
-(global-set-key (kbd "<f10>") 'speedbar)
+(global-set-key (kbd "<f10>") 'sr-speedbar-toggle)
 (global-set-key (kbd "<f11>") 'toggle-fullscreen)
 (global-set-key (kbd "<f12>") 'indent-buffer)
 
@@ -554,11 +556,11 @@
 
 
 ;; Window management
+(require 'windmove)
+
 (global-set-key (kbd "M-1") 'delete-other-windows)
 (global-set-key (kbd "M-2") 'split-window-vertically)
 (global-set-key (kbd "M-3") 'split-window-horizontally)
-
-(require 'windmove)
 
 (global-set-key (kbd "<M-up>") 'windmove-up)
 (global-set-key (kbd "<M-down>") 'windmove-down)
@@ -573,6 +575,12 @@
 (global-set-key (kbd "<s-up>") 'window-resize-up)
 (global-set-key (kbd "<s-down>") 'window-resize-down)
 
+(defun kill-current-buffer()
+  (interactive) 
+  (kill-buffer (buffer-name)))
+
+(global-set-key (kbd "M-k") 'kill-current-buffer)
+(global-set-key (kbd "M-b") 'bury-buffer)
 
 ;; Tags search
 (global-set-key (kbd "M-/") 'tags-search)
@@ -635,6 +643,11 @@
 (defun set-default-font-size()
   (set-default-font (format "%s-%s" default-font-name default-font-size)))
 
+(defun set-speedbar-font(font-name)
+  (if speedbar-frame
+      (modify-frame-parameters speedbar-frame
+			       (list (cons 'font font-name)))))
+  
 (defun decrease-font-size()
   (interactive)
   (decf default-font-size)
