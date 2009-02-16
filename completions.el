@@ -35,7 +35,7 @@
   (try-expand-completion old))
 
 (defun try-expand-completion (old)
-  (if (> (length he-expand-list) 3)
+  (if (> (length he-expand-list) 10)
       (let ((idx (dropdown-list he-expand-list)))
 	(he-substitute-string (nth idx he-expand-list)))
  

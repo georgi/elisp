@@ -21,6 +21,7 @@
 ;;
 (require 'paren)
 (require 'tabbar)
+(require 'moz-update)
 
 ;; ********************************************************************************
 ;; Variables
@@ -125,7 +126,6 @@
 
 
 
-
 ;; ********************************************************************************
 ;; Autoloads
 ;;
@@ -220,6 +220,7 @@
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
 	 try-expand-dabbrev
+	 try-expand-dabbrev-all-buffers
 	 try-expand-tag))
 
   (setq local-abbrev-table ruby-mode-abbrev-table)
@@ -280,6 +281,13 @@
 
 (add-hook 'inferior-ruby-mode-hook 'inferior-ruby-mode-on-init)
 
+
+;; ********************************************************************************
+;; YAML Mode
+;;
+(autoload 'yaml-mode "yaml-mode" "YAML Mode." t)
+
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
 
 ;; ********************************************************************************
@@ -359,26 +367,6 @@
   (interactive)
   (or *fcsh-compile-active* fcsh-compile)
   (call-interactively 'compile))
-
-
-;; ********************************************************************************
-;; Haxe Mode
-;;
-(eval-when-compile (require 'haxe-mode))
-
-(autoload 'haxe-mode "haxe-mode" "Haxe Mode." t)
-(add-to-list 'auto-mode-alist '("\\.hx$" . haxe-mode))
-
-(defun haxe-mode-on-init ()
-  (make-local-variable 'tags-file-name)
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-tag))
-  (define-key haxe-mode-map (kbd "<tab>") 'indent-and-complete))
-  
-(add-hook 'haxe-mode-hook 'haxe-mode-on-init)
-
 
 
 ;; ********************************************************************************
@@ -469,17 +457,17 @@
 ;; dired
 ;;
 (require 'dired)
-;; (require 'dired-single)
+(require 'dired-single)
 (require 'wdired)
 (require 'sunrise-commander)
 
-;; (defun joc-dired-up-directory()
-;;   (interactive)
-;;   (joc-dired-single-buffer ".."))
+(defun joc-dired-up-directory()
+  (interactive)
+  (joc-dired-single-buffer ".."))
 
-;; (define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
-;; (define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
-;; (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
+(define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
+(define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
+(define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
 
 (define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
 
@@ -538,9 +526,9 @@
 ;; F keys
 (global-set-key (kbd "<f1>") 'eshell)
 (global-set-key (kbd "<f2>") 'grep)
-;; (global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
-(global-set-key (kbd "<f5>") 'sunrise)
+(global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
 (global-set-key (kbd "<f6>") 'ibuffer)
+(global-set-key (kbd "<f7>") 'svn-status)
 (global-set-key (kbd "<f8>") 'git-status)
 (global-set-key (kbd "<f9>") 'smart-compile)
 (global-set-key (kbd "<f10>") 'sr-speedbar-toggle)
@@ -637,30 +625,27 @@
 (global-set-key (kbd "C-x g") 'rinari-rgrep)
 
 
-(defvar default-font-size 8)
-(defvar default-font-name "Bitstream Vera Sans Mono")
+(defvar current-font-size 8)
+(defvar current-font-name)
 
-(defun set-default-font-size()
-  (set-default-font (format "%s-%s" default-font-name default-font-size)))
+(setq current-font-name "Monospace")
 
-(defun set-speedbar-font(font-name)
-  (if speedbar-frame
-      (modify-frame-parameters speedbar-frame
-			       (list (cons 'font font-name)))))
+(defun set-font-size()
+  (set-frame-font (format "%s-%s" current-font-name current-font-size)))
   
 (defun decrease-font-size()
   (interactive)
-  (decf default-font-size)
-  (set-default-font-size))
+  (decf current-font-size)
+  (set-font-size))
 
 (defun increase-font-size()
   (interactive)
-  (incf default-font-size)
-  (set-default-font-size))
+  (incf current-font-size)
+  (set-font-size))
 
 (global-set-key (kbd "C--") 'decrease-font-size)
 (global-set-key (kbd "C-=") 'increase-font-size)
 
-(set-default-font-size)
+(set-font-size)
 
 
