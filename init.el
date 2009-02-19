@@ -2,7 +2,6 @@
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/.emacs.d/")
-(add-to-list 'load-path "~/.emacs.d/anything-config")
 (add-to-list 'load-path "~/.emacs.d/git")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/mozrepl")
