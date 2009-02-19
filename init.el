@@ -3,8 +3,6 @@
 ;;
 (add-to-list 'load-path "~/.emacs.d/")
 (add-to-list 'load-path "~/.emacs.d/anything-config")
-(add-to-list 'load-path "~/.emacs.d/as3-mode")
-(add-to-list 'load-path "~/.emacs.d/flyparse")
 (add-to-list 'load-path "~/.emacs.d/git")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/mozrepl")
@@ -13,7 +11,6 @@
 (add-to-list 'load-path "~/.emacs.d/ruby")
 (add-to-list 'load-path "~/.emacs.d/semantic")
 (add-to-list 'load-path "~/.emacs.d/speedbar")
-(add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 
 ;; ********************************************************************************
@@ -313,30 +310,6 @@
 
 (add-hook 'js2-mode-hook 'js2-mode-on-init)
 
-
-
-;; ********************************************************************************
-;; Actionscript 3 Mode
-;;
-(eval-when-compile (require 'as3-mode))
-
-(autoload 'as3-mode "as3-mode" "Actionscript 3 Mode." t)
-(add-to-list 'auto-mode-alist '("\\.as$" . as3-mode))
-
-(setenv "CLASSPATH" 
-	(concat (expand-file-name "~/elisp/flyparse/lib/flyparse_parsers.jar:" )
-		(expand-file-name "~/elisp/flyparse/antlr-3.1.jar:")
-		(getenv "CLASSPATH")))
-
-(defun as3-mode-on-init ()
-  (make-local-variable 'tags-file-name)
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-tag))
-  (define-key as3-mode-map (kbd "<tab>") 'indent-and-complete))
-  
-(add-hook 'as3-mode-hook 'as3-mode-on-init)
 
 
 ;; ********************************************************************************
