@@ -92,6 +92,7 @@
 (mouse-wheel-mode t)
 (partial-completion-mode t)
 (tool-bar-mode nil)
+(menu-bar-mode nil)
 (global-hl-line-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
@@ -503,7 +504,7 @@
 (global-set-key (kbd "<f7>") 'svn-status)
 (global-set-key (kbd "<f8>") 'git-status)
 (global-set-key (kbd "<f9>") 'smart-compile)
-(global-set-key (kbd "<f10>") 'sr-speedbar-toggle)
+(global-set-key (kbd "<f10>") 'ido-switch-buffer)
 (global-set-key (kbd "<f11>") 'toggle-fullscreen)
 (global-set-key (kbd "<f12>") 'indent-buffer)
 
@@ -535,12 +536,22 @@
 (global-set-key (kbd "<s-up>") 'window-resize-up)
 (global-set-key (kbd "<s-down>") 'window-resize-down)
 
+(defun save-and-exit()
+  (interactive)
+  (save-buffer)
+  (save-buffers-kill-terminal))
+
+(global-set-key (kbd "C-x C-c") 'save-and-exit)
+
+
 (defun kill-current-buffer()
   (interactive) 
   (kill-buffer (buffer-name)))
 
 (global-set-key (kbd "M-k") 'kill-current-buffer)
 (global-set-key (kbd "M-b") 'bury-buffer)
+
+(global-set-key (kbd "M-s") 'sort-lines)
 
 ;; Tags search
 (global-set-key (kbd "M-/") 'tags-search)
@@ -559,11 +570,16 @@
 (global-set-key (kbd "<C-prior>") 'tabbar-backward-tab)
 (global-set-key (kbd "<C-next>") 'tabbar-forward-tab)
 
+
+
 (global-set-key (kbd "<C-M-up>") 'move-line-up)
 (global-set-key (kbd "<C-M-down>") 'move-line-down)
 
 (global-set-key (kbd "<M-S-up>") 'copy-line-up)
 (global-set-key (kbd "<M-S-down>") 'copy-line-down)
+
+(global-set-key (kbd "<C-delete>") 'kill-word)
+(global-set-key (kbd "<C-backspace>") 'backward-kill-word)
 
 (global-set-key (kbd "<M-SPC>") 'anything)
 
@@ -587,13 +603,11 @@
 (global-set-key (kbd "C-c C-d a") (rinari-script-key-hook "destroy" "mailer"))
 (global-set-key (kbd "C-c C-d o") (rinari-script-key-hook "destroy" "observer"))
 (global-set-key (kbd "C-c C-d r") (rinari-script-key-hook "destroy" "resource"))
-(global-set-key (kbd "C-x b") 'rinari-browse-url)
 (global-set-key (kbd "C-x t") 'rinari-test)
 (global-set-key (kbd "C-x r") 'rinari-rake)
 (global-set-key (kbd "C-x c") 'rinari-console)
 (global-set-key (kbd "C-x s") 'rinari-sql)
 (global-set-key (kbd "C-x w") 'rinari-web-server)
-(global-set-key (kbd "C-x b") 'rinari-browse-url)
 (global-set-key (kbd "C-x g") 'rinari-rgrep)
 
 
@@ -618,6 +632,4 @@
 (global-set-key (kbd "C--") 'decrease-font-size)
 (global-set-key (kbd "C-=") 'increase-font-size)
 
-(set-font-size)
-
-
+(set-face-attribute 'default nil :height 100)

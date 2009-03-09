@@ -7,7 +7,7 @@
 		    :background "#ffffff")
 
 (set-face-attribute 'hl-line nil 
-		    :background "#ffc")
+		    :background "#f0f0f0")
 
 (set-face-attribute 'fringe nil 
 		    :background "#fff")
@@ -53,7 +53,7 @@
 		    :inherit 'default)
 
 (set-face-attribute 'tabbar-selected nil
-		    :foreground "#0af" 
+		    :foreground "#00a" 
 		    :background "#e9e9e9"
 		    :weight 'bold
 		    :box '(:line-width 1 :color "#fff" :style released-button))
