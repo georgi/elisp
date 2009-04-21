@@ -2,22 +2,19 @@
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/.emacs.d/")
-(add-to-list 'load-path "~/.emacs.d/git")
+(add-to-list 'load-path "~/.emacs.d/magit")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/mozrepl")
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
 (add-to-list 'load-path "~/.emacs.d/semantic")
-(add-to-list 'load-path "~/.emacs.d/speedbar")
 
 
 ;; ********************************************************************************
 ;; Require libraries
 ;;
 (require 'paren)
-(require 'tabbar)
-(require 'moz-update)
 
 ;; ********************************************************************************
 ;; Variables
@@ -65,10 +62,10 @@
 (setq default-major-mode 'text-mode)
 
 ;; Desktop 
-(desktop-save-mode t)
-(setq desktop-globals-to-save nil)
-(setq desktop-load-locked-desktop t)
-(setq desktop-save t)
+;; (desktop-save-mode t)
+;; (setq desktop-globals-to-save nil)
+;; (setq desktop-load-locked-desktop t)
+;; (setq desktop-save t)
 
 ;; Ibuffer
 (setq ibuffer-default-sorting-mode 'major-mode)
@@ -96,7 +93,6 @@
 (global-hl-line-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
-(tabbar-mode t)
 
 ;; Scrolling
 (scroll-bar-mode nil)
@@ -106,6 +102,24 @@
 ;; Woman
 (setq woman-fill-column 80)
 (setq woman-use-own-frame nil)
+
+
+;; ********************************************************************************
+;; Tabbar
+
+(require 'tabbar)
+
+(tabbar-mode t)
+
+(defun tab-label (tab)
+  (if tabbar--buffer-show-groups
+      (format " [%s] " (tabbar-tab-tabset tab))
+    (format " %s " (tabbar-tab-value tab))))
+
+(setq tabbar-tab-label-function 'tab-label)
+
+(remove-hook 'kill-buffer-hook 'tabbar-buffer-track-killed)
+
 
 
 ;; ********************************************************************************
@@ -126,15 +140,24 @@
 ;; ********************************************************************************
 ;; Autoloads
 ;;
-(autoload 'worklog "worklog" "Work log" t)
-(autoload 'rdebug "rdebug" "Ruby Debug" t)
+(autoload 'worklog "worklog" "work log" t)
+(autoload 'rdebug "rdebug" "ruby Debug" t)
+(autoload 'magit-status "magit" "magit" t)
+
+
+
+;; ********************************************************************************
+;; Mozilla
+(require 'moz-update)
+
 (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
-(autoload 'git-status "git" "Git")
+
 
 ;; ********************************************************************************
 ;; Session
 ;;
 (require 'session)
+
 (setq session-initialize t)
 (add-hook 'after-init-hook 'session-initialize)
 
@@ -219,6 +242,8 @@
 	 try-expand-dabbrev
 	 try-expand-dabbrev-all-buffers
 	 try-expand-tag))
+
+  (setq toggle-mapping-style 'rspec)
 
   (setq local-abbrev-table ruby-mode-abbrev-table)
 
@@ -471,6 +496,8 @@
 (require 'sr-speedbar)
 
 (setq speedbar-show-unknown-files t)
+(setq speedbar-use-images t)
+
 
 ;; ********************************************************************************
 ;; Toggle fullscreen
@@ -480,12 +507,7 @@
   (set-frame-parameter nil 'fullscreen
 		       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
 
-(defun tab-label (tab)
-  (if tabbar--buffer-show-groups
-      (format " [%s] " (tabbar-tab-tabset tab))
-    (format " %s " (tabbar-tab-value tab))))
 
-(setq tabbar-tab-label-function 'tab-label)
 
 (defun indent-buffer ()
   (interactive)
@@ -501,12 +523,12 @@
 (global-set-key (kbd "<f2>") 'grep)
 (global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
 (global-set-key (kbd "<f6>") 'ibuffer)
-(global-set-key (kbd "<f7>") 'svn-status)
-(global-set-key (kbd "<f8>") 'git-status)
+(global-set-key (kbd "<f7>") 'create-tags)
+(global-set-key (kbd "<f8>") 'magit-status)
 (global-set-key (kbd "<f9>") 'smart-compile)
 (global-set-key (kbd "<f10>") 'ido-switch-buffer)
 (global-set-key (kbd "<f11>") 'toggle-fullscreen)
-(global-set-key (kbd "<f12>") 'indent-buffer)
+(global-set-key (kbd "<f12>") 'sr-speedbar-toggle)
 
 ;; Help keys
 (global-set-key (kbd "C-h C-d") 'dictionary-lookup)
@@ -570,8 +592,6 @@
 (global-set-key (kbd "<C-prior>") 'tabbar-backward-tab)
 (global-set-key (kbd "<C-next>") 'tabbar-forward-tab)
 
-
-
 (global-set-key (kbd "<C-M-up>") 'move-line-up)
 (global-set-key (kbd "<C-M-down>") 'move-line-down)
 
@@ -591,18 +611,6 @@
 (global-set-key (kbd "C-c j") 'rinari-find-javascript)
 (global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
 (global-set-key (kbd "C-c t") 'rinari-find-test)
-(global-set-key (kbd "C-c C-g m") (rinari-script-key-hook "generate" "model"))
-(global-set-key (kbd "C-c C-g i") (rinari-script-key-hook "generate" "migration"))
-(global-set-key (kbd "C-c C-g c") (rinari-script-key-hook "generate" "controller"))
-(global-set-key (kbd "C-c C-g a") (rinari-script-key-hook "generate" "mailer"))
-(global-set-key (kbd "C-c C-g o") (rinari-script-key-hook "generate" "observer"))
-(global-set-key (kbd "C-c C-g r") (rinari-script-key-hook "generate" "resource"))
-(global-set-key (kbd "C-c C-d m") (rinari-script-key-hook "destroy" "model"))
-(global-set-key (kbd "C-c C-d i") (rinari-script-key-hook "destroy" "migration"))
-(global-set-key (kbd "C-c C-d c") (rinari-script-key-hook "destroy" "controller"))
-(global-set-key (kbd "C-c C-d a") (rinari-script-key-hook "destroy" "mailer"))
-(global-set-key (kbd "C-c C-d o") (rinari-script-key-hook "destroy" "observer"))
-(global-set-key (kbd "C-c C-d r") (rinari-script-key-hook "destroy" "resource"))
 (global-set-key (kbd "C-x t") 'rinari-test)
 (global-set-key (kbd "C-x r") 'rinari-rake)
 (global-set-key (kbd "C-x c") 'rinari-console)
@@ -610,6 +618,14 @@
 (global-set-key (kbd "C-x w") 'rinari-web-server)
 (global-set-key (kbd "C-x g") 'rinari-rgrep)
 
+(global-set-key (kbd "C-c o") 'toggle-buffer)
+(global-set-key (kbd "C-c i") 'indent-buffer)
+
+(global-set-key (kbd "C-x p")
+                (lambda ()
+                  (interactive)
+                  (comint-send-string (inferior-moz-process)
+                                      "BrowserReload();")))
 
 (defvar current-font-size 8)
 (defvar current-font-name)
