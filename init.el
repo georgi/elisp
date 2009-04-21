@@ -125,6 +125,8 @@
 ;; ********************************************************************************
 ;; Load my own elisp stuff
 ;;
+(require 'ruby-mode)
+
 (load "abbrevs")
 (load "browser-help")
 (load "completions")
