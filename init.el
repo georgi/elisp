@@ -165,12 +165,6 @@
 
 
 ;; ********************************************************************************
-;; Git
-;;
-(autoload 'git-blame-mode "git-blame" "Minor mode for incremental blame for Git." t)
-
-
-;; ********************************************************************************
 ;; RI
 ;;
 (setq ri-ruby-script (expand-file-name "~/elisp/ruby/ri-emacs.rb"))
