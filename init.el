@@ -147,9 +147,23 @@
 (autoload 'magit-status "magit" "magit" t)
 
 
+;; ********************************************************************************
+;; Tags
+;;
+(require 'etags-table)
+(require 'etags-select)
+
+(setq etags-table-search-up-depth 5)
+(setq etags-table-alist
+      (list
+       '(".*\\.rb$" "/usr/lib/ruby/1.8/TAGS")
+       '(".*\\.rb$" "/usr/lib/ruby/gems/1.8/gems")
+       ))
+
 
 ;; ********************************************************************************
 ;; Mozilla
+;;
 (require 'moz-update)
 
 (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
@@ -167,17 +181,8 @@
 ;; ********************************************************************************
 ;; RI
 ;;
-(setq ri-ruby-script (expand-file-name "~/elisp/ruby/ri-emacs.rb"))
-(autoload 'ri "~/elisp/ruby/ri-ruby.el" nil t)
-
-
-;; ********************************************************************************
-;; Twitter
-;;
-(autoload 'twitter-get-friends-timeline "twitter" nil t)
-(autoload 'twitter-status-edit "twitter" nil t)
-(global-set-key "\C-xt" 'twitter-get-friends-timeline)
-(add-hook 'twitter-status-edit-mode-hook 'longlines-mode)
+(setq ri-ruby-script (expand-file-name "~/.emacs.d/ruby/ri-emacs.rb"))
+(autoload 'ri "~/.emacs.d/ruby/ri-ruby.el" nil t)
 
 
 ;; ********************************************************************************
@@ -571,8 +576,11 @@
 
 (global-set-key (kbd "M-s") 'sort-lines)
 
-;; Tags search
+;; Tags
 (global-set-key (kbd "M-/") 'tags-search)
+(global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
+(global-set-key (kbd "\M-.") 'etags-select-find-tag)
+
 
 ;; Menubar
 (global-set-key (kbd "<M-menu>") 'menu-bar-mode)

@@ -75,8 +75,6 @@
   (rng-complete))
 
 (defun try-expand-tag (old)
-  (if (not tags-file-name)
-      (setq tags-file-name (find-tags-file)))
   (if tags-file-name
        (try-expand-collection old 'tags-complete-tag)))
 
