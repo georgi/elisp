@@ -10,12 +10,6 @@
 (add-to-list 'load-path "~/.emacs.d/ruby")
 (add-to-list 'load-path "~/.emacs.d/semantic")
 
-
-;; ********************************************************************************
-;; Require libraries
-;;
-(require 'paren)
-
 ;; ********************************************************************************
 ;; Variables
 ;;
@@ -38,18 +32,21 @@
 (setq tags-revert-without-query t)
 (setq tab-width 4)
 
-
 ;; ********************************************************************************
 ;; Anything
 ;;
 
 (require 'anything "anything")
 (require 'anything-config)
-;; (require 'anything-rcodetools)
 
 (setq anything-sources
-      (list anything-c-source-locate
-	    anything-c-source-tracker-search))
+      (list anything-c-source-imenu
+	    anything-c-source-man-pages
+	    anything-c-source-info-pages
+	    anything-c-source-complex-command-history
+	    anything-c-source-emacs-commands
+	    anything-c-source-locate
+	    anything-c-source-google-suggest))
 
 ;; Cua
 (cua-mode t)
