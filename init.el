@@ -150,6 +150,7 @@
 (require 'etags-table)
 (require 'etags-select)
 
+(setq tags-add-tables nil)
 (setq etags-table-search-up-depth 5)
 (setq etags-table-alist
       (list
@@ -173,6 +174,16 @@
 
 (setq session-initialize t)
 (add-hook 'after-init-hook 'session-initialize)
+
+
+;; ********************************************************************************
+;; Org Mode
+;;
+(require 'org-install)
+(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(setq org-log-done t)
 
 
 ;; ********************************************************************************
@@ -576,8 +587,7 @@
 ;; Tags
 (global-set-key (kbd "M-/") 'tags-search)
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
-(global-set-key (kbd "\M-.") 'etags-select-find-tag)
-
+(global-set-key (kbd "M-.") 'etags-select-find-tag)
 
 ;; Menubar
 (global-set-key (kbd "<M-menu>") 'menu-bar-mode)

@@ -38,4 +38,4 @@ not visiting a file"
     (when tags-file
 	(tags-table-append tags-file buffer-file-name))))
 
-(add-hook 'after-save-hook 'update-tags)
+;; (add-hook 'after-save-hook 'update-tags)
