@@ -2,13 +2,14 @@
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/.emacs.d/cedet")
+(add-to-list 'load-path "~/.emacs.d/ecb")
 (add-to-list 'load-path "~/.emacs.d/magit")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/mozrepl")
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
-(add-to-list 'load-path "~/.emacs.d/semantic")
 
 ;; ********************************************************************************
 ;; Variables
@@ -31,6 +32,36 @@
 (setq use-file-dialog t)
 (setq tags-revert-without-query t)
 (setq tab-width 4)
+
+;; Load CEDET.
+;; See cedet/common/cedet.info for configuration details.
+(load-file "~/.emacs.d/cedet/common/cedet.el")
+
+;; Enable EDE (Project Management) features
+(global-ede-mode 1)
+
+;; * This enables the database and idle reparse engines
+(semantic-load-enable-minimum-features)
+
+;; * This enables some tools useful for coding, such as summary mode
+;;   imenu support, and the semantic navigator
+(semantic-load-enable-code-helpers)
+
+;; * This enables even more coding tools such as intellisense mode
+;;   decoration mode, and stickyfunc mode (plus regular code helpers)
+(semantic-load-enable-gaudy-code-helpers)
+
+;; * This enables the use of Exuberent ctags if you have it installed.
+;;   If you use C++ templates or boost, you should NOT enable it.
+(semantic-load-enable-all-exuberent-ctags-support)
+
+;; Enable SRecode (Template management) minor-mode.
+(global-srecode-minor-mode 1)
+
+
+(require 'ecb)
+
+
 
 ;; ********************************************************************************
 ;; Anything
@@ -86,13 +117,13 @@
 (mouse-wheel-mode t)
 (partial-completion-mode t)
 (tool-bar-mode nil)
-(menu-bar-mode nil)
+(menu-bar-mode t)
 (global-hl-line-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
 
 ;; Scrolling
-(scroll-bar-mode nil)
+(set-scroll-bar-mode 'right)
 (setq scroll-conservatively 5)
 (setq scroll-step 1)
 
@@ -286,6 +317,7 @@
 
 (autoload 'rhtml-mode "rhtml-mode" "RHTML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.rhtml$" . rhtml-mode))
+(add-to-list 'auto-mode-alist '("\\.html.erb$" . rhtml-mode))
 
 (defun rhtml-mode-on-init ()
   (abbrev-mode nil)
@@ -419,10 +451,17 @@
 ;; CSS Mode
 ;;
 (eval-when-compile (require 'css-mode))
+(eval-when-compile (require 'regexp-opt))
+
+(defconst css-imenu-generic-expression
+  '((nil "^[ \t]*\\([[:word:].:#, \t]+\\)\\s-*{" 1))
+  "Regular expression matching any selector. Used by imenu.")
 
 (defun css-mode-on-init ()
   (setq cssm-indent-level 4)
   (setq cssm-indent-function #'cssm-c-style-indenter)
+  (set (make-local-variable 'imenu-generic-expression)
+       css-imenu-generic-expression)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-css-property 
 	 try-expand-dabbrev))
@@ -511,6 +550,7 @@
 
 ;; ********************************************************************************
 ;; Speedbar
+
 (require 'sr-speedbar)
 
 (setq speedbar-show-unknown-files t)
@@ -537,16 +577,16 @@
 ;;
 
 ;; F keys
-(global-set-key (kbd "<f1>") 'eshell)
+(global-set-key (kbd "<f1>") 'shell)
 (global-set-key (kbd "<f2>") 'grep)
 (global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
 (global-set-key (kbd "<f6>") 'ibuffer)
 (global-set-key (kbd "<f7>") 'create-tags)
 (global-set-key (kbd "<f8>") 'magit-status)
-(global-set-key (kbd "<f9>") 'smart-compile)
-(global-set-key (kbd "<f10>") 'ido-switch-buffer)
+(global-set-key (kbd "<f9>") 'svn-status)
+(global-set-key (kbd "<f10>") 'smart-compile)
 (global-set-key (kbd "<f11>") 'toggle-fullscreen)
-(global-set-key (kbd "<f12>") 'sr-speedbar-toggle)
+(global-set-key (kbd "<f12>") 'ecb-toggle-layout)
 
 ;; Help keys
 (global-set-key (kbd "C-h C-d") 'dictionary-lookup)
@@ -559,19 +599,19 @@
 ;; Window management
 (require 'windmove)
 
-(global-set-key (kbd "M-1") 'delete-other-windows)
-(global-set-key (kbd "M-2") 'split-window-vertically)
-(global-set-key (kbd "M-3") 'split-window-horizontally)
+;; (global-set-key (kbd "M-1") 'delete-other-windows)
+;; (global-set-key (kbd "M-2") 'split-window-vertically)
+;; (global-set-key (kbd "M-3") 'split-window-horizontally)
 
-(global-set-key (kbd "<M-up>") 'windmove-up)
-(global-set-key (kbd "<M-down>") 'windmove-down)
-(global-set-key (kbd "<M-left>") 'windmove-left)
-(global-set-key (kbd "<M-right>") 'windmove-right)
+;; (global-set-key (kbd "<M-up>") 'windmove-up)
+;; (global-set-key (kbd "<M-down>") 'windmove-down)
+;; (global-set-key (kbd "<M-left>") 'windmove-left)
+;; (global-set-key (kbd "<M-right>") 'windmove-right)
 
-(global-set-key (kbd "ESC <up>") 'windmove-up)
-(global-set-key (kbd "ESC <down>") 'windmove-down)
-(global-set-key (kbd "ESC <left>") 'windmove-left)
-(global-set-key (kbd "ESC <right>") 'windmove-right)
+;; (global-set-key (kbd "ESC <up>") 'windmove-up)
+;; (global-set-key (kbd "ESC <down>") 'windmove-down)
+;; (global-set-key (kbd "ESC <left>") 'windmove-left)
+;; (global-set-key (kbd "ESC <right>") 'windmove-right)
 
 (global-set-key (kbd "<s-up>") 'window-resize-up)
 (global-set-key (kbd "<s-down>") 'window-resize-down)
@@ -588,8 +628,8 @@
   (interactive) 
   (kill-buffer (buffer-name)))
 
-(global-set-key (kbd "M-k") 'kill-current-buffer)
-(global-set-key (kbd "M-b") 'bury-buffer)
+(global-set-key (kbd "H-k") 'kill-current-buffer)
+(global-set-key (kbd "H-b") 'bury-buffer)
 
 (global-set-key (kbd "M-s") 'sort-lines)
 
@@ -598,19 +638,31 @@
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
 
-;; Menubar
-(global-set-key (kbd "<M-menu>") 'menu-bar-mode)
+(global-set-key (kbd "H-/") 'tags-search)
+(global-set-key (kbd "H-?") 'etags-select-find-tag-at-point)
+(global-set-key (kbd "H-.") 'etags-select-find-tag)
+
+(global-set-key (kbd "H-;") 'comment-dwim)
 
 ;; Buffers
-(global-set-key (kbd "<menu>") 'ido-switch-buffer)
-(global-set-key (kbd "<apps>") 'ido-switch-buffer)
-(global-set-key (kbd "<C-menu>") 'ido-goto-symbol)
-(global-set-key (kbd "<C-apps>") 'ido-goto-symbol)
+(global-set-key (kbd "H-x") 'ido-switch-buffer)
+(global-set-key (kbd "H-s") 'save-buffer)
+(global-set-key (kbd "H-z") 'undo)
+(global-set-key (kbd "H-c") 'copy-region-as-kill)
+(global-set-key (kbd "H-v") 'yank)
 
-(global-set-key (kbd "<C-M-prior>") 'tabbar-backward-group)
-(global-set-key (kbd "<C-M-next>") 'tabbar-forward-group)
-(global-set-key (kbd "<C-prior>") 'tabbar-backward-tab)
-(global-set-key (kbd "<C-next>") 'tabbar-forward-tab)
+(global-set-key (kbd "<M-left>") 'tabbar-backward-tab)
+(global-set-key (kbd "<M-right>") 'tabbar-forward-tab)
+(global-set-key (kbd "<M-up>") 'tabbar-backward-group)
+(global-set-key (kbd "<M-down>") 'tabbar-forward-group)
+
+
+(require 'magit)
+(define-key magit-mode-map (kbd "M-1") nil)
+(define-key magit-mode-map (kbd "M-2") nil)
+(define-key magit-mode-map (kbd "M-3") nil)
+(define-key magit-mode-map (kbd "M-4") nil)
+
 
 (global-set-key (kbd "<C-M-up>") 'move-line-up)
 (global-set-key (kbd "<C-M-down>") 'move-line-down)
@@ -622,6 +674,9 @@
 (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
 
 (global-set-key (kbd "<M-SPC>") 'anything)
+
+(global-set-key (kbd "M-n")  (lambda () (interactive) (scroll-up   40)))
+(global-set-key (kbd "M-p")  (lambda () (interactive) (scroll-down 40)))
 
 ;; Rinari
 (global-set-key (kbd "C-c f") 'find-file-in-project)
@@ -647,25 +702,43 @@
                   (comint-send-string (inferior-moz-process)
                                       "BrowserReload();")))
 
-(defvar current-font-size 8)
-(defvar current-font-name)
+(defvar current-font-size 80)
 
-(setq current-font-name "Monospace")
-
-(defun set-font-size()
-  (set-frame-font (format "%s-%s" current-font-name current-font-size)))
-  
 (defun decrease-font-size()
   (interactive)
-  (decf current-font-size)
-  (set-font-size))
+  (setq current-font-size (- current-font-size 10))
+  (set-face-attribute 'default nil :height current-font-size))
 
 (defun increase-font-size()
   (interactive)
-  (incf current-font-size)
-  (set-font-size))
+  (setq current-font-size (+ current-font-size 10))
+  (set-face-attribute 'default nil :height current-font-size))
+
 
 (global-set-key (kbd "C--") 'decrease-font-size)
 (global-set-key (kbd "C-=") 'increase-font-size)
 
-(set-face-attribute 'default nil :height 100)
+(set-face-attribute 'default nil :height current-font-size)
+
+
+(setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
+
+(defun ecb-after-activate()
+  (ecb-layout-switch "leftright2"))
+
+(add-hook 'ecb-activate-hook 'ecb-after-activate)
+
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(ecb-layout-window-sizes (quote (("leftright2" (0.2 . 0.6) (0.2 . 0.4) (0.2 . 0.6) (0.2 . 0.4)))))
+ '(ecb-options-version "2.40")
+ '(ecb-source-path (quote (("/home/matti/traveliq/hotel" "hotel") ("/home/matti/workspace" "workspace") ("/opt/traveliq/Brontosaurus" "Brontosaurus") ("/home/matti/workspace/stern" "stern") (#("/home/matti/workspace/tigi" 0 26 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu")) "tigi") ("/home/matti/traveliq/flight" "flight")))))
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
