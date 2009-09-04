@@ -10,6 +10,7 @@
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
+(add-to-list 'load-path "~/.emacs.d/python")
 
 ;; ********************************************************************************
 ;; Variables
@@ -62,6 +63,10 @@
 (require 'ecb)
 
 
+(require 'browse-kill-ring)
+(browse-kill-ring-default-keybindings)
+
+
 
 ;; ********************************************************************************
 ;; Anything
@@ -76,8 +81,7 @@
 	    anything-c-source-info-pages
 	    anything-c-source-complex-command-history
 	    anything-c-source-emacs-commands
-	    anything-c-source-locate
-	    anything-c-source-google-suggest))
+	    anything-c-source-locate))
 
 ;; Cua
 (cua-mode t)
@@ -268,6 +272,8 @@
 (require 'rinari-extensions)
 
 (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
+
+;; (setq ruby-deep-indent-paren t)
 
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
@@ -586,7 +592,7 @@
 (global-set-key (kbd "<f9>") 'svn-status)
 (global-set-key (kbd "<f10>") 'smart-compile)
 (global-set-key (kbd "<f11>") 'toggle-fullscreen)
-(global-set-key (kbd "<f12>") 'ecb-toggle-layout)
+(global-set-key (kbd "<f12>") 'ecb-toggle-ecb-windows)
 
 ;; Help keys
 (global-set-key (kbd "C-h C-d") 'dictionary-lookup)
@@ -599,22 +605,22 @@
 ;; Window management
 (require 'windmove)
 
-;; (global-set-key (kbd "M-1") 'delete-other-windows)
-;; (global-set-key (kbd "M-2") 'split-window-vertically)
-;; (global-set-key (kbd "M-3") 'split-window-horizontally)
+(global-set-key (kbd "M-1") 'delete-other-windows)
+(global-set-key (kbd "M-2") 'split-window-vertically)
+(global-set-key (kbd "M-3") 'split-window-horizontally)
 
-;; (global-set-key (kbd "<M-up>") 'windmove-up)
-;; (global-set-key (kbd "<M-down>") 'windmove-down)
-;; (global-set-key (kbd "<M-left>") 'windmove-left)
-;; (global-set-key (kbd "<M-right>") 'windmove-right)
+(global-set-key (kbd "<M-up>") 'windmove-up)
+(global-set-key (kbd "<M-down>") 'windmove-down)
+(global-set-key (kbd "<M-left>") 'windmove-left)
+(global-set-key (kbd "<M-right>") 'windmove-right)
 
-;; (global-set-key (kbd "ESC <up>") 'windmove-up)
-;; (global-set-key (kbd "ESC <down>") 'windmove-down)
-;; (global-set-key (kbd "ESC <left>") 'windmove-left)
-;; (global-set-key (kbd "ESC <right>") 'windmove-right)
+(global-set-key (kbd "ESC <up>") 'windmove-up)
+(global-set-key (kbd "ESC <down>") 'windmove-down)
+(global-set-key (kbd "ESC <left>") 'windmove-left)
+(global-set-key (kbd "ESC <right>") 'windmove-right)
 
-(global-set-key (kbd "<s-up>") 'window-resize-up)
-(global-set-key (kbd "<s-down>") 'window-resize-down)
+;; (global-set-key (kbd "<s-up>") 'window-resize-up)
+;; (global-set-key (kbd "<s-down>") 'window-resize-down)
 
 (defun save-and-exit()
   (interactive)
@@ -650,11 +656,12 @@
 (global-set-key (kbd "H-z") 'undo)
 (global-set-key (kbd "H-c") 'copy-region-as-kill)
 (global-set-key (kbd "H-v") 'yank)
+(global-set-key (kbd "H-g") 'goto-line)
 
-(global-set-key (kbd "<M-left>") 'tabbar-backward-tab)
-(global-set-key (kbd "<M-right>") 'tabbar-forward-tab)
-(global-set-key (kbd "<M-up>") 'tabbar-backward-group)
-(global-set-key (kbd "<M-down>") 'tabbar-forward-group)
+(global-set-key (kbd "<C-S-iso-lefttab>") 'tabbar-backward-tab)
+(global-set-key (kbd "<C-tab>") 'tabbar-forward-tab)
+(global-set-key (kbd "<C-prior>") 'tabbar-backward-tab)
+(global-set-key (kbd "<C-next>") 'tabbar-forward-tab)
 
 
 (require 'magit)
@@ -677,6 +684,15 @@
 
 (global-set-key (kbd "M-n")  (lambda () (interactive) (scroll-up   40)))
 (global-set-key (kbd "M-p")  (lambda () (interactive) (scroll-down 40)))
+
+(global-set-key (kbd "C-c r") 'revert-buffer)
+(global-set-key (kbd "C-c v") 'visual-line-mode)
+
+(define-key isearch-mode-map (kbd "C-o") 
+  (lambda () (interactive) 
+    (let ((case-fold-search isearch-case-fold-search)) 
+      (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
+
 
 ;; Rinari
 (global-set-key (kbd "C-c f") 'find-file-in-project)
@@ -720,22 +736,25 @@
 
 (set-face-attribute 'default nil :height current-font-size)
 
-
 (setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
-
-(defun ecb-after-activate()
-  (ecb-layout-switch "leftright2"))
-
-(add-hook 'ecb-activate-hook 'ecb-after-activate)
+(setq ecb-history-make-buckets 'mode)
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(ecb-layout-window-sizes (quote (("leftright2" (0.2 . 0.6) (0.2 . 0.4) (0.2 . 0.6) (0.2 . 0.4)))))
+ '(ecb-add-path-for-not-matching-files (quote (nil)))
+ '(ecb-auto-activate t)
+ '(ecb-clear-caches-before-activate t)
+ '(ecb-layout-name "leftright2")
+ '(ecb-layout-window-sizes (quote (("leftright2" (0.2017167381974249 . 0.5797101449275363) (0.2017167381974249 . 0.4057971014492754) (0.2017167381974249 . 0.391304347826087) (0.2017167381974249 . 0.5942028985507246)))))
  '(ecb-options-version "2.40")
- '(ecb-source-path (quote (("/home/matti/traveliq/hotel" "hotel") ("/home/matti/workspace" "workspace") ("/opt/traveliq/Brontosaurus" "Brontosaurus") ("/home/matti/workspace/stern" "stern") (#("/home/matti/workspace/tigi" 0 26 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu")) "tigi") ("/home/matti/traveliq/flight" "flight")))))
+ '(ecb-source-path (quote (("/home/matti/workspace" "workspace") ("/home/matti/workspace/stern" "stern") ("/home/matti/workspace/tigi" "tigi") ("/home/matti/workspace/lexevita" "lexevita") ("/home/matti/workspace/geofoto" "geofoto") ("/home/matti/traveliq/flight" "flight") ("/home/matti/traveliq/Brontosaurus" "Brontosaurus") ("/home/matti/workspace/velociraptor" "velociraptor") (#("/home/matti/.gem/ruby/1.8/gems/actionpack-2.3.3/lib/action_controller/session" 0 77 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu")) #("/home/matti/.gem/ruby/1.8/gems/actionpack-2.3.3/lib/action_controller/session" 0 77 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu"))) (#("/home/matti/.gem/ruby/1.8/gems/actionpack-2.3.3/lib/action_controller" 0 69 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu")) #("/home/matti/.gem/ruby/1.8/gems/actionpack-2.3.3/lib/action_controller" 0 69 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu"))) ("/usr/lib/ruby/gems/1.8/gems" "gems") ("/opt/flexable" "flexable"))))
+ '(ecb-tip-of-the-day nil)
+ '(ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
+ '(global-semantic-stickyfunc-mode nil nil (semantic-util-modes)))
+
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
