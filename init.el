@@ -76,12 +76,8 @@
 (require 'anything-config)
 
 (setq anything-sources
-      (list anything-c-source-imenu
-	    anything-c-source-man-pages
-	    anything-c-source-info-pages
-	    anything-c-source-complex-command-history
-	    anything-c-source-emacs-commands
-	    anything-c-source-locate))
+      (list anything-c-source-complex-command-history
+	    anything-c-source-emacs-commands))
 
 ;; Cua
 (cua-mode t)
@@ -369,6 +365,14 @@
 
 
 ;; ********************************************************************************
+;; HAML Mode
+;;
+(autoload 'haml-mode "haml-mode" "HAML Mode." t)
+
+(add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
+
+
+;; ********************************************************************************
 ;; JS2 Mode
 ;;
 (eval-when-compile (require 'js2-mode))
@@ -409,7 +413,7 @@
 	 try-expand-dabbrev
 	 try-expand-tag))
   (define-key actionscript-mode-map (kbd "<tab>") 'indent-and-complete))
-  
+
 (add-hook 'actionscript-mode-hook 'actionscript-mode-on-init)
 
 (load "ani-fcsh")
@@ -534,7 +538,22 @@
 
 (setq dired-listing-switches "-l")
 (setq dired-omit-files "^\\.")
- 
+
+(defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
+  (if (equal major-mode 'dired-mode)
+      (revert-buffer)))
+
+(defadvice switch-to-buffer (after auto-refresh-dired (buffer &optional norecord) activate)
+  (if (equal major-mode 'dired-mode)
+      (revert-buffer)))
+
+(defadvice display-buffer (after auto-refresh-dired (buffer &optional not-this-window frame)  activate)
+  (if (equal major-mode 'dired-mode)
+      (revert-buffer)))
+
+(defadvice other-window (after auto-refresh-dired (arg &optional all-frame) activate)
+  (if (equal major-mode 'dired-mode)
+      (revert-buffer))) 
 
 
 
@@ -591,7 +610,8 @@
 (global-set-key (kbd "<f8>") 'magit-status)
 (global-set-key (kbd "<f9>") 'svn-status)
 (global-set-key (kbd "<f10>") 'smart-compile)
-(global-set-key (kbd "<f11>") 'toggle-fullscreen)
+;; (global-set-key (kbd "<f11>") 'toggle-fullscreen)
+(global-set-key (kbd "<f11>") 'ecb-toggle-compile-window)
 (global-set-key (kbd "<f12>") 'ecb-toggle-ecb-windows)
 
 ;; Help keys
@@ -618,9 +638,6 @@
 (global-set-key (kbd "ESC <down>") 'windmove-down)
 (global-set-key (kbd "ESC <left>") 'windmove-left)
 (global-set-key (kbd "ESC <right>") 'windmove-right)
-
-;; (global-set-key (kbd "<s-up>") 'window-resize-up)
-;; (global-set-key (kbd "<s-down>") 'window-resize-down)
 
 (defun save-and-exit()
   (interactive)
@@ -651,6 +668,7 @@
 (global-set-key (kbd "H-;") 'comment-dwim)
 
 ;; Buffers
+(global-set-key (kbd "H-a") 'align-string)
 (global-set-key (kbd "H-x") 'ido-switch-buffer)
 (global-set-key (kbd "H-s") 'save-buffer)
 (global-set-key (kbd "H-z") 'undo)
@@ -745,15 +763,20 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(ecb-add-path-for-not-matching-files (quote (nil)))
- '(ecb-auto-activate t)
+ '(ecb-auto-activate nil)
  '(ecb-clear-caches-before-activate t)
+ '(ecb-compile-window-height 20)
  '(ecb-layout-name "leftright2")
  '(ecb-layout-window-sizes (quote (("leftright2" (0.2017167381974249 . 0.5797101449275363) (0.2017167381974249 . 0.4057971014492754) (0.2017167381974249 . 0.391304347826087) (0.2017167381974249 . 0.5942028985507246)))))
  '(ecb-options-version "2.40")
- '(ecb-source-path (quote (("/home/matti/workspace" "workspace") ("/home/matti/workspace/stern" "stern") ("/home/matti/workspace/tigi" "tigi") ("/home/matti/workspace/lexevita" "lexevita") ("/home/matti/workspace/geofoto" "geofoto") ("/home/matti/traveliq/flight" "flight") ("/home/matti/traveliq/Brontosaurus" "Brontosaurus") ("/home/matti/workspace/velociraptor" "velociraptor") (#("/home/matti/.gem/ruby/1.8/gems/actionpack-2.3.3/lib/action_controller/session" 0 77 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu")) #("/home/matti/.gem/ruby/1.8/gems/actionpack-2.3.3/lib/action_controller/session" 0 77 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu"))) (#("/home/matti/.gem/ruby/1.8/gems/actionpack-2.3.3/lib/action_controller" 0 69 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu")) #("/home/matti/.gem/ruby/1.8/gems/actionpack-2.3.3/lib/action_controller" 0 69 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu"))) ("/usr/lib/ruby/gems/1.8/gems" "gems") ("/opt/flexable" "flexable"))))
+ '(ecb-source-path (quote (("/home/matti/workspace" "workspace") ("/home/matti/workspace/stern" "stern") ("/home/matti/workspace/tigi" "tigi") ("/home/matti/workspace/lexevita" "lexevita") ("/home/matti/workspace/geofoto" "geofoto") ("/home/matti/traveliq/flight" "flight") ("/home/matti/traveliq/Brontosaurus" "Brontosaurus") ("/opt/traveliq/hotel" "hotel") ("/opt/traveliq/InlineBooking" "InlineBooking") ("/opt/flexable" "flexable") ("/home/matti/workspace/dunwich" "dunwich") ("/opt/filmnetz" "filmnetz"))))
  '(ecb-tip-of-the-day nil)
  '(ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
- '(global-semantic-stickyfunc-mode nil nil (semantic-util-modes)))
+ '(global-semantic-stickyfunc-mode nil nil (semantic-util-modes))
+ '(ido-enable-tramp-completion nil)
+ '(ido-separator "  ")
+ '(ido-use-filename-at-point (quote guess))
+ '(tooltip-delay 0))
 
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
