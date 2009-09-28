@@ -193,9 +193,9 @@
 ;; ********************************************************************************
 ;; Mozilla
 ;;
-(require 'moz-update)
+;; (require 'moz-update)
 
-(autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
+;; (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
 
 
 ;; ********************************************************************************
@@ -500,7 +500,7 @@
 ;; XML Mode
 ;;
 
-(setq rng-schema-locating-file-schema-file "~/elisp/nxml-mode/schema/schemas.xml")
+(setq rng-schema-locating-file-schema-file "/home/matti/.emacs.d/nxml-mode/schema/schemas.xml")
 
 (autoload 'nxml-mode "nxml-mode" "XML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.xml$" . nxml-mode))
