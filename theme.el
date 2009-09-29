@@ -20,13 +20,13 @@
 		    :background "#eef")
 
 (set-face-attribute 'dropdown-list-selection-face nil
-		    :background "#fcc")
+		    :background "#fee")
 
 (set-face-attribute 'vertical-border nil 
 		    :foreground "#eee")
 
 (set-face-attribute 'region nil
-		    :background "#fcc")
+		    :background "#fee")
 
 (set-face-attribute 'mode-line nil 
 		    :foreground "#666" 
@@ -47,20 +47,21 @@
 		    :box '(:line-width 1 :color "#444"))
 
 (set-face-attribute 'tabbar-default nil
-		    :height 1.0
 		    :foreground "#333" 
-		    :background "#fff"
+		    :background "#eee"
+		    :height 1.0
 		    :inherit 'default)
 
 (set-face-attribute 'tabbar-selected nil
-		    :foreground "#00a" 
-		    :background "#e9e9e9"
+		    :foreground "#333"
+		    :background "#ffffff"
 		    :weight 'bold
-		    :box '(:line-width 1 :color "#fff" :style released-button))
+		    :box nil)
 
 (set-face-attribute 'tabbar-unselected nil
 		    :foreground "#666"
-		    :box '(:line-width 1 :color "#fff"))
+		    :background "#f0f0f0"
+		    :box nil)
 
 (set-face-attribute 'tabbar-button nil
 		    :foreground "#666"

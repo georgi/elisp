@@ -330,7 +330,6 @@
   (setq local-abbrev-table rhtml-mode-abbrev-table)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-dabbrev
 	 try-expand-tag))
   (define-key rhtml-mode-map (kbd "<tab>") 'indent-and-complete))
 
