@@ -1,3 +1,6 @@
 [submodule "rhtml"]
 	path = rhtml
 	url = git://github.com/eschulte/rhtml.git
+[submodule "magit"]
+	path = magit
+	url = git://gitorious.org/magit/mainline.git
