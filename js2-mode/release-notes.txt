@@ -1,3 +1,47 @@
+New in 20090728 release:
+  - consolidated all files into `js2-mode.el`
+  - checked js2-mode.el into GNU Emacs sources for inclusion in Emacs 23.2
+  - officially dropped support for emacs 21
+  - removed some compatibility checks (e.g. for xemacs, which is not supported)
+  - removed the restriction that js2-mode must be byte-compiled
+  - miscellaneous documentation and commenting updates
+
+New in 20090723b release:
+  - made "import" and "export" reserved words (Issue 100)
+  - fixed Issue 80 (parser confuses quotes in a regexp with a true string)
+  - fixed Issue 105 (mixed EOL confuse js2-mode)
+  - fixed Issue 87 (fontification of comments inconsistent with other modes)
+
+New for 20090723 release:
+  - support over 25 more jsdoc tags
+
+New for 20090722 release:
+
+  - added support for JavaScript 1.8 function closures
+    - set `js2-language-version' default to 180
+  - changed `js2-auto-indent-flag' to `js2-auto-indent-p'
+  - changed `js2-bounce-indent-flag' to `js2-bounce-indent-p'
+  - added js2-externs.el with some predefined browser externs
+  - added `js2-additional-externs' for user-defined externs
+  - went back to using c-fill-paragraph
+  - bug fix for matching curly braces
+  - added support for auto-completing try/catch blocks
+  - set mode-specific c-comment-start-regexp
+  - added 4-space indent option for expression continuation lines
+  - completely overhauled "magic"-paren logic to be less annoying
+    and more like the Eclipse behavior it was originally inspired by:
+    - autoinserted parens/brackets are now highlighted
+    - if you make an edit on a different line, all magic turns off
+    - we only auto-overwrite a paren/bracket if it's currently magic
+    - we highlight magic parens with `js2-magic-paren-face'
+    - auto-overwriting a magic delimiter makes it nonmagic
+    - auto-insert if next char on line is puncutation, or if at eol
+  - we no longer auto-insert a close-curly if the next non-whitespace
+    character in the buffer is a close-curly with an error overlay.
+  - added `js2-auto-insert-catch-block' defcustom variable,
+    to configure auto-insertion of catch-blocks
+  - prefix-arg plus open-curly => close-curly becomes magic
+
 Since 2008330:
 
   - fixed broken installation instructions
