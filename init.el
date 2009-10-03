@@ -743,33 +743,3 @@
 
 (setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
 (setq ecb-history-make-buckets 'mode)
-
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(ecb-add-path-for-not-matching-files (quote (nil)))
- '(ecb-auto-activate nil)
- '(ecb-clear-caches-before-activate t)
- '(ecb-compile-window-height 20)
- '(ecb-layout-name "leftright2")
- '(ecb-layout-window-sizes (quote (("leftright2" (0.2017167381974249 . 0.5797101449275363) (0.2017167381974249 . 0.4057971014492754) (0.2017167381974249 . 0.391304347826087) (0.2017167381974249 . 0.5942028985507246)))))
- '(ecb-options-version "2.40")
- '(ecb-source-path (quote (("/home/matti/workspace" "workspace") ("/home/matti/workspace/stern" "stern") ("/home/matti/workspace/tigi" "tigi") ("/home/matti/workspace/lexevita" "lexevita") ("/home/matti/workspace/geofoto" "geofoto") ("/home/matti/traveliq/flight" "flight") ("/home/matti/traveliq/Brontosaurus" "Brontosaurus") ("/opt/traveliq/hotel" "hotel") ("/opt/traveliq/InlineBooking" "InlineBooking") ("/opt/flexable" "flexable") ("/home/matti/workspace/dunwich" "dunwich") ("/opt/filmnetz" "filmnetz"))))
- '(ecb-tip-of-the-day nil)
- '(ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
- '(global-semantic-stickyfunc-mode nil nil (semantic-util-modes))
- '(ido-enable-tramp-completion nil)
- '(ido-separator "  ")
- '(ido-use-filename-at-point (quote guess))
- '(js2-dynamic-idle-timer-adjust 10)
- '(js2-idle-timer-delay 1)
- '(tooltip-delay 0))
-
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- )
