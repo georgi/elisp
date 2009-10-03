@@ -34,30 +34,18 @@
 (setq tags-revert-without-query t)
 (setq tab-width 4)
 
-;; Load CEDET.
-;; See cedet/common/cedet.info for configuration details.
+;; ********************************************************************************
+;; CEDET.
 (load-file "~/.emacs.d/cedet/common/cedet.el")
 
-;; Enable EDE (Project Management) features
 (global-ede-mode 1)
 
-;; * This enables the database and idle reparse engines
+;; ********************************************************************************
+;; Semantic
 (semantic-load-enable-minimum-features)
-
-;; * This enables some tools useful for coding, such as summary mode
-;;   imenu support, and the semantic navigator
-(semantic-load-enable-code-helpers)
-
-;; * This enables even more coding tools such as intellisense mode
-;;   decoration mode, and stickyfunc mode (plus regular code helpers)
-(semantic-load-enable-gaudy-code-helpers)
-
-;; * This enables the use of Exuberent ctags if you have it installed.
-;;   If you use C++ templates or boost, you should NOT enable it.
-(semantic-load-enable-all-exuberent-ctags-support)
-
-;; Enable SRecode (Template management) minor-mode.
-(global-srecode-minor-mode 1)
+;; (semantic-load-enable-code-helpers)
+;; (semantic-load-enable-gaudy-code-helpers)
+;; (semantic-load-enable-all-exuberent-ctags-support)
 
 
 (require 'ecb)
@@ -775,6 +763,8 @@
  '(ido-enable-tramp-completion nil)
  '(ido-separator "  ")
  '(ido-use-filename-at-point (quote guess))
+ '(js2-dynamic-idle-timer-adjust 10)
+ '(js2-idle-timer-delay 1)
  '(tooltip-delay 0))
 
 (custom-set-faces
