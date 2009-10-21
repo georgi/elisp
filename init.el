@@ -33,6 +33,7 @@
 (setq use-file-dialog t)
 (setq tags-revert-without-query t)
 (setq tab-width 4)
+(setq tooltip-delay 0)
 
 ;; ********************************************************************************
 ;; CEDET.
@@ -49,6 +50,15 @@
 
 
 (require 'ecb)
+(setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
+(setq ecb-history-make-buckets 'mode)
+(setq ecb-add-path-for-not-matching-files (quote (nil)))
+(setq ecb-auto-activate nil)
+(setq ecb-clear-caches-before-activate t)
+(setq ecb-compile-window-height 20)
+(setq ecb-options-version "2.40")
+(setq ecb-tip-of-the-day nil)
+(setq ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
 
 
 (require 'browse-kill-ring)
@@ -93,6 +103,10 @@
 (setq ido-case-fold t)
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere nil)
+(setq ido-enable-tramp-completion nil)
+(setq ido-separator "  ")
+(setq ido-use-filename-at-point (quote guess))
+
 (load "ido-goto-symbol")
 
 ;; I-Menu
@@ -148,7 +162,6 @@
 (load "completions")
 (load "find-tags-file")
 (load "menu-from-pattern")
-(load "js2")
 (load "move-lines")
 (load "theme")
 (load "window-management")
@@ -368,11 +381,27 @@
 
 (defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
-  (moz-minor-mode 1)
+  (setq js2-allow-keywords-as-property-names nil)
+  (setq js2-allow-rhino-new-expr-initializer nil)
   (setq js2-basic-offset 4)
   (setq js2-bounce-indent-flag nil)
+  (setq js2-dynamic-idle-timer-adjust 2)
   (setq js2-highlight-level 4)
+  (setq js2-idle-timer-delay 5)
+  (setq js2-include-browser-externs t)
+  (setq js2-include-rhino-externs t)
+  (setq js2-language-version 150)
+  (setq js2-missing-semi-one-line-override t)
   (setq js2-mode-show-overlay nil)
+  (setq js2-mode-show-strict-warnings t)
+  (setq js2-skip-preprocessor-directives t)
+  (setq js2-strict-cond-assign-warning t)
+  (setq js2-strict-inconsistent-return-warning nil)
+  (setq js2-strict-missing-semi-warning t)
+  (setq js2-strict-trailing-comma-warning t)
+  (setq js2-strict-var-hides-function-arg-warning t)
+  (setq js2-strict-var-redeclaration-warning t)
+
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
 	 try-expand-dabbrev
@@ -740,6 +769,3 @@
 (global-set-key (kbd "C-=") 'increase-font-size)
 
 (set-face-attribute 'default nil :height current-font-size)
-
-(setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
-(setq ecb-history-make-buckets 'mode)
