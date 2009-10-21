@@ -35,6 +35,10 @@
 (setq tab-width 4)
 (setq tooltip-delay 0)
 
+(setq grep-command "grep --exclude-dir=.svn --exclude-dir=.git -nH -e")
+
+(grep-compute-defaults)
+
 ;; ********************************************************************************
 ;; CEDET.
 (load-file "~/.emacs.d/cedet/common/cedet.el")
@@ -379,10 +383,13 @@
 
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
+(setq js2-mode-dev-mode-p t)
+(setq js2-mode-must-byte-compile nil)
+
 (defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
   (setq js2-allow-keywords-as-property-names nil)
-  (setq js2-allow-rhino-new-expr-initializer nil)
+  (setq js2-allow-rhino-new-expr-initializer t)
   (setq js2-basic-offset 4)
   (setq js2-bounce-indent-flag nil)
   (setq js2-dynamic-idle-timer-adjust 2)
@@ -685,7 +692,6 @@
 
 ;; Buffers
 (global-set-key (kbd "H-a") 'align-string)
-(global-set-key (kbd "H-x") 'ido-switch-buffer)
 (global-set-key (kbd "H-s") 'save-buffer)
 (global-set-key (kbd "H-z") 'undo)
 (global-set-key (kbd "H-c") 'copy-region-as-kill)
@@ -714,7 +720,8 @@
 (global-set-key (kbd "<C-delete>") 'kill-word)
 (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
 
-(global-set-key (kbd "<M-SPC>") 'anything)
+(global-set-key (kbd "<M-SPC>") 'ido-switch-buffer)
+(global-set-key (kbd "<H-M-SPC>") 'find-file-in-project)
 
 (global-set-key (kbd "M-n")  (lambda () (interactive) (scroll-up   40)))
 (global-set-key (kbd "M-p")  (lambda () (interactive) (scroll-down 40)))
