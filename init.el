@@ -35,10 +35,6 @@
 (setq tab-width 4)
 (setq tooltip-delay 0)
 
-(setq grep-command "grep --exclude-dir=.svn --exclude-dir=.git -nH -e")
-
-(grep-compute-defaults)
-
 ;; ********************************************************************************
 ;; CEDET.
 (load-file "~/.emacs.d/cedet/common/cedet.el")
@@ -624,16 +620,15 @@
 ;; Global Key Bindings
 ;;
 
-;; F keys
+;; Function keys
 (global-set-key (kbd "<f1>") 'shell)
-(global-set-key (kbd "<f2>") 'grep)
+(global-set-key (kbd "<f2>") 'rgrep)
 (global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
 (global-set-key (kbd "<f6>") 'ibuffer)
 (global-set-key (kbd "<f7>") 'create-tags)
 (global-set-key (kbd "<f8>") 'magit-status)
 (global-set-key (kbd "<f9>") 'svn-status)
 (global-set-key (kbd "<f10>") 'smart-compile)
-;; (global-set-key (kbd "<f11>") 'toggle-fullscreen)
 (global-set-key (kbd "<f11>") 'ecb-toggle-compile-window)
 (global-set-key (kbd "<f12>") 'ecb-toggle-ecb-windows)
 
@@ -684,13 +679,11 @@
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
 
+;; Hyper Mapping
 (global-set-key (kbd "H-/") 'tags-search)
 (global-set-key (kbd "H-?") 'etags-select-find-tag-at-point)
 (global-set-key (kbd "H-.") 'etags-select-find-tag)
-
 (global-set-key (kbd "H-;") 'comment-dwim)
-
-;; Buffers
 (global-set-key (kbd "H-a") 'align-string)
 (global-set-key (kbd "H-s") 'save-buffer)
 (global-set-key (kbd "H-z") 'undo)
@@ -727,7 +720,6 @@
 (global-set-key (kbd "M-p")  (lambda () (interactive) (scroll-down 40)))
 
 (global-set-key (kbd "C-c r") 'revert-buffer)
-(global-set-key (kbd "C-c v") 'visual-line-mode)
 
 (define-key isearch-mode-map (kbd "C-o") 
   (lambda () (interactive) 

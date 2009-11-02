@@ -7,10 +7,10 @@
 		    :background "#ffffff")
 
 (set-face-attribute 'hl-line nil 
-		    :background "#f0f0f0")
+		    :background "#fffff0")
 
 (set-face-attribute 'fringe nil 
-		    :background "#fff")
+		    :background "#f0f0f0")
 
 (set-face-attribute 'cursor nil
 		    :background "#000")
@@ -26,7 +26,7 @@
 		    :foreground "#eee")
 
 (set-face-attribute 'region nil
-		    :background "#fee")
+		    :background "#ffffcc")
 
 (set-face-attribute 'mode-line nil 
 		    :foreground "#666" 
