@@ -24,8 +24,8 @@
 ;;
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq x-select-enable-clipboard t)
-(setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
-(setq browse-url-browser-function 'browse-url-firefox)
+;; (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+;; (setq browse-url-browser-function 'browse-url-firefox)
 (setq case-fold-search t)
 (setq compilation-read-command t)
 (setq compilation-window-height nil)
@@ -91,7 +91,7 @@
 (column-number-mode t)
 (mouse-wheel-mode t)
 (partial-completion-mode t)
-(tool-bar-mode nil)
+;;(tool-bar-mode nil)
 (menu-bar-mode nil)
 (global-hl-line-mode t)
 (show-paren-mode t)
@@ -99,7 +99,7 @@
 (tabbar-mode t)
 
 ;; Scrolling
-(scroll-bar-mode nil)
+;;(scroll-bar-mode nil)
 (setq scroll-conservatively 5)
 (setq scroll-step 1)
 
