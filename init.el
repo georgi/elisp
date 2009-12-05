@@ -118,23 +118,15 @@
 (column-number-mode t)
 (mouse-wheel-mode t)
 (partial-completion-mode t)
-<<<<<<< HEAD:init.el
-;;(tool-bar-mode nil)
 (menu-bar-mode nil)
-=======
 (tool-bar-mode nil)
 (menu-bar-mode t)
->>>>>>> 4b17b41d5ed9df6e6f9727c3a84823b6eabc87b5:init.el
 (global-hl-line-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
 
-;; Scrolling
-<<<<<<< HEAD:init.el
-;;(scroll-bar-mode nil)
-=======
 (set-scroll-bar-mode 'right)
->>>>>>> 4b17b41d5ed9df6e6f9727c3a84823b6eabc87b5:init.el
+
 (setq scroll-conservatively 5)
 (setq scroll-step 1)
 
