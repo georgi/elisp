@@ -2,22 +2,15 @@
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/.emacs.d/")
-(add-to-list 'load-path "~/.emacs.d/git")
+(add-to-list 'load-path "~/.emacs.d/cedet")
+(add-to-list 'load-path "~/.emacs.d/ecb")
+(add-to-list 'load-path "~/.emacs.d/magit")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/mozrepl")
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
-(add-to-list 'load-path "~/.emacs.d/semantic")
-(add-to-list 'load-path "~/.emacs.d/speedbar")
-
-
-;; ********************************************************************************
-;; Require libraries
-;;
-(require 'paren)
-(require 'tabbar)
-(require 'moz-update)
+(add-to-list 'load-path "~/.emacs.d/python")
 
 ;; ********************************************************************************
 ;; Variables
@@ -40,6 +33,37 @@
 (setq use-file-dialog t)
 (setq tags-revert-without-query t)
 (setq tab-width 4)
+(setq tooltip-delay 0)
+
+;; ********************************************************************************
+;; CEDET.
+(load-file "~/.emacs.d/cedet/common/cedet.el")
+
+(global-ede-mode 1)
+
+;; ********************************************************************************
+;; Semantic
+(semantic-load-enable-minimum-features)
+;; (semantic-load-enable-code-helpers)
+;; (semantic-load-enable-gaudy-code-helpers)
+;; (semantic-load-enable-all-exuberent-ctags-support)
+
+
+(require 'ecb)
+(setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
+(setq ecb-history-make-buckets 'mode)
+(setq ecb-add-path-for-not-matching-files (quote (nil)))
+(setq ecb-auto-activate nil)
+(setq ecb-clear-caches-before-activate t)
+(setq ecb-compile-window-height 20)
+(setq ecb-options-version "2.40")
+(setq ecb-tip-of-the-day nil)
+(setq ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
+
+
+(require 'browse-kill-ring)
+(browse-kill-ring-default-keybindings)
+
 
 
 ;; ********************************************************************************
@@ -48,11 +72,10 @@
 
 (require 'anything "anything")
 (require 'anything-config)
-;; (require 'anything-rcodetools)
 
 (setq anything-sources
-      (list anything-c-source-locate
-	    anything-c-source-tracker-search))
+      (list anything-c-source-complex-command-history
+	    anything-c-source-emacs-commands))
 
 ;; Cua
 (cua-mode t)
@@ -65,10 +88,10 @@
 (setq default-major-mode 'text-mode)
 
 ;; Desktop 
-(desktop-save-mode t)
-(setq desktop-globals-to-save nil)
-(setq desktop-load-locked-desktop t)
-(setq desktop-save t)
+;; (desktop-save-mode t)
+;; (setq desktop-globals-to-save nil)
+;; (setq desktop-load-locked-desktop t)
+;; (setq desktop-save t)
 
 ;; Ibuffer
 (setq ibuffer-default-sorting-mode 'major-mode)
@@ -80,6 +103,10 @@
 (setq ido-case-fold t)
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere nil)
+(setq ido-enable-tramp-completion nil)
+(setq ido-separator "  ")
+(setq ido-use-filename-at-point (quote guess))
+
 (load "ido-goto-symbol")
 
 ;; I-Menu
@@ -91,15 +118,23 @@
 (column-number-mode t)
 (mouse-wheel-mode t)
 (partial-completion-mode t)
+<<<<<<< HEAD:init.el
 ;;(tool-bar-mode nil)
 (menu-bar-mode nil)
+=======
+(tool-bar-mode nil)
+(menu-bar-mode t)
+>>>>>>> 4b17b41d5ed9df6e6f9727c3a84823b6eabc87b5:init.el
 (global-hl-line-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
-(tabbar-mode t)
 
 ;; Scrolling
+<<<<<<< HEAD:init.el
 ;;(scroll-bar-mode nil)
+=======
+(set-scroll-bar-mode 'right)
+>>>>>>> 4b17b41d5ed9df6e6f9727c3a84823b6eabc87b5:init.el
 (setq scroll-conservatively 5)
 (setq scroll-step 1)
 
@@ -109,14 +144,33 @@
 
 
 ;; ********************************************************************************
+;; Tabbar
+
+(require 'tabbar)
+
+(tabbar-mode t)
+
+(defun tab-label (tab)
+  (if tabbar--buffer-show-groups
+      (format " [%s] " (tabbar-tab-tabset tab))
+    (format " %s " (tabbar-tab-value tab))))
+
+(setq tabbar-tab-label-function 'tab-label)
+
+(remove-hook 'kill-buffer-hook 'tabbar-buffer-track-killed)
+
+
+
+;; ********************************************************************************
 ;; Load my own elisp stuff
 ;;
+(require 'ruby-mode)
+
 (load "abbrevs")
 (load "browser-help")
 (load "completions")
 (load "find-tags-file")
 (load "menu-from-pattern")
-(load "js2")
 (load "move-lines")
 (load "theme")
 (load "window-management")
@@ -126,39 +180,58 @@
 ;; ********************************************************************************
 ;; Autoloads
 ;;
-(autoload 'worklog "worklog" "Work log" t)
-(autoload 'rdebug "rdebug" "Ruby Debug" t)
-(autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
-(autoload 'git-status "git" "Git")
+(autoload 'worklog "worklog" "work log" t)
+(autoload 'rdebug "rdebug" "ruby Debug" t)
+(autoload 'magit-status "magit" "magit" t)
+
+
+;; ********************************************************************************
+;; Tags
+;;
+(require 'etags-table)
+(require 'etags-select)
+
+(setq tags-add-tables nil)
+(setq etags-table-search-up-depth 5)
+(setq etags-table-alist
+      (list
+       '(".*\\.rb$" "/usr/lib/ruby/1.8/TAGS")
+       '(".*\\.rb$" "/usr/lib/ruby/gems/1.8/gems")
+       ))
+
+
+;; ********************************************************************************
+;; Mozilla
+;;
+;; (require 'moz-update)
+
+;; (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
+
 
 ;; ********************************************************************************
 ;; Session
 ;;
 (require 'session)
+
 (setq session-initialize t)
 (add-hook 'after-init-hook 'session-initialize)
 
 
 ;; ********************************************************************************
-;; Git
+;; Org Mode
 ;;
-(autoload 'git-blame-mode "git-blame" "Minor mode for incremental blame for Git." t)
+(require 'org-install)
+(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(setq org-log-done t)
 
 
 ;; ********************************************************************************
 ;; RI
 ;;
-(setq ri-ruby-script (expand-file-name "~/elisp/ruby/ri-emacs.rb"))
-(autoload 'ri "~/elisp/ruby/ri-ruby.el" nil t)
-
-
-;; ********************************************************************************
-;; Twitter
-;;
-(autoload 'twitter-get-friends-timeline "twitter" nil t)
-(autoload 'twitter-status-edit "twitter" nil t)
-(global-set-key "\C-xt" 'twitter-get-friends-timeline)
-(add-hook 'twitter-status-edit-mode-hook 'longlines-mode)
+(setq ri-ruby-script (expand-file-name "~/.emacs.d/ruby/ri-emacs.rb"))
+(autoload 'ri "~/.emacs.d/ruby/ri-ruby.el" nil t)
 
 
 ;; ********************************************************************************
@@ -189,6 +262,15 @@
 
 
 ;; ********************************************************************************
+;; Chuck Mode
+;;
+
+(autoload 'chuck-mode "chuck-mode" "Chuck Mode." t)
+(add-to-list 'auto-mode-alist '("\\.ck\\'" . chuck-mode))
+
+
+
+;; ********************************************************************************
 ;; Ruby Mode
 ;;
 
@@ -196,6 +278,8 @@
 (require 'rinari-extensions)
 
 (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
+
+;; (setq ruby-deep-indent-paren t)
 
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
@@ -220,6 +304,8 @@
 	 try-expand-dabbrev-all-buffers
 	 try-expand-tag))
 
+  (setq toggle-mapping-style 'rspec)
+
   (setq local-abbrev-table ruby-mode-abbrev-table)
 
   (case (rinari-whats-my-type)
@@ -243,6 +329,7 @@
 
 (autoload 'rhtml-mode "rhtml-mode" "RHTML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.rhtml$" . rhtml-mode))
+(add-to-list 'auto-mode-alist '("\\.html.erb$" . rhtml-mode))
 
 (defun rhtml-mode-on-init ()
   (abbrev-mode nil)
@@ -253,7 +340,6 @@
   (setq local-abbrev-table rhtml-mode-abbrev-table)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-dabbrev
 	 try-expand-tag))
   (define-key rhtml-mode-map (kbd "<tab>") 'indent-and-complete))
 
@@ -288,19 +374,46 @@
 
 
 ;; ********************************************************************************
+;; HAML Mode
+;;
+(autoload 'haml-mode "haml-mode" "HAML Mode." t)
+
+(add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
+
+
+;; ********************************************************************************
 ;; JS2 Mode
 ;;
 (eval-when-compile (require 'js2-mode))
 
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
+(setq js2-mode-dev-mode-p t)
+(setq js2-mode-must-byte-compile nil)
+
 (defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
-  (moz-minor-mode 1)
+  (setq js2-allow-keywords-as-property-names nil)
+  (setq js2-allow-rhino-new-expr-initializer t)
   (setq js2-basic-offset 4)
   (setq js2-bounce-indent-flag nil)
+  (setq js2-dynamic-idle-timer-adjust 2)
   (setq js2-highlight-level 4)
+  (setq js2-idle-timer-delay 5)
+  (setq js2-include-browser-externs t)
+  (setq js2-include-rhino-externs t)
+  (setq js2-language-version 150)
+  (setq js2-missing-semi-one-line-override t)
   (setq js2-mode-show-overlay nil)
+  (setq js2-mode-show-strict-warnings t)
+  (setq js2-skip-preprocessor-directives t)
+  (setq js2-strict-cond-assign-warning t)
+  (setq js2-strict-inconsistent-return-warning nil)
+  (setq js2-strict-missing-semi-warning t)
+  (setq js2-strict-trailing-comma-warning t)
+  (setq js2-strict-var-hides-function-arg-warning t)
+  (setq js2-strict-var-redeclaration-warning t)
+
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
 	 try-expand-dabbrev
@@ -328,7 +441,7 @@
 	 try-expand-dabbrev
 	 try-expand-tag))
   (define-key actionscript-mode-map (kbd "<tab>") 'indent-and-complete))
-  
+
 (add-hook 'actionscript-mode-hook 'actionscript-mode-on-init)
 
 (load "ani-fcsh")
@@ -376,10 +489,17 @@
 ;; CSS Mode
 ;;
 (eval-when-compile (require 'css-mode))
+(eval-when-compile (require 'regexp-opt))
+
+(defconst css-imenu-generic-expression
+  '((nil "^[ \t]*\\([[:word:].:#, \t]+\\)\\s-*{" 1))
+  "Regular expression matching any selector. Used by imenu.")
 
 (defun css-mode-on-init ()
   (setq cssm-indent-level 4)
   (setq cssm-indent-function #'cssm-c-style-indenter)
+  (set (make-local-variable 'imenu-generic-expression)
+       css-imenu-generic-expression)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-css-property 
 	 try-expand-dabbrev))
@@ -408,7 +528,7 @@
 ;; XML Mode
 ;;
 
-(setq rng-schema-locating-file-schema-file "~/elisp/nxml-mode/schema/schemas.xml")
+(setq rng-schema-locating-file-schema-file "/home/matti/.emacs.d/nxml-mode/schema/schemas.xml")
 
 (autoload 'nxml-mode "nxml-mode" "XML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.xml$" . nxml-mode))
@@ -446,7 +566,22 @@
 
 (setq dired-listing-switches "-l")
 (setq dired-omit-files "^\\.")
- 
+
+(defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
+  (if (equal major-mode 'dired-mode)
+      (revert-buffer)))
+
+(defadvice switch-to-buffer (after auto-refresh-dired (buffer &optional norecord) activate)
+  (if (equal major-mode 'dired-mode)
+      (revert-buffer)))
+
+(defadvice display-buffer (after auto-refresh-dired (buffer &optional not-this-window frame)  activate)
+  (if (equal major-mode 'dired-mode)
+      (revert-buffer)))
+
+(defadvice other-window (after auto-refresh-dired (arg &optional all-frame) activate)
+  (if (equal major-mode 'dired-mode)
+      (revert-buffer))) 
 
 
 
@@ -468,9 +603,12 @@
 
 ;; ********************************************************************************
 ;; Speedbar
+
 (require 'sr-speedbar)
 
 (setq speedbar-show-unknown-files t)
+(setq speedbar-use-images t)
+
 
 ;; ********************************************************************************
 ;; Toggle fullscreen
@@ -480,12 +618,7 @@
   (set-frame-parameter nil 'fullscreen
 		       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
 
-(defun tab-label (tab)
-  (if tabbar--buffer-show-groups
-      (format " [%s] " (tabbar-tab-tabset tab))
-    (format " %s " (tabbar-tab-value tab))))
 
-(setq tabbar-tab-label-function 'tab-label)
 
 (defun indent-buffer ()
   (interactive)
@@ -496,17 +629,17 @@
 ;; Global Key Bindings
 ;;
 
-;; F keys
-(global-set-key (kbd "<f1>") 'eshell)
-(global-set-key (kbd "<f2>") 'grep)
+;; Function keys
+(global-set-key (kbd "<f1>") 'shell)
+(global-set-key (kbd "<f2>") 'rgrep)
 (global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
 (global-set-key (kbd "<f6>") 'ibuffer)
-(global-set-key (kbd "<f7>") 'svn-status)
-(global-set-key (kbd "<f8>") 'git-status)
-(global-set-key (kbd "<f9>") 'smart-compile)
-(global-set-key (kbd "<f10>") 'ido-switch-buffer)
-(global-set-key (kbd "<f11>") 'toggle-fullscreen)
-(global-set-key (kbd "<f12>") 'indent-buffer)
+(global-set-key (kbd "<f7>") 'create-tags)
+(global-set-key (kbd "<f8>") 'magit-status)
+(global-set-key (kbd "<f9>") 'svn-status)
+(global-set-key (kbd "<f10>") 'smart-compile)
+(global-set-key (kbd "<f11>") 'ecb-toggle-compile-window)
+(global-set-key (kbd "<f12>") 'ecb-toggle-ecb-windows)
 
 ;; Help keys
 (global-set-key (kbd "C-h C-d") 'dictionary-lookup)
@@ -533,9 +666,6 @@
 (global-set-key (kbd "ESC <left>") 'windmove-left)
 (global-set-key (kbd "ESC <right>") 'windmove-right)
 
-(global-set-key (kbd "<s-up>") 'window-resize-up)
-(global-set-key (kbd "<s-down>") 'window-resize-down)
-
 (defun save-and-exit()
   (interactive)
   (save-buffer)
@@ -548,28 +678,39 @@
   (interactive) 
   (kill-buffer (buffer-name)))
 
-(global-set-key (kbd "M-k") 'kill-current-buffer)
-(global-set-key (kbd "M-b") 'bury-buffer)
+(global-set-key (kbd "H-k") 'kill-current-buffer)
+(global-set-key (kbd "H-b") 'bury-buffer)
 
 (global-set-key (kbd "M-s") 'sort-lines)
 
-;; Tags search
+;; Tags
 (global-set-key (kbd "M-/") 'tags-search)
+(global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
+(global-set-key (kbd "M-.") 'etags-select-find-tag)
 
-;; Menubar
-(global-set-key (kbd "<M-menu>") 'menu-bar-mode)
+;; Hyper Mapping
+(global-set-key (kbd "H-/") 'tags-search)
+(global-set-key (kbd "H-?") 'etags-select-find-tag-at-point)
+(global-set-key (kbd "H-.") 'etags-select-find-tag)
+(global-set-key (kbd "H-;") 'comment-dwim)
+(global-set-key (kbd "H-a") 'align-string)
+(global-set-key (kbd "H-s") 'save-buffer)
+(global-set-key (kbd "H-z") 'undo)
+(global-set-key (kbd "H-c") 'copy-region-as-kill)
+(global-set-key (kbd "H-v") 'yank)
+(global-set-key (kbd "H-g") 'goto-line)
 
-;; Buffers
-(global-set-key (kbd "<menu>") 'ido-switch-buffer)
-(global-set-key (kbd "<apps>") 'ido-switch-buffer)
-(global-set-key (kbd "<C-menu>") 'ido-goto-symbol)
-(global-set-key (kbd "<C-apps>") 'ido-goto-symbol)
-
-(global-set-key (kbd "<C-M-prior>") 'tabbar-backward-group)
-(global-set-key (kbd "<C-M-next>") 'tabbar-forward-group)
+(global-set-key (kbd "<C-S-iso-lefttab>") 'tabbar-backward-tab)
+(global-set-key (kbd "<C-tab>") 'tabbar-forward-tab)
 (global-set-key (kbd "<C-prior>") 'tabbar-backward-tab)
 (global-set-key (kbd "<C-next>") 'tabbar-forward-tab)
 
+
+(require 'magit)
+(define-key magit-mode-map (kbd "M-1") nil)
+(define-key magit-mode-map (kbd "M-2") nil)
+(define-key magit-mode-map (kbd "M-3") nil)
+(define-key magit-mode-map (kbd "M-4") nil)
 
 
 (global-set-key (kbd "<C-M-up>") 'move-line-up)
@@ -581,7 +722,19 @@
 (global-set-key (kbd "<C-delete>") 'kill-word)
 (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
 
-(global-set-key (kbd "<M-SPC>") 'anything)
+(global-set-key (kbd "<M-SPC>") 'ido-switch-buffer)
+(global-set-key (kbd "<H-M-SPC>") 'find-file-in-project)
+
+(global-set-key (kbd "M-n")  (lambda () (interactive) (scroll-up   40)))
+(global-set-key (kbd "M-p")  (lambda () (interactive) (scroll-down 40)))
+
+(global-set-key (kbd "C-c r") 'revert-buffer)
+
+(define-key isearch-mode-map (kbd "C-o") 
+  (lambda () (interactive) 
+    (let ((case-fold-search isearch-case-fold-search)) 
+      (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
+
 
 ;; Rinari
 (global-set-key (kbd "C-c f") 'find-file-in-project)
@@ -591,18 +744,6 @@
 (global-set-key (kbd "C-c j") 'rinari-find-javascript)
 (global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
 (global-set-key (kbd "C-c t") 'rinari-find-test)
-(global-set-key (kbd "C-c C-g m") (rinari-script-key-hook "generate" "model"))
-(global-set-key (kbd "C-c C-g i") (rinari-script-key-hook "generate" "migration"))
-(global-set-key (kbd "C-c C-g c") (rinari-script-key-hook "generate" "controller"))
-(global-set-key (kbd "C-c C-g a") (rinari-script-key-hook "generate" "mailer"))
-(global-set-key (kbd "C-c C-g o") (rinari-script-key-hook "generate" "observer"))
-(global-set-key (kbd "C-c C-g r") (rinari-script-key-hook "generate" "resource"))
-(global-set-key (kbd "C-c C-d m") (rinari-script-key-hook "destroy" "model"))
-(global-set-key (kbd "C-c C-d i") (rinari-script-key-hook "destroy" "migration"))
-(global-set-key (kbd "C-c C-d c") (rinari-script-key-hook "destroy" "controller"))
-(global-set-key (kbd "C-c C-d a") (rinari-script-key-hook "destroy" "mailer"))
-(global-set-key (kbd "C-c C-d o") (rinari-script-key-hook "destroy" "observer"))
-(global-set-key (kbd "C-c C-d r") (rinari-script-key-hook "destroy" "resource"))
 (global-set-key (kbd "C-x t") 'rinari-test)
 (global-set-key (kbd "C-x r") 'rinari-rake)
 (global-set-key (kbd "C-x c") 'rinari-console)
@@ -610,26 +751,29 @@
 (global-set-key (kbd "C-x w") 'rinari-web-server)
 (global-set-key (kbd "C-x g") 'rinari-rgrep)
 
+(global-set-key (kbd "C-c o") 'toggle-buffer)
+(global-set-key (kbd "C-c i") 'indent-buffer)
 
-(defvar current-font-size 8)
-(defvar current-font-name)
+(global-set-key (kbd "C-x p")
+                (lambda ()
+                  (interactive)
+                  (comint-send-string (inferior-moz-process)
+                                      "BrowserReload();")))
 
-(setq current-font-name "Monospace")
+(defvar current-font-size 80)
 
-(defun set-font-size()
-  (set-frame-font (format "%s-%s" current-font-name current-font-size)))
-  
 (defun decrease-font-size()
   (interactive)
-  (decf current-font-size)
-  (set-font-size))
+  (setq current-font-size (- current-font-size 10))
+  (set-face-attribute 'default nil :height current-font-size))
 
 (defun increase-font-size()
   (interactive)
-  (incf current-font-size)
-  (set-font-size))
+  (setq current-font-size (+ current-font-size 10))
+  (set-face-attribute 'default nil :height current-font-size))
+
 
 (global-set-key (kbd "C--") 'decrease-font-size)
 (global-set-key (kbd "C-=") 'increase-font-size)
 
-(set-face-attribute 'default nil :height 100)
+(set-face-attribute 'default nil :height current-font-size)

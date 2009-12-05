@@ -59,4 +59,21 @@
      (rinari-run-script ,script ,type)))
 
 
+(defun rinari-launch ()
+  "Run `rinari-minor-mode' if inside of a rails projcect,
+otherwise turn `rinari-minor-mode' off if it is on."
+  (interactive)
+  (let* ((root (rinari-root)) (r-tags-path (concat root rinari-tags-file-name)))
+    (if root
+	(progn
+	  (setq toggle-mapping-style 'rspec)
+	  (setq toggle-mappings (toggle-style toggle-mapping-style))
+	  (setq toggle-which-function-command 'ruby-add-log-current-method)
+	  (setq toggle-method-format "def %s")
+	  (if (file-exists-p r-tags-path) (setq tags-file-name r-tags-path))
+	  (unless rinari-minor-mode (rinari-minor-mode t)))
+      (if rinari-minor-mode (rinari-minor-mode)))))
+
+
+
 (provide 'rinari-extensions)
