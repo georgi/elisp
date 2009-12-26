@@ -680,16 +680,7 @@
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
 
 ;; Hyper Mapping
-(global-set-key (kbd "H-/") 'tags-search)
-(global-set-key (kbd "H-?") 'etags-select-find-tag-at-point)
-(global-set-key (kbd "H-.") 'etags-select-find-tag)
-(global-set-key (kbd "H-;") 'comment-dwim)
-(global-set-key (kbd "H-a") 'align-string)
-(global-set-key (kbd "H-s") 'save-buffer)
-(global-set-key (kbd "H-z") 'undo)
-(global-set-key (kbd "H-c") 'copy-region-as-kill)
-(global-set-key (kbd "H-v") 'yank)
-(global-set-key (kbd "H-g") 'goto-line)
+(global-set-key (kbd "C-c C-a") 'align-string)
 
 (global-set-key (kbd "<C-S-iso-lefttab>") 'tabbar-backward-tab)
 (global-set-key (kbd "<C-tab>") 'tabbar-forward-tab)
