@@ -663,15 +663,10 @@
   (save-buffer)
   (save-buffers-kill-terminal))
 
-(global-set-key (kbd "C-x C-c") 'save-and-exit)
-
 
 (defun kill-current-buffer()
   (interactive) 
   (kill-buffer (buffer-name)))
-
-(global-set-key (kbd "H-k") 'kill-current-buffer)
-(global-set-key (kbd "H-b") 'bury-buffer)
 
 (global-set-key (kbd "M-s") 'sort-lines)
 
@@ -680,8 +675,9 @@
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
 
-;; Hyper Mapping
 (global-set-key (kbd "C-c C-a") 'align-string)
+(global-set-key (kbd "C-x C-c") 'save-and-exit)
+(global-set-key (kbd "C-c C-b") 'bury-buffer)
 
 (global-set-key (kbd "<C-S-iso-lefttab>") 'tabbar-backward-tab)
 (global-set-key (kbd "<C-tab>") 'tabbar-forward-tab)
