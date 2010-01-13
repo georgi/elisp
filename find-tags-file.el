@@ -29,8 +29,6 @@ not visiting a file"
   (interactive)
   (let* ((tags-file (or (find-tags-file) (read-file-name "tags table: ")))
 	 (default-directory (file-name-directory tags-file)))
-    (if (file-exists-p "exclude.tags")
-	(shell-command "ctags -e --exclude=@exclude.tags -R")
       (shell-command "ctags -e -R"))))
 
 (defun update-tags ()

@@ -642,21 +642,10 @@
 
 
 ;; Window management
-(require 'windmove)
 
-(global-set-key (kbd "M-1") 'delete-other-windows)
-(global-set-key (kbd "M-2") 'split-window-vertically)
-(global-set-key (kbd "M-3") 'split-window-horizontally)
+(require 'window-numbering)
 
-(global-set-key (kbd "<M-up>") 'windmove-up)
-(global-set-key (kbd "<M-down>") 'windmove-down)
-(global-set-key (kbd "<M-left>") 'windmove-left)
-(global-set-key (kbd "<M-right>") 'windmove-right)
-
-(global-set-key (kbd "ESC <up>") 'windmove-up)
-(global-set-key (kbd "ESC <down>") 'windmove-down)
-(global-set-key (kbd "ESC <left>") 'windmove-left)
-(global-set-key (kbd "ESC <right>") 'windmove-right)
+(window-numbering-mode)
 
 (defun save-and-exit()
   (interactive)
@@ -683,7 +672,6 @@
 (global-set-key (kbd "<C-tab>") 'tabbar-forward-tab)
 (global-set-key (kbd "<C-prior>") 'tabbar-backward-tab)
 (global-set-key (kbd "<C-next>") 'tabbar-forward-tab)
-
 
 (require 'magit)
 (define-key magit-mode-map (kbd "M-1") nil)
