@@ -9,8 +9,8 @@
 (set-face-attribute 'hl-line nil 
 		    :background "#fffff0")
 
-(set-face-attribute 'fringe nil 
-		    :background "#f0f0f0")
+(set-face-attribute 'fringe nil
+		    :background "#ffffff")
 
 (set-face-attribute 'cursor nil
 		    :background "#000")

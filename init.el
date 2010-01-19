@@ -74,7 +74,6 @@
 (setq current-language-environment "UTF-8")
 (setq dabbrev-abbrev-char-regexp "\\\\sw")
 (setq default-input-method "rfc1345")
-(setq default-major-mode 'text-mode)
 
 ;; Desktop 
 ;; (desktop-save-mode t)
@@ -112,9 +111,10 @@
 (menu-bar-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
+(recentf-mode)
 
 (if window-system
-    (global-hl-line-mode t)
+    (global-hl-line-mode t))
 
 (set-scroll-bar-mode 'right)
 
@@ -259,6 +259,7 @@
 
 (require 'rinari)
 (require 'rinari-extensions)
+(require 'rspec-mode)
 
 (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
@@ -279,6 +280,7 @@
   (ruby-electric-mode t)
   (linum-mode t)
   (idle-highlight)
+  (rspec-mode)
 
   (make-local-variable 'tags-file-name)
 
@@ -302,6 +304,8 @@
   (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
   (define-key ruby-mode-map (kbd "<tab>") 'indent-and-complete)
   (define-key ruby-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
+  (define-key ruby-mode-map (kbd "C-c C-v") 'rspec-verify)
+  (define-key ruby-mode-map (kbd "C-c C-t") 'rspec-toggle-spec-and-target)
   )
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init)
@@ -328,6 +332,7 @@
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
 	 try-expand-tag))
+  (define-key rhtml-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key rhtml-mode-map (kbd "<tab>") 'indent-and-complete))
 
 (defun abbrev-in-rhtml-mode (fn)
@@ -409,6 +414,7 @@
 	 try-expand-dabbrev
 	 try-expand-javascript-symbol	 
 	 try-expand-tag))
+  (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key js2-mode-map (kbd "<tab>") 'indent-and-complete))
 
 (add-hook 'js2-mode-hook 'js2-mode-on-init)
@@ -430,6 +436,7 @@
        '(try-expand-abbrev
 	 try-expand-dabbrev
 	 try-expand-tag))
+  (define-key actionscript-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key actionscript-mode-map (kbd "<tab>") 'indent-and-complete))
 
 (add-hook 'actionscript-mode-hook 'actionscript-mode-on-init)
@@ -453,7 +460,8 @@
        '(try-expand-abbrev
 	 try-expand-dabbrev
 	 try-complete-lisp-symbol))
-  (define-key emacs-lisp-mode-map (kbd "<tab>") 'indent-and-complete))
+  (define-key emacs-lisp-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
+  (define-key emacs-lisp-mode-map (kbd "<tab>") 'newline-a))
 
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init)
 
@@ -473,6 +481,7 @@
        '(try-expand-abbrev
 	 try-expand-dabbrev
 	 try-expand-tag))
+  (define-key html-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key html-mode-map (kbd "<tab>") 'indent-and-complete))
 
 (add-hook 'html-mode-hook 'html-mode-on-init)
@@ -497,6 +506,7 @@
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-css-property 
 	 try-expand-dabbrev))
+  (define-key cssm-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key cssm-mode-map (kbd "<tab>") 'indent-and-complete)
   (define-key cssm-mode-map (kbd "<C-menu>") 'show-css-mode))
 
@@ -513,6 +523,8 @@
        '(try-expand-abbrev
 	 try-expand-dabbrev
 	 try-expand-tag))
+ 
+  (define-key c-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key c-mode-map (kbd "<tab>") 'indent-and-complete))
 
 
@@ -540,6 +552,7 @@
 	 try-expand-abbrev
 	 try-expand-dabbrev
 	 try-expand-tag))
+  (define-key c-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key nxml-mode-map (kbd "<tab>") 'indent-and-complete))
 
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
@@ -608,9 +621,25 @@
 (setq speedbar-show-unknown-files t)
 (setq speedbar-use-images t)
 
+;; Window management
+
+(require 'window-numbering)
+
+(window-numbering-mode)
+
 
 ;; ********************************************************************************
 ;; Defuns
+
+
+(defun save-and-exit()
+  (interactive)
+  (save-buffer)
+  (save-buffers-kill-terminal))
+
+(defun kill-current-buffer()
+  (interactive) 
+  (kill-buffer (buffer-name)))
 
 (defun toggle-fullscreen()
   (interactive)
@@ -632,6 +661,19 @@
     ;; TODO: switch to nxml/nxhtml mode
     (cond ((search-forward "<?xml" nil t) (xml-mode))
           ((search-forward "<html" nil t) (html-mode)))))
+
+(defun sudo-edit (&optional arg)
+  (interactive "p")
+  (if (or arg (not buffer-file-name))
+      (find-file (concat "/sudo:root@localhost:" (ido-read-file-name "File: ")))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
+(defun recentf-ido-find-file ()
+  "Find a recent file using ido."
+  (interactive)
+  (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
+    (when file
+      (find-file file))))
 
 ;; ********************************************************************************
 ;; Global Key Bindings
@@ -657,22 +699,6 @@
 (global-set-key (kbd "C-h C-e") 'rails-help)
 
 
-;; Window management
-
-(require 'window-numbering)
-
-(window-numbering-mode)
-
-(defun save-and-exit()
-  (interactive)
-  (save-buffer)
-  (save-buffers-kill-terminal))
-
-
-(defun kill-current-buffer()
-  (interactive) 
-  (kill-buffer (buffer-name)))
-
 (global-set-key (kbd "M-s") 'sort-lines)
 
 ;; Tags
@@ -680,10 +706,22 @@
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
 
-(global-set-key (kbd "C-c C-a") 'align-string)
-(global-set-key (kbd "C-x C-c") 'save-and-exit)
-(global-set-key (kbd "C-c C-b") 'bury-buffer)
+(global-set-key (kbd "C-c C-a") 'align-regexp)
+(global-set-key (kbd "C-c C-b") 'ibuffer)
+(global-set-key (kbd "C-c C-c") 'smart-compile)
+(global-set-key (kbd "C-c C-d") 'joc-dired-magic-buffer)
+(global-set-key (kbd "C-c C-f") 'recentf-ido-find-file)
+(global-set-key (kbd "C-c C-g") 'magit-status)
+(global-set-key (kbd "C-c C-o") 'ecb-toggle-ecb-windows)
+(global-set-key (kbd "C-c C-r") 'rgrep)
+(global-set-key (kbd "C-c C-s") 'shell)
+(global-set-key (kbd "C-c C-.") 'create-tags)
 (global-set-key (kbd "C-c C-u") 'view-url)
+(global-set-key (kbd "C-c C-w") 'ecb-toggle-compile-window)
+(global-set-key (kbd "C-c C-x") 'kill-current-buffer)
+(global-set-key (kbd "C-c C-z") 'bury-buffer)
+
+(global-set-key (kbd "C-x C-c") 'save-and-exit)
 
 (global-set-key (kbd "<C-S-iso-lefttab>") 'tabbar-backward-tab)
 (global-set-key (kbd "<C-tab>") 'tabbar-forward-tab)
@@ -728,6 +766,7 @@
 (global-set-key (kbd "C-c c") 'rinari-find-controller-or-select)
 (global-set-key (kbd "C-c j") 'rinari-find-javascript)
 (global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
+;; (global-set-key (kbd "C-c t") 'rinari-find-test)
 (global-set-key (kbd "C-c t") 'rinari-find-test)
 (global-set-key (kbd "C-x t") 'rinari-test)
 (global-set-key (kbd "C-x r") 'rinari-rake)
