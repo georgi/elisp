@@ -64,18 +64,7 @@
 (require 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
 
-
-
-;; ********************************************************************************
-;; Anything
-;;
-
-(require 'anything "anything")
-(require 'anything-config)
-
-(setq anything-sources
-      (list anything-c-source-complex-command-history
-	    anything-c-source-emacs-commands))
+(require 'idle-highlight)
 
 ;; Cua
 (cua-mode t)
@@ -121,9 +110,11 @@
 (menu-bar-mode nil)
 (tool-bar-mode nil)
 (menu-bar-mode t)
-(global-hl-line-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
+
+(if window-system
+    (global-hl-line-mode t)
 
 (set-scroll-bar-mode 'right)
 
@@ -286,6 +277,8 @@
 
   (rinari-launch)
   (ruby-electric-mode t)
+  (linum-mode t)
+  (idle-highlight)
 
   (make-local-variable 'tags-file-name)
 
@@ -308,7 +301,7 @@
 
   (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
   (define-key ruby-mode-map (kbd "<tab>") 'indent-and-complete)
-  (define-key ruby-mode-map (kbd "<return>") 'newline-and-indent)
+  (define-key ruby-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   )
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init)
@@ -325,6 +318,8 @@
 
 (defun rhtml-mode-on-init ()
   (abbrev-mode nil)
+  (linum-mode t)
+  (idle-highlight)
   (make-local-variable 'tags-file-name)
   (set-face-attribute 'erb-delim-face nil :background "#fff")
   (set-face-attribute 'erb-face nil :background "#fff")
@@ -385,6 +380,9 @@
 
 (defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
+  (linum-mode t)
+  (idle-highlight)
+
   (setq js2-allow-keywords-as-property-names nil)
   (setq js2-allow-rhino-new-expr-initializer t)
   (setq js2-basic-offset 4)
@@ -468,6 +466,9 @@
 (add-to-list 'auto-mode-alist  '("\\.liquid$" . html-mode))  
 
 (defun html-mode-on-init ()
+  (linum-mode t)
+  (idle-highlight)
+
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
 	 try-expand-dabbrev
@@ -488,6 +489,7 @@
   "Regular expression matching any selector. Used by imenu.")
 
 (defun css-mode-on-init ()
+  (idle-highlight)
   (setq cssm-indent-level 4)
   (setq cssm-indent-function #'cssm-c-style-indenter)
   (set (make-local-variable 'imenu-generic-expression)
@@ -505,6 +507,8 @@
 ;; C Mode
 ;;
 (defun c-mode-on-init ()
+  (linum-mode t)
+  (idle-highlight)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
 	 try-expand-dabbrev
@@ -528,6 +532,9 @@
 ;; (add-to-list 'auto-mode-alist '("\\.html$" . nxml-mode))
 
 (defun nxml-mode-on-init ()
+  (linum-mode t)
+  (idle-highlight)
+
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-rng
 	 try-expand-abbrev
@@ -603,19 +610,28 @@
 
 
 ;; ********************************************************************************
-;; Toggle fullscreen
+;; Defuns
 
 (defun toggle-fullscreen()
   (interactive)
   (set-frame-parameter nil 'fullscreen
 		       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
 
-
-
 (defun indent-buffer ()
   (interactive)
   (save-excursion
     (indent-region (point-min) (point-max) nil)))
+
+(defun view-url ()
+  "Open a new buffer containing the contents of URL."
+  (interactive)
+  (let* ((default (thing-at-point-url-at-point))
+         (url (read-from-minibuffer "URL: " default)))
+    (switch-to-buffer (url-retrieve-synchronously url))
+    (rename-buffer url t)
+    ;; TODO: switch to nxml/nxhtml mode
+    (cond ((search-forward "<?xml" nil t) (xml-mode))
+          ((search-forward "<html" nil t) (html-mode)))))
 
 ;; ********************************************************************************
 ;; Global Key Bindings
@@ -667,6 +683,7 @@
 (global-set-key (kbd "C-c C-a") 'align-string)
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 (global-set-key (kbd "C-c C-b") 'bury-buffer)
+(global-set-key (kbd "C-c C-u") 'view-url)
 
 (global-set-key (kbd "<C-S-iso-lefttab>") 'tabbar-backward-tab)
 (global-set-key (kbd "<C-tab>") 'tabbar-forward-tab)
@@ -689,7 +706,8 @@
 (global-set-key (kbd "<C-delete>") 'kill-word)
 (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
 
-(global-set-key (kbd "<M-SPC>") 'ido-switch-buffer)
+(global-set-key (kbd "<M-return>") 'ido-switch-buffer)
+(global-set-key (kbd "<M-SPC>") 'ido-goto-symbol)
 (global-set-key (kbd "<H-M-SPC>") 'find-file-in-project)
 
 (global-set-key (kbd "M-n")  (lambda () (interactive) (scroll-up   40)))
