@@ -116,7 +116,8 @@
 (if window-system
     (global-hl-line-mode t))
 
-(set-scroll-bar-mode 'right)
+(if (fboundp 'set-scroll-bar-mode)
+    (set-scroll-bar-mode 'right))
 
 (setq scroll-conservatively 5)
 (setq scroll-step 1)
@@ -155,8 +156,10 @@
 (load "find-tags-file")
 (load "menu-from-pattern")
 (load "move-lines")
-(load "theme")
 (load "window-management")
+
+(if window-system
+    (load "theme"))
 
 
 
@@ -165,7 +168,7 @@
 ;;
 (autoload 'worklog "worklog" "work log" t)
 (autoload 'rdebug "rdebug" "ruby Debug" t)
-(autoload 'magit-status "magit" "magit" t)
+;; (autoload 'magit-status "magit" "magit" t)
 
 
 ;; ********************************************************************************
@@ -685,7 +688,7 @@
 (global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
 (global-set-key (kbd "<f6>") 'ibuffer)
 (global-set-key (kbd "<f7>") 'create-tags)
-(global-set-key (kbd "<f8>") 'magit-status)
+;; (global-set-key (kbd "<f8>") 'magit-status)
 (global-set-key (kbd "<f9>") 'svn-status)
 (global-set-key (kbd "<f10>") 'smart-compile)
 (global-set-key (kbd "<f11>") 'ecb-toggle-compile-window)
@@ -711,7 +714,7 @@
 (global-set-key (kbd "C-c C-c") 'smart-compile)
 (global-set-key (kbd "C-c C-d") 'joc-dired-magic-buffer)
 (global-set-key (kbd "C-c C-f") 'recentf-ido-find-file)
-(global-set-key (kbd "C-c C-g") 'magit-status)
+;; (global-set-key (kbd "C-c C-g") 'magit-status)
 (global-set-key (kbd "C-c C-o") 'ecb-toggle-ecb-windows)
 (global-set-key (kbd "C-c C-r") 'rgrep)
 (global-set-key (kbd "C-c C-s") 'shell)
@@ -728,11 +731,11 @@
 (global-set-key (kbd "<C-prior>") 'tabbar-backward-tab)
 (global-set-key (kbd "<C-next>") 'tabbar-forward-tab)
 
-(require 'magit)
-(define-key magit-mode-map (kbd "M-1") nil)
-(define-key magit-mode-map (kbd "M-2") nil)
-(define-key magit-mode-map (kbd "M-3") nil)
-(define-key magit-mode-map (kbd "M-4") nil)
+;; (require 'magit)
+;; (define-key magit-mode-map (kbd "M-1") nil)
+;; (define-key magit-mode-map (kbd "M-2") nil)
+;; (define-key magit-mode-map (kbd "M-3") nil)
+;; (define-key magit-mode-map (kbd "M-4") nil)
 
 
 (global-set-key (kbd "<C-M-up>") 'move-line-up)

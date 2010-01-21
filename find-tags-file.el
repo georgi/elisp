@@ -29,7 +29,7 @@ not visiting a file"
   (interactive)
   (let* ((tags-file (or (find-tags-file) (read-file-name "tags table: ")))
 	 (default-directory (file-name-directory tags-file)))
-      (shell-command "ctags -e -R"))))
+      (shell-command "ctags -e -R")))
 
 (defun update-tags ()
   (let ((tags-file (find-tags-file)))
