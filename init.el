@@ -246,6 +246,32 @@
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
 
 
+;; ********************************************************************************
+;; PHP Mode
+;;
+
+(autoload 'php-mode "php-mode" "PHP Mode." t)
+(add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
+(add-to-list 'interpreter-mode-alist '("php" . php-mode))
+
+(defun php-mode-on-init ()
+  (linum-mode t)
+  (idle-highlight)
+  (setq tab-width 4)
+  (setq c-basic-offset 4)
+  (setq indent-tabs-mode nil)
+  (c-set-style "k&r")
+
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-tag))
+  (define-key html-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
+  (define-key html-mode-map (kbd "<tab>") 'indent-and-complete))
+
+(add-hook 'php-mode-hook 'php-mode-on-init)
+
+
 
 ;; ********************************************************************************
 ;; Chuck Mode
@@ -284,6 +310,7 @@
   (linum-mode t)
   (idle-highlight)
   (rspec-mode)
+  (setq indent-tabs-mode nil)  
 
   (make-local-variable 'tags-file-name)
 
@@ -327,6 +354,7 @@
   (abbrev-mode nil)
   (linum-mode t)
   (idle-highlight)
+  (setq indent-tabs-mode nil)
   (make-local-variable 'tags-file-name)
   (set-face-attribute 'erb-delim-face nil :background "#fff")
   (set-face-attribute 'erb-face nil :background "#fff")
@@ -411,6 +439,7 @@
   (setq js2-strict-trailing-comma-warning t)
   (setq js2-strict-var-hides-function-arg-warning t)
   (setq js2-strict-var-redeclaration-warning t)
+  (setq indent-tabs-mode nil)
 
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
@@ -678,6 +707,7 @@
     (when file
       (find-file file))))
 
+
 ;; ********************************************************************************
 ;; Global Key Bindings
 ;;
@@ -709,20 +739,17 @@
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
 
-(global-set-key (kbd "C-c C-a") 'align-regexp)
-(global-set-key (kbd "C-c C-b") 'ibuffer)
-(global-set-key (kbd "C-c C-c") 'smart-compile)
-(global-set-key (kbd "C-c C-d") 'joc-dired-magic-buffer)
-(global-set-key (kbd "C-c C-f") 'recentf-ido-find-file)
-;; (global-set-key (kbd "C-c C-g") 'magit-status)
-(global-set-key (kbd "C-c C-o") 'ecb-toggle-ecb-windows)
-(global-set-key (kbd "C-c C-r") 'rgrep)
-(global-set-key (kbd "C-c C-s") 'shell)
-(global-set-key (kbd "C-c C-.") 'create-tags)
-(global-set-key (kbd "C-c C-u") 'view-url)
-(global-set-key (kbd "C-c C-w") 'ecb-toggle-compile-window)
-(global-set-key (kbd "C-c C-x") 'kill-current-buffer)
-(global-set-key (kbd "C-c C-z") 'bury-buffer)
+(global-set-key (kbd "C-c a") 'align-regexp)
+(global-set-key (kbd "C-c b") 'ibuffer)
+(global-set-key (kbd "C-c c") 'smart-compile)
+(global-set-key (kbd "C-c f") 'recentf-ido-find-file)
+(global-set-key (kbd "C-c o") 'ecb-toggle-ecb-windows)
+(global-set-key (kbd "C-c g") 'rgrep)
+(global-set-key (kbd "C-c s") 'shell)
+(global-set-key (kbd "C-c u") 'view-url)
+(global-set-key (kbd "C-c w") 'ecb-toggle-compile-window)
+(global-set-key (kbd "C-c x") 'kill-current-buffer)
+(global-set-key (kbd "C-c z") 'bury-buffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 
@@ -768,11 +795,11 @@
 (global-set-key (kbd "C-c v") 'rinari-find-view-or-select)
 (global-set-key (kbd "C-c c") 'rinari-find-controller-or-select)
 (global-set-key (kbd "C-c j") 'rinari-find-javascript)
-(global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
+;; (global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
 ;; (global-set-key (kbd "C-c t") 'rinari-find-test)
-(global-set-key (kbd "C-c t") 'rinari-find-test)
-(global-set-key (kbd "C-x t") 'rinari-test)
-(global-set-key (kbd "C-x r") 'rinari-rake)
+;; (global-set-key (kbd "C-c t") 'rinari-find-test)
+;; (global-set-key (kbd "C-x t") 'rinari-test)
+;; (global-set-key (kbd "C-x r") 'rinari-rake)
 (global-set-key (kbd "C-x c") 'rinari-console)
 (global-set-key (kbd "C-x s") 'rinari-sql)
 (global-set-key (kbd "C-x w") 'rinari-web-server)

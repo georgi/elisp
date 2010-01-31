@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2005 Joakim Verona, Eric Ludlam
 
-;; Author:  <matti@mellow>
-;; Created: 2009-08-01 17:58:00+0200
+;; Author: matti <matti@orgor>
+;; Created: 2010-01-30 17:59:04+0100
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
