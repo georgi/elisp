@@ -757,8 +757,10 @@
 
 (global-set-key (kbd "C-c a") 'align-regexp)
 (global-set-key (kbd "C-c b") 'ibuffer)
-(global-set-key (kbd "C-c s") 'smart-compile)
-(global-set-key (kbd "C-c f") 'recentf-ido-find-file)
+;; (global-set-key (kbd "C-c s") 'smart-compile)
+(global-set-key (kbd "C-x f") 'recentf-ido-find-file)
+(global-set-key (kbd "C-c f") 'find-file-in-project)
+(global-set-key (kbd "C-c n") 'svn-status)
 ;; (global-set-key (kbd "C-c C-g") 'magit-status)
 (global-set-key (kbd "C-c t") 'ecb-toggle-ecb-windows)
 (global-set-key (kbd "C-c g") 'rgrep)
@@ -794,7 +796,6 @@
 
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
 (global-set-key (kbd "<M-SPC>") 'ido-goto-symbol)
-(global-set-key (kbd "<H-M-SPC>") 'find-file-in-project)
 
 (global-set-key (kbd "M-n")  (lambda () (interactive) (scroll-up   40)))
 (global-set-key (kbd "M-p")  (lambda () (interactive) (scroll-down 40)))
