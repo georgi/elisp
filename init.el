@@ -246,6 +246,32 @@
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
 
 
+;; ********************************************************************************
+;; PHP Mode
+;;
+
+(autoload 'php-mode "php-mode" "PHP Mode." t)
+(add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
+(add-to-list 'interpreter-mode-alist '("php" . php-mode))
+
+(defun php-mode-on-init ()
+  (linum-mode t)
+  (idle-highlight)
+  (setq tab-width 4)
+  (setq c-basic-offset 4)
+  (setq indent-tabs-mode nil)
+  (c-set-style "k&r")
+
+  (set (make-local-variable 'hippie-expand-try-functions-list)
+       '(try-expand-abbrev
+	 try-expand-dabbrev
+	 try-expand-tag))
+  (define-key html-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
+  (define-key html-mode-map (kbd "<tab>") 'indent-and-complete))
+
+(add-hook 'php-mode-hook 'php-mode-on-init)
+
+
 
 ;; ********************************************************************************
 ;; Chuck Mode
@@ -284,6 +310,7 @@
   (linum-mode t)
   (idle-highlight)
   (rspec-mode)
+  (setq indent-tabs-mode nil)  
 
   (make-local-variable 'tags-file-name)
 
@@ -330,6 +357,7 @@
   (linum-mode t)
   (idle-highlight)
   (add-hook 'before-save-hook 'untabify-buffer)
+  (setq indent-tabs-mode nil)
   (make-local-variable 'tags-file-name)
   (set-face-attribute 'erb-delim-face nil :background "#fff")
   (set-face-attribute 'erb-face nil :background "#fff")
@@ -414,6 +442,7 @@
   (setq js2-strict-trailing-comma-warning t)
   (setq js2-strict-var-hides-function-arg-warning t)
   (setq js2-strict-var-redeclaration-warning t)
+  (setq indent-tabs-mode nil)
 
   (add-hook 'before-save-hook 'untabify-buffer)
   
@@ -694,6 +723,7 @@
     (when file
       (find-file file))))
 
+
 ;; ********************************************************************************
 ;; Global Key Bindings
 ;;
@@ -786,8 +816,8 @@
 ;; (global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
 ;; (global-set-key (kbd "C-c t") 'rinari-find-test)
 ;; (global-set-key (kbd "C-c t") 'rinari-find-test)
-(global-set-key (kbd "C-x t") 'rinari-test)
-(global-set-key (kbd "C-x r") 'rinari-rake)
+;; (global-set-key (kbd "C-x t") 'rinari-test)
+;; (global-set-key (kbd "C-x r") 'rinari-rake)
 (global-set-key (kbd "C-x c") 'rinari-console)
 (global-set-key (kbd "C-x s") 'rinari-sql)
 (global-set-key (kbd "C-x w") 'rinari-web-server)

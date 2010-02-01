@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2002, 2003, 2004 David Ponce
 
-;; Author:  <matti@mellow>
-;; Created: 2009-08-01 17:57:47+0200
+;; Author: matti <matti@orgor>
+;; Created: 2010-01-30 17:58:45+0100
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 

@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2002, 2003 Vladimir G. Sekissov
 
-;; Author:  <matti@mellow>
-;; Created: 2009-08-01 17:58:05+0200
+;; Author: matti <matti@orgor>
+;; Created: 2010-01-30 17:59:10+0100
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 

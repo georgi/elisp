@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2002, 2003, 2004, 2007 Richard Kim
 
-;; Author:  <matti@mellow>
-;; Created: 2009-08-01 17:57:59+0200
+;; Author: matti <matti@orgor>
+;; Created: 2010-01-30 17:59:02+0100
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
