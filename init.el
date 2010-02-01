@@ -206,11 +206,11 @@
 ;; ********************************************************************************
 ;; Org Mode
 ;;
-(require 'org-install)
-(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-(define-key global-map "\C-cl" 'org-store-link)
-(define-key global-map "\C-ca" 'org-agenda)
-(setq org-log-done t)
+;; (require 'org-install)
+;; (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+;; (define-key global-map "\C-cl" 'org-store-link)
+;; (define-key global-map "\C-ca" 'org-agenda)
+;; (setq org-log-done t)
 
 
 ;; ********************************************************************************
@@ -298,6 +298,8 @@
 
   (setq local-abbrev-table ruby-mode-abbrev-table)
 
+  (add-hook 'before-save-hook 'untabify-buffer)
+
   (case (rinari-whats-my-type)
     (:model      (setq local-abbrev-table rails-model-abbrev-table))
     (:controller (setq local-abbrev-table rails-controller-abbrev-table))
@@ -327,6 +329,7 @@
   (abbrev-mode nil)
   (linum-mode t)
   (idle-highlight)
+  (add-hook 'before-save-hook 'untabify-buffer)
   (make-local-variable 'tags-file-name)
   (set-face-attribute 'erb-delim-face nil :background "#fff")
   (set-face-attribute 'erb-face nil :background "#fff")
@@ -412,6 +415,8 @@
   (setq js2-strict-var-hides-function-arg-warning t)
   (setq js2-strict-var-redeclaration-warning t)
 
+  (add-hook 'before-save-hook 'untabify-buffer)
+  
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
 	 try-expand-dabbrev
@@ -479,6 +484,7 @@
 (defun html-mode-on-init ()
   (linum-mode t)
   (idle-highlight)
+  (add-hook 'before-save-hook 'untabify-buffer)
 
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
@@ -502,6 +508,8 @@
 
 (defun css-mode-on-init ()
   (idle-highlight)
+  (add-hook 'before-save-hook 'untabify-buffer)
+
   (setq cssm-indent-level 4)
   (setq cssm-indent-function #'cssm-c-style-indenter)
   (set (make-local-variable 'imenu-generic-expression)
@@ -522,6 +530,8 @@
 (defun c-mode-on-init ()
   (linum-mode t)
   (idle-highlight)
+  (add-hook 'before-save-hook 'untabify-buffer)
+
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
 	 try-expand-dabbrev
@@ -654,6 +664,12 @@
   (save-excursion
     (indent-region (point-min) (point-max) nil)))
 
+(defun untabify-buffer ()
+  (interactive)
+  (save-excursion
+    (untabify (point-min) (point-max))))
+
+
 (defun view-url ()
   "Open a new buffer containing the contents of URL."
   (interactive)
@@ -709,20 +725,19 @@
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
 
-(global-set-key (kbd "C-c C-a") 'align-regexp)
-(global-set-key (kbd "C-c C-b") 'ibuffer)
-(global-set-key (kbd "C-c C-c") 'smart-compile)
-(global-set-key (kbd "C-c C-d") 'joc-dired-magic-buffer)
-(global-set-key (kbd "C-c C-f") 'recentf-ido-find-file)
+(global-set-key (kbd "C-c a") 'align-regexp)
+(global-set-key (kbd "C-c b") 'ibuffer)
+(global-set-key (kbd "C-c s") 'smart-compile)
+(global-set-key (kbd "C-c f") 'recentf-ido-find-file)
 ;; (global-set-key (kbd "C-c C-g") 'magit-status)
-(global-set-key (kbd "C-c C-o") 'ecb-toggle-ecb-windows)
-(global-set-key (kbd "C-c C-r") 'rgrep)
-(global-set-key (kbd "C-c C-s") 'shell)
-(global-set-key (kbd "C-c C-.") 'create-tags)
-(global-set-key (kbd "C-c C-u") 'view-url)
-(global-set-key (kbd "C-c C-w") 'ecb-toggle-compile-window)
-(global-set-key (kbd "C-c C-x") 'kill-current-buffer)
-(global-set-key (kbd "C-c C-z") 'bury-buffer)
+(global-set-key (kbd "C-c t") 'ecb-toggle-ecb-windows)
+(global-set-key (kbd "C-c g") 'rgrep)
+(global-set-key (kbd "C-c s") 'shell)
+;; (global-set-key (kbd "C-c C-.") 'create-tags)
+(global-set-key (kbd "C-c u") 'view-url)
+(global-set-key (kbd "C-c w") 'ecb-toggle-compile-window)
+(global-set-key (kbd "C-c x") 'kill-current-buffer)
+(global-set-key (kbd "C-c z") 'bury-buffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 
@@ -768,9 +783,9 @@
 (global-set-key (kbd "C-c v") 'rinari-find-view-or-select)
 (global-set-key (kbd "C-c c") 'rinari-find-controller-or-select)
 (global-set-key (kbd "C-c j") 'rinari-find-javascript)
-(global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
+;; (global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
 ;; (global-set-key (kbd "C-c t") 'rinari-find-test)
-(global-set-key (kbd "C-c t") 'rinari-find-test)
+;; (global-set-key (kbd "C-c t") 'rinari-find-test)
 (global-set-key (kbd "C-x t") 'rinari-test)
 (global-set-key (kbd "C-x r") 'rinari-rake)
 (global-set-key (kbd "C-x c") 'rinari-console)
