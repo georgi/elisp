@@ -177,12 +177,11 @@
 
 (setq tags-add-tables nil)
 (setq etags-table-search-up-depth 5)
-(setq etags-table-alist
-      (list
-       '(".*\\.rb$" "/usr/lib/ruby/1.8/TAGS")
-       '(".*\\.rb$" "/usr/lib/ruby/gems/1.8/gems")
-       ))
-
+;; (setq etags-table-alist
+;;       (list
+;;        '(".*\\.rb$" "/usr/lib/ruby/1.8/TAGS")
+;;        '(".*\\.rb$" "/usr/lib/ruby/gems/1.8/gems")
+;;        ))
 
 ;; ********************************************************************************
 ;; Mozilla
@@ -831,7 +830,7 @@
                   (comint-send-string (inferior-moz-process)
                                       "BrowserReload();")))
 
-(defvar current-font-size 80)
+(defvar current-font-size 140)
 
 (defun decrease-font-size()
   (interactive)
