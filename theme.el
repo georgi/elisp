@@ -84,3 +84,13 @@
 
 (set-face-attribute 'font-lock-string-face nil
 		    :foreground "#c93")
+
+
+(add-hook 'rhtml-mode-hook 
+	  (lambda ()
+	    (set-face-attribute 'erb-exec-delim-face nil
+				:weight 'normal)
+
+	    (set-face-attribute 'erb-out-delim-face nil
+				:weight 'normal)))
+

@@ -64,8 +64,6 @@
 (require 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
 
-(require 'idle-highlight)
-
 ;; Cua
 (cua-mode t)
 (setq cua-enable-region-auto-help t)
@@ -189,7 +187,15 @@
 ;; ********************************************************************************
 ;; Mozilla
 ;;
-;; (require 'moz-update)
+(require 'moz)
+
+
+(defun moz-update (&rest ignored)
+  "Update the remote mozrepl instance"
+  (interactive)
+  (comint-send-string (inferior-moz-process)
+    (concat "content.document.body.innerHTML="
+             (json-encode (buffer-string)) ";")))
 
 ;; (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
 
@@ -229,8 +235,8 @@
   (define-key markdown-mode-map (kbd "<tab>") 'indent-and-complete)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-ispell)))
+         try-expand-dabbrev
+         try-expand-ispell)))
 
 (add-hook 'markdown-mode-hook 'markdown-mode-on-init)
 (autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
@@ -256,7 +262,6 @@
 
 (defun php-mode-on-init ()
   (linum-mode t)
-  (idle-highlight)
   (setq tab-width 4)
   (setq c-basic-offset 4)
   (setq indent-tabs-mode nil)
@@ -264,8 +269,8 @@
 
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-tag))
+         try-expand-dabbrev
+         try-expand-tag))
   (define-key html-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key html-mode-map (kbd "<tab>") 'indent-and-complete))
 
@@ -308,7 +313,6 @@
   (rinari-launch)
   (ruby-electric-mode t)
   (linum-mode t)
-  (idle-highlight)
   (rspec-mode)
   (setq indent-tabs-mode nil)  
 
@@ -317,9 +321,9 @@
   (set (make-local-variable 'tab-width) 2)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-dabbrev-all-buffers
-	 try-expand-tag))
+         try-expand-dabbrev
+         try-expand-dabbrev-all-buffers
+         try-expand-tag))
 
   (setq toggle-mapping-style 'rspec)
 
@@ -355,7 +359,6 @@
 (defun rhtml-mode-on-init ()
   (abbrev-mode nil)
   (linum-mode t)
-  (idle-highlight)
   (add-hook 'before-save-hook 'untabify-buffer)
   (setq indent-tabs-mode nil)
   (make-local-variable 'tags-file-name)
@@ -365,7 +368,7 @@
   (setq local-abbrev-table rhtml-mode-abbrev-table)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-tag))
+         try-expand-tag))
   (define-key rhtml-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key rhtml-mode-map (kbd "<tab>") 'indent-and-complete))
 
@@ -384,8 +387,8 @@
 (defun inferior-ruby-mode-on-init ()
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-tag))
+         try-expand-dabbrev
+         try-expand-tag))
   (define-key inferior-ruby-mode-map (kbd "<tab>") 'indent-and-complete))
 
 (add-hook 'inferior-ruby-mode-hook 'inferior-ruby-mode-on-init)
@@ -420,7 +423,6 @@
 (defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
   (linum-mode t)
-  (idle-highlight)
 
   (setq js2-allow-keywords-as-property-names nil)
   (setq js2-allow-rhino-new-expr-initializer t)
@@ -448,9 +450,9 @@
   
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-javascript-symbol	 
-	 try-expand-tag))
+         try-expand-dabbrev
+         try-expand-javascript-symbol    
+         try-expand-tag))
   (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key js2-mode-map (kbd "<tab>") 'indent-and-complete))
 
@@ -471,8 +473,8 @@
   (make-local-variable 'tags-file-name)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-tag))
+         try-expand-dabbrev
+         try-expand-tag))
   (define-key actionscript-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key actionscript-mode-map (kbd "<tab>") 'indent-and-complete))
 
@@ -495,8 +497,8 @@
 (defun emacs-lisp-mode-on-init ()
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-complete-lisp-symbol))
+         try-expand-dabbrev
+         try-complete-lisp-symbol))
   (define-key emacs-lisp-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key emacs-lisp-mode-map (kbd "<tab>") 'newline-a))
 
@@ -512,13 +514,12 @@
 
 (defun html-mode-on-init ()
   (linum-mode t)
-  (idle-highlight)
   (add-hook 'before-save-hook 'untabify-buffer)
 
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-tag))
+         try-expand-dabbrev
+         try-expand-tag))
   (define-key html-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key html-mode-map (kbd "<tab>") 'indent-and-complete))
 
@@ -536,7 +537,6 @@
   "Regular expression matching any selector. Used by imenu.")
 
 (defun css-mode-on-init ()
-  (idle-highlight)
   (add-hook 'before-save-hook 'untabify-buffer)
 
   (setq cssm-indent-level 4)
@@ -545,7 +545,7 @@
        css-imenu-generic-expression)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-css-property 
-	 try-expand-dabbrev))
+         try-expand-dabbrev))
   (define-key cssm-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key cssm-mode-map (kbd "<tab>") 'indent-and-complete)
   (define-key cssm-mode-map (kbd "<C-menu>") 'show-css-mode))
@@ -558,13 +558,12 @@
 ;;
 (defun c-mode-on-init ()
   (linum-mode t)
-  (idle-highlight)
   (add-hook 'before-save-hook 'untabify-buffer)
 
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-tag))
+         try-expand-dabbrev
+         try-expand-tag))
  
   (define-key c-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key c-mode-map (kbd "<tab>") 'indent-and-complete))
@@ -587,13 +586,12 @@
 
 (defun nxml-mode-on-init ()
   (linum-mode t)
-  (idle-highlight)
 
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-rng
-	 try-expand-abbrev
-	 try-expand-dabbrev
-	 try-expand-tag))
+         try-expand-abbrev
+         try-expand-dabbrev
+         try-expand-tag))
   (define-key c-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key nxml-mode-map (kbd "<tab>") 'indent-and-complete))
 
@@ -686,7 +684,7 @@
 (defun toggle-fullscreen()
   (interactive)
   (set-frame-parameter nil 'fullscreen
-		       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
+                       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
 
 (defun indent-buffer ()
   (interactive)
