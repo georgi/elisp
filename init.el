@@ -738,8 +738,9 @@
 (global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c g") 'rgrep)
 (global-set-key (kbd "C-c s") 'shell)
+(global-set-key (kbd "C-c u") 'view-url)
+(global-set-key (kbd "C-c b") 'ibuffer)
 
-(global-set-key (kbd "M-s") 'save-buffer)
 
 (global-set-key (kbd "M-/") 'tags-search)
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
@@ -749,13 +750,10 @@
 (global-set-key (kbd "M-b") 'bury-buffer)
 (global-set-key (kbd "M-f") 'recentf-ido-find-file)
 (global-set-key (kbd "M-n") 'svn-status)
+(global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-k") 'kill-current-buffer)
-(global-set-key (kbd "M-w") 'ecb-toggle-compile-window)
+(global-set-key (kbd "M-w") 'ecb-toggle-ecb-windows)
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
-
-(global-set-key (kbd "C-c u") 'view-url)
-(global-set-key (kbd "C-c w") 'ecb-toggle-ecb-windows)
-(global-set-key (kbd "C-c b") 'ibuffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 
