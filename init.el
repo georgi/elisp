@@ -726,16 +726,7 @@
 ;;
 
 ;; Function keys
-(global-set-key (kbd "<f1>") 'shell)
-(global-set-key (kbd "<f2>") 'rgrep)
-(global-set-key (kbd "<f5>") 'joc-dired-magic-buffer)
-(global-set-key (kbd "<f6>") 'ibuffer)
-(global-set-key (kbd "<f7>") 'create-tags)
-;; (global-set-key (kbd "<f8>") 'magit-status)
-(global-set-key (kbd "<f9>") 'svn-status)
 (global-set-key (kbd "<f10>") 'smart-compile)
-(global-set-key (kbd "<f11>") 'ecb-toggle-compile-window)
-(global-set-key (kbd "<f12>") 'ecb-toggle-ecb-windows)
 
 ;; Help keys
 (global-set-key (kbd "C-h C-d") 'dictionary-lookup)
@@ -744,29 +735,27 @@
 (global-set-key (kbd "C-h C-r") 'ruby-help)
 (global-set-key (kbd "C-h C-e") 'rails-help)
 
+(global-set-key (kbd "C-c f") 'find-file-in-project)
+(global-set-key (kbd "C-c g") 'rgrep)
+(global-set-key (kbd "C-c s") 'shell)
 
-(global-set-key (kbd "M-s") 'sort-lines)
+(global-set-key (kbd "M-s") 'save-buffer)
 
-;; Tags
 (global-set-key (kbd "M-/") 'tags-search)
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
 
-(global-set-key (kbd "C-c a") 'align-regexp)
-(global-set-key (kbd "C-c b") 'ibuffer)
-;; (global-set-key (kbd "C-c s") 'smart-compile)
-(global-set-key (kbd "C-x f") 'recentf-ido-find-file)
-(global-set-key (kbd "C-c f") 'find-file-in-project)
-(global-set-key (kbd "C-c n") 'svn-status)
-;; (global-set-key (kbd "C-c C-g") 'magit-status)
-(global-set-key (kbd "C-c t") 'ecb-toggle-ecb-windows)
-(global-set-key (kbd "C-c g") 'rgrep)
-(global-set-key (kbd "C-c s") 'shell)
-;; (global-set-key (kbd "C-c C-.") 'create-tags)
+(global-set-key (kbd "M-a") 'align-regexp)
+(global-set-key (kbd "M-b") 'bury-buffer)
+(global-set-key (kbd "M-f") 'recentf-ido-find-file)
+(global-set-key (kbd "M-n") 'svn-status)
+(global-set-key (kbd "M-k") 'kill-current-buffer)
+(global-set-key (kbd "M-w") 'ecb-toggle-compile-window)
+(global-set-key (kbd "<M-return>") 'ido-switch-buffer)
+
 (global-set-key (kbd "C-c u") 'view-url)
-(global-set-key (kbd "C-c w") 'ecb-toggle-compile-window)
-(global-set-key (kbd "C-c x") 'kill-current-buffer)
-(global-set-key (kbd "C-c z") 'bury-buffer)
+(global-set-key (kbd "C-c w") 'ecb-toggle-ecb-windows)
+(global-set-key (kbd "C-c b") 'ibuffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 
@@ -780,6 +769,7 @@
 ;; (define-key magit-mode-map (kbd "M-2") nil)
 ;; (define-key magit-mode-map (kbd "M-3") nil)
 ;; (define-key magit-mode-map (kbd "M-4") nil)
+;; (global-set-key (kbd "M-g") 'magit-status)
 
 
 (global-set-key (kbd "<C-M-up>") 'move-line-up)
@@ -791,11 +781,8 @@
 (global-set-key (kbd "<C-delete>") 'kill-word)
 (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
 
-(global-set-key (kbd "<M-return>") 'ido-switch-buffer)
-(global-set-key (kbd "<M-SPC>") 'ido-goto-symbol)
-
-(global-set-key (kbd "M-n")  (lambda () (interactive) (scroll-up   40)))
-(global-set-key (kbd "M-p")  (lambda () (interactive) (scroll-down 40)))
+(global-set-key (kbd "<C-left>") 'backward-word)
+(global-set-key (kbd "<C-right>") 'forward-word)
 
 (global-set-key (kbd "C-c r") 'revert-buffer)
 
