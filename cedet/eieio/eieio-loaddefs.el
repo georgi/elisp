@@ -3,7 +3,7 @@
 ;;; Code:
 
 
-;;;### (autoloads (chart-test-it-all) "chart" "chart.el" (19187 17201))
+;;;### (autoloads (chart-test-it-all) "chart" "chart.el" (18857 63843))
 ;;; Generated autoloads from chart.el
 
 (autoload 'chart-test-it-all "chart" "\
@@ -15,7 +15,7 @@ Test out various charting features.
 
 ;;;### (autoloads (data-debug-show data-debug-insert-object-button
 ;;;;;;  data-debug-insert-object-slots) "eieio-datadebug" "eieio-datadebug.el"
-;;;;;;  (19187 17201))
+;;;;;;  (18857 63843))
 ;;; Generated autoloads from eieio-datadebug.el
 
 (autoload 'data-debug-insert-object-slots "eieio-datadebug" "\
@@ -40,7 +40,7 @@ Run ddebug against any EIEIO object OBJ
 
 ;;;### (autoloads (eieio-describe-generic eieio-build-class-alist
 ;;;;;;  eieio-describe-constructor eieio-describe-class eieio-browse)
-;;;;;;  "eieio-opt" "eieio-opt.el" (19187 17201))
+;;;;;;  "eieio-opt" "eieio-opt.el" (18857 63843))
 ;;; Generated autoloads from eieio-opt.el
 
 (autoload 'eieio-browse "eieio-opt" "\
@@ -89,7 +89,7 @@ Also extracts information about all methods specific to this generic.
 ;;;***
 
 ;;;### (autoloads (eieio-perftest-onemethodcall eieio-perftest-methodcall)
-;;;;;;  "eieio-perftest" "eieio-perftest.el" (19187 17201))
+;;;;;;  "eieio-perftest" "eieio-perftest.el" (18857 63843))
 ;;; Generated autoloads from eieio-perftest.el
 
 (autoload 'eieio-perftest-methodcall "eieio-perftest" "\
@@ -105,7 +105,7 @@ Test and time performance of method invocation.
 ;;;***
 
 ;;;### (autoloads (enable-visual-studio-bookmarks) "linemark" "linemark.el"
-;;;;;;  (19187 17201))
+;;;;;;  (18857 63843))
 ;;; Generated autoloads from linemark.el
 
 (autoload 'enable-visual-studio-bookmarks "linemark" "\
@@ -121,7 +121,7 @@ Bind the viss bookmark functions to F2 related keys.
 ;;;***
 
 ;;;### (autoloads (lmcompile-do-highlight) "lmcompile" "lmcompile.el"
-;;;;;;  (19187 17201))
+;;;;;;  (18857 63843))
 ;;; Generated autoloads from lmcompile.el
 
 (autoload 'lmcompile-do-highlight "lmcompile" "\
@@ -134,7 +134,7 @@ Works on grep, compile, or other type mode.
 
 ;;;### (autoloads nil nil ("eieio-base.el" "eieio-comp.el" "eieio-custom.el"
 ;;;;;;  "eieio-doc.el" "eieio-load.el" "eieio-speedbar.el" "eieio-test-methodinvoke.el"
-;;;;;;  "eieio-tests.el" "eieio.el") (19300 25920 649332))
+;;;;;;  "eieio-tests.el" "eieio.el") (19332 61911 678888))
 
 ;;;***
 

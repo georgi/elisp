@@ -15,12 +15,12 @@
 (set-face-attribute 'cursor nil
 		    :background "#000")
 
-(set-face-attribute 'dropdown-list-face nil  
-		    :foreground "#000"
-		    :background "#eef")
+;; (set-face-attribute 'dropdown-list-face nil  
+;; 		    :foreground "#000"
+;; 		    :background "#eef")
 
-(set-face-attribute 'dropdown-list-selection-face nil
-		    :background "#fee")
+;; (set-face-attribute 'dropdown-list-selection-face nil
+;; 		    :background "#fee")
 
 (set-face-attribute 'vertical-border nil 
 		    :foreground "#eee")

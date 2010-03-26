@@ -48,6 +48,14 @@
 ;; (semantic-load-enable-gaudy-code-helpers)
 ;; (semantic-load-enable-all-exuberent-ctags-support)
 
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories "/home/matti/.emacs.d/ac-dict")
+(ac-config-default)
+
+(setq rsense-home "/home/matti/rsense-0.2")
+(add-to-list 'load-path (concat rsense-home "/etc"))
+(require 'rsense)
+
 
 (require 'ecb)
 (setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
@@ -150,9 +158,11 @@
 
 (load "abbrevs")
 (load "browser-help")
-(load "completions")
+
+;; (load "completions")
+;; (load "menu-from-pattern")
+
 (load "find-tags-file")
-(load "menu-from-pattern")
 (load "move-lines")
 (load "window-management")
 
@@ -193,8 +203,8 @@
   "Update the remote mozrepl instance"
   (interactive)
   (comint-send-string (inferior-moz-process)
-    (concat "content.document.body.innerHTML="
-             (json-encode (buffer-string)) ";")))
+                      (concat "content.document.body.innerHTML="
+                              (json-encode (buffer-string)) ";")))
 
 ;; (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
 
@@ -231,7 +241,7 @@
 (eval-when-compile (require 'markdown-mode))
 
 (defun markdown-mode-on-init ()
-  (define-key markdown-mode-map (kbd "<tab>") 'indent-and-complete)
+  ;; (define-key markdown-mode-map (kbd "<tab>") 'indent-and-complete)
   (set (make-local-variable 'hippie-expand-try-functions-list)
        '(try-expand-abbrev
          try-expand-dabbrev
@@ -270,8 +280,10 @@
        '(try-expand-abbrev
          try-expand-dabbrev
          try-expand-tag))
+  
   (define-key html-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  (define-key html-mode-map (kbd "<tab>") 'indent-and-complete))
+  ;; (define-key html-mode-map (kbd "<tab>") 'indent-and-complete)
+  )
 
 (add-hook 'php-mode-hook 'php-mode-on-init)
 
@@ -330,6 +342,9 @@
 
   (add-hook 'before-save-hook 'untabify-buffer)
 
+  (add-to-list 'ac-sources 'ac-source-rsense-method)
+  (add-to-list 'ac-sources 'ac-source-rsense-constant)  
+
   (case (rinari-whats-my-type)
     (:model      (setq local-abbrev-table rails-model-abbrev-table))
     (:controller (setq local-abbrev-table rails-controller-abbrev-table))
@@ -337,7 +352,7 @@
     (:unit (setq local-abbrev-table ruby-test-abbrev-table)))
 
   (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
-  (define-key ruby-mode-map (kbd "<tab>") 'indent-and-complete)
+  ;; (define-key ruby-mode-map (kbd "<tab>") 'indent-and-complete)
   (define-key ruby-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key ruby-mode-map (kbd "C-c C-v") 'rspec-verify)
   (define-key ruby-mode-map (kbd "C-c C-t") 'rspec-toggle-spec-and-target)
@@ -369,7 +384,8 @@
        '(try-expand-abbrev
          try-expand-tag))
   (define-key rhtml-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  (define-key rhtml-mode-map (kbd "<tab>") 'indent-and-complete))
+  ;; (define-key rhtml-mode-map (kbd "<tab>") 'indent-and-complete)
+  )
 
 (defun abbrev-in-rhtml-mode (fn)
   (if (and (boundp 'rhtml-erb-tag-region) (rhtml-erb-tag-region))
@@ -388,7 +404,8 @@
        '(try-expand-abbrev
          try-expand-dabbrev
          try-expand-tag))
-  (define-key inferior-ruby-mode-map (kbd "<tab>") 'indent-and-complete))
+  ;; (define-key inferior-ruby-mode-map (kbd "<tab>") 'indent-and-complete)
+  )
 
 (add-hook 'inferior-ruby-mode-hook 'inferior-ruby-mode-on-init)
 
@@ -453,7 +470,8 @@
          try-expand-javascript-symbol    
          try-expand-tag))
   (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  (define-key js2-mode-map (kbd "<tab>") 'indent-and-complete))
+  ;; (define-key js2-mode-map (kbd "<tab>") 'indent-and-complete)
+  )
 
 (add-hook 'js2-mode-hook 'js2-mode-on-init)
 
@@ -475,7 +493,8 @@
          try-expand-dabbrev
          try-expand-tag))
   (define-key actionscript-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  (define-key actionscript-mode-map (kbd "<tab>") 'indent-and-complete))
+  ;; (define-key actionscript-mode-map (kbd "<tab>") 'indent-and-complete)
+  )
 
 (add-hook 'actionscript-mode-hook 'actionscript-mode-on-init)
 
@@ -520,7 +539,8 @@
          try-expand-dabbrev
          try-expand-tag))
   (define-key html-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  (define-key html-mode-map (kbd "<tab>") 'indent-and-complete))
+  ;; (define-key html-mode-map (kbd "<tab>") 'indent-and-complete)
+  )
 
 (add-hook 'html-mode-hook 'html-mode-on-init)
 
@@ -546,7 +566,7 @@
        '(try-expand-css-property 
          try-expand-dabbrev))
   (define-key cssm-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  (define-key cssm-mode-map (kbd "<tab>") 'indent-and-complete)
+  ;; (define-key cssm-mode-map (kbd "<tab>") 'indent-and-complete)
   (define-key cssm-mode-map (kbd "<C-menu>") 'show-css-mode))
 
 (add-hook 'css-mode-hook 'css-mode-on-init)
@@ -563,9 +583,10 @@
        '(try-expand-abbrev
          try-expand-dabbrev
          try-expand-tag))
- 
+  
   (define-key c-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  (define-key c-mode-map (kbd "<tab>") 'indent-and-complete))
+  ;; (define-key c-mode-map (kbd "<tab>") 'indent-and-complete)
+  )
 
 
 (add-hook 'c-mode-hook 'c-mode-on-init)
@@ -592,7 +613,8 @@
          try-expand-dabbrev
          try-expand-tag))
   (define-key c-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  (define-key nxml-mode-map (kbd "<tab>") 'indent-and-complete))
+  ;; (define-key nxml-mode-map (kbd "<tab>") 'indent-and-complete)
+  )
 
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
 

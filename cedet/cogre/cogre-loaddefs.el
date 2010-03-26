@@ -3,8 +3,8 @@
 ;;; Code:
 
 
-;;;### (autoloads (cogre-load-graph cogre) "cogre" "cogre.el" (19187
-;;;;;;  17201))
+;;;### (autoloads (cogre-load-graph cogre) "cogre" "cogre.el" (18857
+;;;;;;  63845))
 ;;; Generated autoloads from cogre.el
 
 (eieio-defclass-autoload 'cogre-graph '(eieio-persistent) "cogre" "A Connected Graph.\na connected graph contains a series of nodes and links which are\nrendered in a buffer, or serialized to disk.")
@@ -29,8 +29,8 @@ Load a graph from FILE into a new graph buffer.
 
 ;;;***
 
-;;;### (autoloads (cogre-mode) "cogre-mode" "cogre-mode.el" (19187
-;;;;;;  17201))
+;;;### (autoloads (cogre-mode) "cogre-mode" "cogre-mode.el" (18857
+;;;;;;  63845))
 ;;; Generated autoloads from cogre-mode.el
 
 (autoload 'cogre-mode "cogre-mode" "\
@@ -41,7 +41,7 @@ Connected Graph Editor Mode.
 
 ;;;***
 
-;;;### (autoloads nil "cogre-uml" "cogre-uml.el" (19187 17201))
+;;;### (autoloads nil "cogre-uml" "cogre-uml.el" (18857 63845))
 ;;; Generated autoloads from cogre-uml.el
 
 (eieio-defclass-autoload 'cogre-package '(cogre-node) "cogre-uml" "A Package node.\nPackages represent other class diagrams, and list the major nodes\nwithin them.  They can be linked by dependency links.")
@@ -55,7 +55,7 @@ Connected Graph Editor Mode.
 ;;;***
 
 ;;;### (autoloads (cogre-uml-utest cogre-utest) "cogre-utest" "cogre-utest.el"
-;;;;;;  (19187 17201))
+;;;;;;  (18857 63845))
 ;;; Generated autoloads from cogre-utest.el
 
 (autoload 'cogre-utest "cogre-utest" "\
@@ -71,7 +71,7 @@ Quick test for UML chart generation.
 ;;;***
 
 ;;;### (autoloads (cogre-uml-create cogre-uml-quick-class) "uml-create"
-;;;;;;  "uml-create.el" (19187 17201))
+;;;;;;  "uml-create.el" (18857 63845))
 ;;; Generated autoloads from uml-create.el
 
 (autoload 'cogre-uml-quick-class "uml-create" "\
@@ -89,7 +89,7 @@ CLASS must be a type in the current project.
 ;;;***
 
 ;;;### (autoloads (wisent-dot-setup-parser) "wisent-dot" "wisent-dot.el"
-;;;;;;  (19187 17201))
+;;;;;;  (18857 63845))
 ;;; Generated autoloads from wisent-dot.el
 
 (autoload 'wisent-dot-setup-parser "wisent-dot" "\
@@ -102,7 +102,7 @@ Setup buffer for parse.
 ;;;***
 
 ;;;### (autoloads nil nil ("cogre-load.el" "picture-hack.el" "wisent-dot-wy.el")
-;;;;;;  (19300 26034 511383))
+;;;;;;  (19332 61932 598089))
 
 ;;;***
 
