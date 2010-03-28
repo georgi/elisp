@@ -37,10 +37,10 @@
 (defun try-expand-completion (old)
   (if (> (length he-expand-list) 10)
       (let ((idx (dropdown-list he-expand-list)))
-	(he-substitute-string (nth idx he-expand-list)))
+        (he-substitute-string (nth idx he-expand-list)))
  
     (while (and he-expand-list 
-		(he-string-member (car he-expand-list) he-tried-table))
+                (he-string-member (car he-expand-list) he-tried-table))
       (setq he-expand-list (cdr he-expand-list)))
 
     (if (null he-expand-list)
@@ -52,14 +52,14 @@
 
 (defun find-all-dabbrev-expansions (abbrev)
   (let ((all-expansions nil)
-	expansion)
+        expansion)
     (save-excursion
       (while (setq expansion (he-dabbrev-search abbrev nil))
-	(unless (member expansion all-expansions)
-	  (setq all-expansions (cons expansion all-expansions))))
+        (unless (member expansion all-expansions)
+          (setq all-expansions (cons expansion all-expansions))))
       (while (setq expansion (he-dabbrev-search abbrev t))
-	(unless (member expansion all-expansions)
-	  (setq all-expansions (cons expansion all-expansions))))
+        (unless (member expansion all-expansions)
+          (setq all-expansions (cons expansion all-expansions))))
     all-expansions)))
 
 (defun try-expand-dabbrev (old)
@@ -81,11 +81,11 @@
 (defun try-complete-lisp-symbol (old)
   (he-init-string (he-symbol-beginning) (point))
   (setq he-expand-list (sort (all-completions 
-			      he-search-string obarray
-			      (function (lambda (sym)
-					  (or (boundp sym)
-					      (fboundp sym)
-					      (symbol-plist sym))))) 'string-lessp))
+                              he-search-string obarray
+                              (function (lambda (sym)
+                                          (or (boundp sym)
+                                              (fboundp sym)
+                                              (symbol-plist sym))))) 'string-lessp))
   (try-expand-completion old))
 
 (defun try-expand-css-property (old)
@@ -101,7 +101,7 @@
   "Completion function for ispell."
   (let ((completions (lookup-words (concat string "*"))))
     (if predicate
-	(remove-if-not predicate completions)
+        (remove-if-not predicate completions)
       completions)))
 
 
@@ -116,7 +116,11 @@
 ;;;    ((boundp 'nxml-completion-hook)
 ;;;     (nxml-complete))
 
-   ((looking-at "\\_>")    
-    (hippie-expand nil))
+   ;; ((looking-at "\\_>")
+   ;;  (hippie-expand nil))
+   
+   ((looking-at "\\_>")
+    (unless (ac-menu-live-p)
+      (ac-fuzzy-complete))
 
    ((indent-for-tab-command))))

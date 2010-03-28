@@ -11,6 +11,7 @@
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
 (add-to-list 'load-path "~/.emacs.d/python")
+(add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 ;; ********************************************************************************
 ;; Variables
@@ -48,14 +49,22 @@
 ;; (semantic-load-enable-gaudy-code-helpers)
 ;; (semantic-load-enable-all-exuberent-ctags-support)
 
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "/home/matti/.emacs.d/ac-dict")
-(ac-config-default)
 
-(setq rsense-home "/home/matti/rsense-0.2")
+(require 'yasnippet)
+(yas/initialize)
+(yas/load-directory "~/.emacs.d/yasnippet/snippets")
+(yas/load-directory "~/.emacs.d/snippets/")
+
+
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
+(ac-config-default)
+(ac-set-trigger-key "TAB")
+(setq ac-auto-start t)
+
+(setq rsense-home (expand-file-name "~/rsense-0.2"))
 (add-to-list 'load-path (concat rsense-home "/etc"))
 (require 'rsense)
-
 
 (require 'ecb)
 (setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
@@ -78,16 +87,20 @@
 (setq cua-highlight-region-shift-only nil)
 
 (setq current-language-environment "UTF-8")
-(setq dabbrev-abbrev-char-regexp "\\\\sw")
 (setq default-input-method "rfc1345")
 
-;; Desktop 
-;; (desktop-save-mode t)
-;; (setq desktop-globals-to-save nil)
-;; (setq desktop-load-locked-desktop t)
-;; (setq desktop-save t)
 
-;; Ibuffer
+(require 'window-numbering)
+
+(window-numbering-mode)
+
+;; Desktop 
+(desktop-save-mode t)
+(setq desktop-globals-to-save nil)
+(setq desktop-load-locked-desktop t)
+(setq desktop-save t)
+
+;; ibuffer
 (setq ibuffer-default-sorting-mode 'major-mode)
 (setq ibuffer-enable nil)
 (setq ibuffer-expert t)
@@ -111,8 +124,7 @@
 (setq initial-major-mode 'text-mode)
 (column-number-mode t)
 (mouse-wheel-mode t)
-(partial-completion-mode t)
-(menu-bar-mode nil)
+(partial-completion-mode nil)
 (tool-bar-mode nil)
 (menu-bar-mode t)
 (show-paren-mode t)
@@ -131,7 +143,6 @@
 ;; Woman
 (setq woman-fill-column 80)
 (setq woman-use-own-frame nil)
-
 
 ;; ********************************************************************************
 ;; Tabbar
@@ -156,7 +167,7 @@
 ;;
 (require 'ruby-mode)
 
-(load "abbrevs")
+;; (load "abbrevs")
 (load "browser-help")
 
 ;; (load "completions")
@@ -164,7 +175,6 @@
 
 (load "find-tags-file")
 (load "move-lines")
-(load "window-management")
 
 (if window-system
     (load "theme"))
@@ -176,7 +186,7 @@
 ;;
 (autoload 'worklog "worklog" "work log" t)
 (autoload 'rdebug "rdebug" "ruby Debug" t)
-;; (autoload 'magit-status "magit" "magit" t)
+(autoload 'magit-status "magit" "magit" t)
 
 
 ;; ********************************************************************************
@@ -240,14 +250,6 @@
 ;;
 (eval-when-compile (require 'markdown-mode))
 
-(defun markdown-mode-on-init ()
-  ;; (define-key markdown-mode-map (kbd "<tab>") 'indent-and-complete)
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-         try-expand-dabbrev
-         try-expand-ispell)))
-
-(add-hook 'markdown-mode-hook 'markdown-mode-on-init)
 (autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
@@ -275,14 +277,6 @@
   (setq c-basic-offset 4)
   (setq indent-tabs-mode nil)
   (c-set-style "k&r")
-
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-         try-expand-dabbrev
-         try-expand-tag))
-  
-  (define-key html-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  ;; (define-key html-mode-map (kbd "<tab>") 'indent-and-complete)
   )
 
 (add-hook 'php-mode-hook 'php-mode-on-init)
@@ -316,13 +310,11 @@
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))  
 
 (defun ruby-mode-on-init ()
-  (require 'ruby-electric)
   (require 'inflections)
 
   (setq ffip-find-options "-not -regex '.*vendor.*'")
 
   (rinari-launch)
-  (ruby-electric-mode t)
   (linum-mode t)
   (rspec-mode)
   (setq indent-tabs-mode nil)  
@@ -330,30 +322,18 @@
   (make-local-variable 'tags-file-name)
 
   (set (make-local-variable 'tab-width) 2)
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-         try-expand-dabbrev
-         try-expand-dabbrev-all-buffers
-         try-expand-tag))
 
   (setq toggle-mapping-style 'rspec)
 
-  (setq local-abbrev-table ruby-mode-abbrev-table)
-
   (add-hook 'before-save-hook 'untabify-buffer)
 
-  (add-to-list 'ac-sources 'ac-source-rsense-method)
-  (add-to-list 'ac-sources 'ac-source-rsense-constant)  
-
-  (case (rinari-whats-my-type)
-    (:model      (setq local-abbrev-table rails-model-abbrev-table))
-    (:controller (setq local-abbrev-table rails-controller-abbrev-table))
-    (:functional (setq local-abbrev-table ruby-test-abbrev-table))
-    (:unit (setq local-abbrev-table ruby-test-abbrev-table)))
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-rsense-method
+                     ac-source-rsense-constant
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
 
   (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
-  ;; (define-key ruby-mode-map (kbd "<tab>") 'indent-and-complete)
-  (define-key ruby-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   (define-key ruby-mode-map (kbd "C-c C-v") 'rspec-verify)
   (define-key ruby-mode-map (kbd "C-c C-t") 'rspec-toggle-spec-and-target)
   )
@@ -376,35 +356,32 @@
   (add-hook 'before-save-hook 'untabify-buffer)
   (setq indent-tabs-mode nil)
   (make-local-variable 'tags-file-name)
+
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-rsense-method
+                     ac-source-rsense-constant
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
+
   (set-face-attribute 'erb-delim-face nil :background "#fff")
   (set-face-attribute 'erb-face nil :background "#fff")
   (set-face-attribute 'erb-out-delim-face nil :foreground "#933")
-  (setq local-abbrev-table rhtml-mode-abbrev-table)
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-         try-expand-tag))
-  (define-key rhtml-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  ;; (define-key rhtml-mode-map (kbd "<tab>") 'indent-and-complete)
   )
 
-(defun abbrev-in-rhtml-mode (fn)
-  (if (and (boundp 'rhtml-erb-tag-region) (rhtml-erb-tag-region))
-      ()
-    (funcall fn)))
-
 (add-hook 'rhtml-mode-hook 'rhtml-mode-on-init)
-(add-hook 'abbrev-expand-functions 'abbrev-in-rhtml-mode)
 
 
 ;; ********************************************************************************
 ;; IRB Mode
 ;;
 (defun inferior-ruby-mode-on-init ()
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-         try-expand-dabbrev
-         try-expand-tag))
-  ;; (define-key inferior-ruby-mode-map (kbd "<tab>") 'indent-and-complete)
+
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-rsense-method
+                     ac-source-rsense-constant
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
+
   )
 
 (add-hook 'inferior-ruby-mode-hook 'inferior-ruby-mode-on-init)
@@ -462,15 +439,14 @@
   (setq js2-strict-var-redeclaration-warning t)
   (setq indent-tabs-mode nil)
 
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-semantic
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
+
   (add-hook 'before-save-hook 'untabify-buffer)
   
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-         try-expand-dabbrev
-         try-expand-javascript-symbol    
-         try-expand-tag))
-  (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  ;; (define-key js2-mode-map (kbd "<tab>") 'indent-and-complete)
+  ;; (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   )
 
 (add-hook 'js2-mode-hook 'js2-mode-on-init)
@@ -478,47 +454,19 @@
 
 
 ;; ********************************************************************************
-;; Actionscript Mode
-;;
-
-(eval-when-compile (require 'actionscript-mode))
-
-(autoload 'actionscript-mode "actionscript-mode" "Actionscript Mode." t)
-;; (add-to-list 'auto-mode-alist '("\\.as$" . actionscript-mode))
-
-(defun actionscript-mode-on-init ()
-  (make-local-variable 'tags-file-name)
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-         try-expand-dabbrev
-         try-expand-tag))
-  (define-key actionscript-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  ;; (define-key actionscript-mode-map (kbd "<tab>") 'indent-and-complete)
-  )
-
-(add-hook 'actionscript-mode-hook 'actionscript-mode-on-init)
-
-(load "ani-fcsh")
-
-(setq *fcsh-path* "fcsh")
-(setq *fcsh-mxmlc-output-path* "")
-
-(defun compile-mxmlc ()
-  (interactive)
-  (or *fcsh-compile-active* fcsh-compile)
-  (call-interactively 'compile))
-
-
-;; ********************************************************************************
 ;; Emacs-Lisp Mode
 ;;
 (defun emacs-lisp-mode-on-init ()
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-         try-expand-dabbrev
-         try-complete-lisp-symbol))
-  (define-key emacs-lisp-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  (define-key emacs-lisp-mode-map (kbd "<tab>") 'newline-a))
+
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-features
+                     ac-source-functions
+                     ac-source-symbols
+                     ac-source-variables
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
+
+  )
 
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init)
 
@@ -534,12 +482,10 @@
   (linum-mode t)
   (add-hook 'before-save-hook 'untabify-buffer)
 
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-         try-expand-dabbrev
-         try-expand-tag))
-  (define-key html-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  ;; (define-key html-mode-map (kbd "<tab>") 'indent-and-complete)
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
+
   )
 
 (add-hook 'html-mode-hook 'html-mode-on-init)
@@ -558,16 +504,15 @@
 (defun css-mode-on-init ()
   (add-hook 'before-save-hook 'untabify-buffer)
 
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
+
   (setq cssm-indent-level 4)
   (setq cssm-indent-function #'cssm-c-style-indenter)
   (set (make-local-variable 'imenu-generic-expression)
        css-imenu-generic-expression)
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-css-property 
-         try-expand-dabbrev))
-  (define-key cssm-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  ;; (define-key cssm-mode-map (kbd "<tab>") 'indent-and-complete)
-  (define-key cssm-mode-map (kbd "<C-menu>") 'show-css-mode))
+  )
 
 (add-hook 'css-mode-hook 'css-mode-on-init)
 
@@ -579,13 +524,11 @@
   (linum-mode t)
   (add-hook 'before-save-hook 'untabify-buffer)
 
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-abbrev
-         try-expand-dabbrev
-         try-expand-tag))
-  
-  (define-key c-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  ;; (define-key c-mode-map (kbd "<tab>") 'indent-and-complete)
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-semantic
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
+
   )
 
 
@@ -607,13 +550,11 @@
 (defun nxml-mode-on-init ()
   (linum-mode t)
 
-  (set (make-local-variable 'hippie-expand-try-functions-list)
-       '(try-expand-rng
-         try-expand-abbrev
-         try-expand-dabbrev
-         try-expand-tag))
-  (define-key c-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  ;; (define-key nxml-mode-map (kbd "<tab>") 'indent-and-complete)
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-semantic
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
+
   )
 
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
@@ -625,7 +566,6 @@
 (require 'dired)
 (require 'dired-single)
 (require 'wdired)
-(require 'sunrise-commander)
 
 (defun joc-dired-up-directory()
   (interactive)
@@ -637,8 +577,8 @@
 
 (define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
 
-(setq dired-listing-switches "-l")
-(setq dired-omit-files "^\\.")
+(setq dired-listing-switches "-al")
+;; (setq dired-omit-files "^\\.")
 
 (defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
   (if (equal major-mode 'dired-mode)
@@ -673,20 +613,6 @@
 (add-to-list 'smart-compile-alist '("\\.mxml$"    . (compile-mxmlc)))
 (add-to-list 'smart-compile-alist '("\\.as$"      . (compile-mxmlc)))
 
-
-;; ********************************************************************************
-;; Speedbar
-
-(require 'sr-speedbar)
-
-(setq speedbar-show-unknown-files t)
-(setq speedbar-use-images t)
-
-;; Window management
-
-(require 'window-numbering)
-
-(window-numbering-mode)
 
 
 ;; ********************************************************************************
@@ -771,6 +697,7 @@
 (global-set-key (kbd "M-a") 'align-regexp)
 (global-set-key (kbd "M-b") 'bury-buffer)
 (global-set-key (kbd "M-f") 'recentf-ido-find-file)
+(global-set-key (kbd "M-i") 'indent-region)
 (global-set-key (kbd "M-n") 'svn-status)
 (global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-k") 'kill-current-buffer)
@@ -784,12 +711,12 @@
 (global-set-key (kbd "<C-prior>") 'tabbar-backward-tab)
 (global-set-key (kbd "<C-next>") 'tabbar-forward-tab)
 
-;; (require 'magit)
-;; (define-key magit-mode-map (kbd "M-1") nil)
-;; (define-key magit-mode-map (kbd "M-2") nil)
-;; (define-key magit-mode-map (kbd "M-3") nil)
-;; (define-key magit-mode-map (kbd "M-4") nil)
-;; (global-set-key (kbd "M-g") 'magit-status)
+(require 'magit)
+(define-key magit-mode-map (kbd "M-1") nil)
+(define-key magit-mode-map (kbd "M-2") nil)
+(define-key magit-mode-map (kbd "M-3") nil)
+(define-key magit-mode-map (kbd "M-4") nil)
+(global-set-key (kbd "M-m") 'magit-status)
 
 
 (global-set-key (kbd "<C-M-up>") 'move-line-up)
