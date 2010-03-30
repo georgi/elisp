@@ -54,6 +54,7 @@
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/yasnippet/snippets")
 (yas/load-directory "~/.emacs.d/snippets/")
+(setq yas/trigger-key "SPC")
 
 
 (require 'auto-complete-config)
@@ -62,9 +63,9 @@
 (ac-set-trigger-key "TAB")
 (setq ac-auto-start t)
 
-(setq rsense-home (expand-file-name "~/rsense-0.2"))
-(add-to-list 'load-path (concat rsense-home "/etc"))
-(require 'rsense)
+;; (setq rsense-home (expand-file-name "~/rsense-0.2"))
+;; (add-to-list 'load-path (concat rsense-home "/etc"))
+;; (require 'rsense)
 
 (require 'ecb)
 (setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
@@ -328,8 +329,8 @@
   (add-hook 'before-save-hook 'untabify-buffer)
 
   (setq ac-sources '(ac-source-yasnippet
-                     ac-source-rsense-method
-                     ac-source-rsense-constant
+                     ;; ac-source-rsense-method
+                     ;; ac-source-rsense-constant
                      ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers))
 
