@@ -2,4 +2,4 @@
 # --
 {% unless ${cond} %}
 $0
-{% end %}
+{% endunless %}

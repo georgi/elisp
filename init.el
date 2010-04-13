@@ -54,14 +54,14 @@
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/yasnippet/snippets")
 (yas/load-directory "~/.emacs.d/snippets/")
-(setq yas/trigger-key "SPC")
+(setq yas/trigger-key "TAB")
 
 
 (require 'auto-complete-config)
 (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
 (ac-config-default)
 (ac-set-trigger-key "TAB")
-(setq ac-auto-start t)
+(setq ac-auto-start nil)
 
 ;; (setq rsense-home (expand-file-name "~/rsense-0.2"))
 ;; (add-to-list 'load-path (concat rsense-home "/etc"))
@@ -91,9 +91,9 @@
 (setq default-input-method "rfc1345")
 
 
-(require 'window-numbering)
+;; (require 'window-numbering)
 
-(window-numbering-mode)
+;; (window-numbering-mode)
 
 ;; Desktop 
 (desktop-save-mode t)
@@ -107,6 +107,7 @@
 (setq ibuffer-expert t)
 
 ;; Ido
+
 (ido-mode t)
 (setq ido-case-fold t)
 (setq ido-enable-flex-matching t)
@@ -126,7 +127,7 @@
 (column-number-mode t)
 (mouse-wheel-mode t)
 (partial-completion-mode nil)
-(tool-bar-mode nil)
+(tool-bar-mode t)
 (menu-bar-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
@@ -690,6 +691,12 @@
 (global-set-key (kbd "C-c u") 'view-url)
 (global-set-key (kbd "C-c b") 'ibuffer)
 
+
+(global-set-key (kbd "M-1") 'ecb-goto-window-directories)
+(global-set-key (kbd "M-2") 'ecb-goto-window-edit1)
+(global-set-key (kbd "M-3") 'ecb-goto-window-edit2)
+(global-set-key (kbd "M-4") 'ecb-goto-window-compilation)
+(global-set-key (kbd "M-0") 'tree-buffer-show-node-menu-keyboard)
 
 (global-set-key (kbd "M-/") 'tags-search)
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)

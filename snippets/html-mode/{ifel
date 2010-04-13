@@ -3,4 +3,4 @@
 {% if $0cond} %}
 $0
 {% else %}
-{% end %}
+{% endif %}
