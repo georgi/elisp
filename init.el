@@ -73,7 +73,7 @@
 (setq ecb-add-path-for-not-matching-files (quote (nil)))
 (setq ecb-auto-activate nil)
 (setq ecb-clear-caches-before-activate t)
-(setq ecb-compile-window-height 40)
+(setq ecb-compile-window-height 30)
 (setq ecb-options-version "2.40")
 (setq ecb-tip-of-the-day nil)
 (setq ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
