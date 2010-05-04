@@ -73,7 +73,7 @@
 (setq ecb-add-path-for-not-matching-files (quote (nil)))
 (setq ecb-auto-activate nil)
 (setq ecb-clear-caches-before-activate t)
-(setq ecb-compile-window-height 20)
+(setq ecb-compile-window-height 40)
 (setq ecb-options-version "2.40")
 (setq ecb-tip-of-the-day nil)
 (setq ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
@@ -113,7 +113,7 @@
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere nil)
 (setq ido-enable-tramp-completion nil)
-(setq ido-separator "  ")
+(setq ido-separator "   ")
 (setq ido-use-filename-at-point (quote guess))
 
 (load "ido-goto-symbol")
@@ -127,7 +127,7 @@
 (column-number-mode t)
 (mouse-wheel-mode t)
 (partial-completion-mode nil)
-(tool-bar-mode t)
+(tool-bar-mode nil)
 (menu-bar-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
@@ -360,8 +360,8 @@
   (make-local-variable 'tags-file-name)
 
   (setq ac-sources '(ac-source-yasnippet
-                     ac-source-rsense-method
-                     ac-source-rsense-constant
+                     ;; ac-source-rsense-method
+                     ;; ac-source-rsense-constant
                      ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers))
 
@@ -579,6 +579,7 @@
 
 (define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
 
+(setq dired-backup-overwrite t)
 (setq dired-listing-switches "-al")
 ;; (setq dired-omit-files "^\\.")
 
@@ -694,9 +695,14 @@
 
 (global-set-key (kbd "M-1") 'ecb-goto-window-directories)
 (global-set-key (kbd "M-2") 'ecb-goto-window-edit1)
-(global-set-key (kbd "M-3") 'ecb-goto-window-edit2)
+(global-set-key (kbd "M-3") 'ecb-goto-window-history)
 (global-set-key (kbd "M-4") 'ecb-goto-window-compilation)
 (global-set-key (kbd "M-0") 'tree-buffer-show-node-menu-keyboard)
+
+(require 'multi-term)
+(global-set-key (kbd "M-t") 'multi-term)
+(global-set-key (kbd "<M-right>") 'multi-term-next)
+(global-set-key (kbd "<M-left>") 'multi-term-prev)
 
 (global-set-key (kbd "M-/") 'tags-search)
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
@@ -709,7 +715,7 @@
 (global-set-key (kbd "M-n") 'svn-status)
 (global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-k") 'kill-current-buffer)
-(global-set-key (kbd "M-w") 'ecb-toggle-ecb-windows)
+(global-set-key (kbd "M-w") 'ecb-toggle-compile-window)
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
