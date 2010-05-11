@@ -1,0 +1,5 @@
+#name : <% for ... in ...  %> $. <% end %>
+# --
+<% for ${item} in ${list} %>
+$0
+<% end %>
