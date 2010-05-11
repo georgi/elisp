@@ -81,6 +81,7 @@
 
 (require 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
+(setq kill-ring-max 20)
 
 ;; Cua
 (cua-mode t)
@@ -620,7 +621,12 @@
 
 ;; ********************************************************************************
 ;; Defuns
-
+(defun popup-yank-menu()
+  (interactive)
+  (let ((x-y (posn-x-y (posn-at-point (point)))))
+    (popup-menu 'yank-menu (list (list (+ (car x-y) 10)
+                                       (+ (cdr x-y) 20))
+                                 (selected-window)))))
 
 (defun save-and-exit()
   (interactive)
@@ -712,6 +718,7 @@
 (global-set-key (kbd "M-b") 'bury-buffer)
 (global-set-key (kbd "M-f") 'recentf-ido-find-file)
 (global-set-key (kbd "M-i") 'indent-region)
+(global-set-key (kbd "M-y") 'popup-yank-menu)
 (global-set-key (kbd "M-n") 'svn-status)
 (global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-k") 'kill-current-buffer)
