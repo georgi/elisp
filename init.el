@@ -319,7 +319,6 @@
 
   (rinari-launch)
   (linum-mode t)
-  (rspec-mode)
   (setq indent-tabs-mode nil)  
 
   (make-local-variable 'tags-file-name)
@@ -698,14 +697,30 @@
 (global-set-key (kbd "C-c u") 'view-url)
 (global-set-key (kbd "C-c b") 'ibuffer)
 
-
 (global-set-key (kbd "M-1") 'ecb-goto-window-directories)
-(global-set-key (kbd "M-2") 'ecb-goto-window-edit1)
-(global-set-key (kbd "M-3") 'ecb-goto-window-history)
-(global-set-key (kbd "M-4") 'ecb-goto-window-compilation)
+(global-set-key (kbd "M-2") 'ecb-goto-window-sources)
+(global-set-key (kbd "M-3") 'ecb-goto-window-methods)
+(global-set-key (kbd "M-4") 'ecb-goto-window-history)
+(global-set-key (kbd "M-5") 'ecb-goto-window-compilation)
 (global-set-key (kbd "M-0") 'tree-buffer-show-node-menu-keyboard)
+(global-set-key (kbd "M-e") 'ecb-goto-window-edit1)
+(global-set-key (kbd "M-w") 'ecb-toggle-ecb-windows)
+(global-set-key (kbd "M-c") 'ecb-toggle-compile-window)
 
 (require 'multi-term)
+
+(setq term-bind-key-alist
+  '(
+    ("C-c C-c" . term-interrupt-subjob)
+    ("C-s" . isearch-forward)
+    ("C-r" . isearch-backward)
+    ("C-m" . term-send-raw)
+    ("<C-right>" . term-send-forward-word)
+    ("<C-right>" . term-send-backward-word)
+    ("<C-backspace>" . term-send-backward-kill-word)
+    ("<M-backspace>" . term-send-backward-kill-word)
+    ("M-r" . term-send-reverse-search-history)))
+
 (global-set-key (kbd "M-t") 'multi-term)
 (global-set-key (kbd "<M-right>") 'multi-term-next)
 (global-set-key (kbd "<M-left>") 'multi-term-prev)
@@ -716,13 +731,12 @@
 
 (global-set-key (kbd "M-a") 'align-regexp)
 (global-set-key (kbd "M-b") 'bury-buffer)
-(global-set-key (kbd "M-f") 'recentf-ido-find-file)
-(global-set-key (kbd "M-i") 'indent-region)
+(global-set-key (kbd "M-f") 'ido-find-file)
+(global-set-key (kbd "M-i") 'indent-buffer)
 (global-set-key (kbd "M-y") 'popup-yank-menu)
 (global-set-key (kbd "M-n") 'svn-status)
 (global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-k") 'kill-current-buffer)
-(global-set-key (kbd "M-w") 'ecb-toggle-compile-window)
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
@@ -777,7 +791,6 @@
 (global-set-key (kbd "C-x g") 'rinari-rgrep)
 
 (global-set-key (kbd "C-c o") 'toggle-buffer)
-(global-set-key (kbd "C-c i") 'indent-buffer)
 
 (global-set-key (kbd "C-x p")
                 (lambda ()
