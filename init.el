@@ -5,7 +5,7 @@
 (add-to-list 'load-path "~/.emacs.d/cedet")
 (add-to-list 'load-path "~/.emacs.d/ecb")
 (add-to-list 'load-path "~/.emacs.d/magit")
-(add-to-list 'load-path "~/.emacs.d/js2-mode")
+;; (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/mozrepl")
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
@@ -408,51 +408,65 @@
 ;; ********************************************************************************
 ;; JS2 Mode
 ;;
-(eval-when-compile (require 'js2-mode))
+;; (eval-when-compile (require 'js2-mode))
 
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+;; (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
-(setq js2-mode-dev-mode-p t)
-(setq js2-mode-must-byte-compile nil)
+;; (setq js2-mode-dev-mode-p t)
+;; (setq js2-mode-must-byte-compile nil)
 
-(defun js2-mode-on-init ()
+;; (defun js2-mode-on-init ()
+;;   (make-local-variable 'tags-file-name)
+;;   (linum-mode t)
+
+;;   (setq js2-allow-keywords-as-property-names nil)
+;;   (setq js2-allow-rhino-new-expr-initializer t)
+;;   (setq js2-basic-offset 4)
+;;   (setq js2-bounce-indent-flag nil)
+;;   (setq js2-dynamic-idle-timer-adjust 2)
+;;   (setq js2-highlight-level 4)
+;;   (setq js2-idle-timer-delay 5)
+;;   (setq js2-include-browser-externs t)
+;;   (setq js2-include-rhino-externs t)
+;;   (setq js2-language-version 150)
+;;   (setq js2-missing-semi-one-line-override t)
+;;   (setq js2-mode-show-overlay nil)
+;;   (setq js2-mode-show-strict-warnings t)
+;;   (setq js2-skip-preprocessor-directives t)
+;;   (setq js2-strict-cond-assign-warning t)
+;;   (setq js2-strict-inconsistent-return-warning nil)
+;;   (setq js2-strict-missing-semi-warning t)
+;;   (setq js2-strict-trailing-comma-warning t)
+;;   (setq js2-strict-var-hides-function-arg-warning t)
+;;   (setq js2-strict-var-redeclaration-warning t)
+;;   (setq indent-tabs-mode nil)
+
+;;   (setq ac-sources '(ac-source-yasnippet
+;;                      ac-source-semantic
+;;                      ac-source-words-in-buffer
+;;                      ac-source-words-in-same-mode-buffers))
+
+;;   (add-hook 'before-save-hook 'untabify-buffer)
+  
+;;   ;; (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
+;;   )
+
+;; (add-hook 'js2-mode-hook 'js2-mode-on-init)
+
+(defun js-mode-on-init ()
   (make-local-variable 'tags-file-name)
   (linum-mode t)
-
-  (setq js2-allow-keywords-as-property-names nil)
-  (setq js2-allow-rhino-new-expr-initializer t)
-  (setq js2-basic-offset 4)
-  (setq js2-bounce-indent-flag nil)
-  (setq js2-dynamic-idle-timer-adjust 2)
-  (setq js2-highlight-level 4)
-  (setq js2-idle-timer-delay 5)
-  (setq js2-include-browser-externs t)
-  (setq js2-include-rhino-externs t)
-  (setq js2-language-version 150)
-  (setq js2-missing-semi-one-line-override t)
-  (setq js2-mode-show-overlay nil)
-  (setq js2-mode-show-strict-warnings t)
-  (setq js2-skip-preprocessor-directives t)
-  (setq js2-strict-cond-assign-warning t)
-  (setq js2-strict-inconsistent-return-warning nil)
-  (setq js2-strict-missing-semi-warning t)
-  (setq js2-strict-trailing-comma-warning t)
-  (setq js2-strict-var-hides-function-arg-warning t)
-  (setq js2-strict-var-redeclaration-warning t)
-  (setq indent-tabs-mode nil)
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
                      ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers))
 
-  (add-hook 'before-save-hook 'untabify-buffer)
-  
-  ;; (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  )
+  (add-hook 'before-save-hook 'untabify-buffer))
 
-(add-hook 'js2-mode-hook 'js2-mode-on-init)
+(add-hook 'js-mode-hook 'js-mode-on-init)
 
+(add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
 
 
 ;; ********************************************************************************
