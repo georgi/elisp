@@ -718,7 +718,7 @@
 (global-set-key (kbd "M-5") 'ecb-goto-window-compilation)
 (global-set-key (kbd "M-0") 'tree-buffer-show-node-menu-keyboard)
 (global-set-key (kbd "M-e") 'ecb-goto-window-edit1)
-(global-set-key (kbd "M-w") 'ecb-toggle-ecb-windows)
+(global-set-key (kbd "M-w") 'ecb-toggle-layout)
 (global-set-key (kbd "M-c") 'ecb-toggle-compile-window)
 
 (require 'multi-term)

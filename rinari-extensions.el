@@ -9,11 +9,11 @@
   (or dir (setq dir default-directory))
   (if dir
       (if (file-exists-p (concat dir "config/environment.rb"))
-	  dir
-	(let* ((dir (directory-file-name dir))
-	       (parent (file-name-directory dir)))
-	  (if (and parent (not (equal parent dir)))
-	    (rinari-root parent))))))
+          dir
+        (let* ((dir (directory-file-name dir))
+               (parent (file-name-directory dir)))
+          (if (and parent (not (equal parent dir)))
+            (rinari-root parent))))))
 
 
 ;; modified to not auto generate model
@@ -38,18 +38,18 @@
   (or (rinari-find-controller)
       (string-match "_controller" buffer-file-name)
       (let ((default-directory (concat (rinari-root) "app/controllers/")))
-	(rinari-find-file))))
+        (rinari-find-file))))
 
 (defun rinari-find-view-or-select()
   "Find view or select view file"
   (interactive)
   (or (rinari-find-view)
       (let ((default-directory (concat (rinari-root) "app/views/")))
-	(rinari-find-file))))
+        (rinari-find-file))))
 
 (defun rinari-run-script (script type)
   (let ((default-directory (or (rinari-root) default-directory))
-	(name (read-from-minibuffer (format "%s %s: " script type))))
+        (name (read-from-minibuffer (format "%s %s: " script type))))
     (shell-command (format "./script/%s %s %s" script type name) "*Rails-Command*")
     (rinari-open (intern (concat ":" type)) name)))
 
@@ -65,15 +65,24 @@ otherwise turn `rinari-minor-mode' off if it is on."
   (interactive)
   (let* ((root (rinari-root)) (r-tags-path (concat root rinari-tags-file-name)))
     (if root
-	(progn
-	  (setq toggle-mapping-style 'rspec)
-	  (setq toggle-mappings (toggle-style toggle-mapping-style))
-	  (setq toggle-which-function-command 'ruby-add-log-current-method)
-	  (setq toggle-method-format "def %s")
-	  (if (file-exists-p r-tags-path) (setq tags-file-name r-tags-path))
-	  (unless rinari-minor-mode (rinari-minor-mode t)))
+        (progn
+          (setq toggle-mapping-style 'rspec)
+          (setq toggle-mappings (toggle-style toggle-mapping-style))
+          (setq toggle-which-function-command 'ruby-add-log-current-method)
+          (setq toggle-method-format "def %s")
+          (if (file-exists-p r-tags-path) (setq tags-file-name r-tags-path))
+          (unless rinari-minor-mode (rinari-minor-mode t)))
       (if rinari-minor-mode (rinari-minor-mode)))))
 
+
+(defun rinari-rgrep (&optional arg)
+  "Search through the rails project for a string or `regexp'.
+With optional prefix argument just run `rgrep'."
+  (interactive "P")
+  (grep-compute-defaults)
+  (if arg (call-interactively 'rgrep)
+    (funcall 'rgrep (read-from-minibuffer "search for: ")
+             "*.rb *.rhtml *.yml *.erb *.liquid *.css *.js" (rinari-root))))
 
 
 (provide 'rinari-extensions)
