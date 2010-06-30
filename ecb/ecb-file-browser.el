@@ -101,14 +101,14 @@ is either
                    (set symbol value)
                    (if (and (boundp 'ecb-minor-mode)
                             ecb-minor-mode
-			    (functionp 'ecb-update-directories-buffer))
-		       (ecb-update-directories-buffer))))
+                            (functionp 'ecb-update-directories-buffer))
+                       (ecb-update-directories-buffer))))
   :type '(repeat (choice :tag "Display type"
                          :menu-tag "Display type"
-			 (directory :tag "Path")
-			 (list :tag "Path with alias"
-			       (directory :tag "Path")
-			       (string :tag "Alias")))))
+                         (directory :tag "Path")
+                         (list :tag "Path with alias"
+                               (directory :tag "Path")
+                               (string :tag "Alias")))))
 
 (defcustom ecb-add-path-for-not-matching-files '(t . nil)
   "*Add path of a file to `ecb-source-path' if not already contained.
@@ -170,11 +170,11 @@ layouts sources should be displayed in the directories window."
   :group 'ecb-directories
   :initialize 'custom-initialize-default
   :set (function (lambda (symbol value)
-		   (set symbol value)
-		   (if (and ecb-minor-mode
-			    (functionp 'ecb-set-selected-directory)
+                   (set symbol value)
+                   (if (and ecb-minor-mode
+                            (functionp 'ecb-set-selected-directory)
                             ecb-path-selected-directory)
-		       (ecb-set-selected-directory ecb-path-selected-directory t))))
+                       (ecb-set-selected-directory ecb-path-selected-directory t))))
   :type '(radio (const :tag "Always" :value always)
                 (const :tag "Never" :value never)
                 (repeat :tag "With these layouts"
@@ -805,7 +805,7 @@ The default value is 'directory."
   :group 'ecb-history
   :initialize 'custom-initialize-default
   :set (function (lambda (symbol value)
-		   (set symbol value)
+                   (set symbol value)
                    (when (and (boundp 'ecb-minor-mode)
                               ecb-minor-mode)
                      (ecb-exec-in-window ecb-history-buffer-name
@@ -833,7 +833,7 @@ as children-nodes, so the history looks like:
   :group 'ecb-history
   :initialize 'custom-initialize-default
   :set (function (lambda (symbol value)
-		   (set symbol value)
+                   (set symbol value)
                    (when (and (boundp 'ecb-minor-mode)
                               ecb-minor-mode)
                      (ecb-exec-in-window ecb-history-buffer-name
@@ -853,7 +853,7 @@ sorting applies to the sorting within each bucket."
   :group 'ecb-history
   :initialize 'custom-initialize-default
   :set (function (lambda (symbol value)
-		   (set symbol value)
+                   (set symbol value)
                    (when (and (boundp 'ecb-minor-mode)
                               ecb-minor-mode)
                      (ecb-exec-in-window ecb-history-buffer-name
@@ -871,7 +871,7 @@ See also `ecb-history-sort-method'."
   :group 'ecb-history
   :initialize 'custom-initialize-default
   :set (function (lambda (symbol value)
-		   (set symbol value)
+                   (set symbol value)
                    (when (and (boundp 'ecb-minor-mode)
                               ecb-minor-mode)
                      (ecb-exec-in-window ecb-history-buffer-name
@@ -2744,14 +2744,14 @@ Subnodes can be directories or sources."
 (defun ecb-get-source-paths-from-functions ()
   "Return a list of paths found by querying `ecb-source-path-functions'."
   (let ((func ecb-source-path-functions)
-	(paths nil)
-	(rpaths nil))
+        (paths nil)
+        (rpaths nil))
     (while func
       (setq paths (append paths (funcall (car func)))
-	    func (cdr func)))
+            func (cdr func)))
     (while paths
       (setq rpaths (cons (ecb-fix-filename (car paths)) rpaths)
-	    paths (cdr paths)))
+            paths (cdr paths)))
     rpaths))
 
 
@@ -3819,7 +3819,7 @@ is created."
 (defun ecb-delete-s (child children sources)
   (when children
     (if (eq child (car children))
-	(cdr sources)
+        (cdr sources)
       (cons (car sources) (ecb-delete-s child (cdr children) (cdr sources))))))
 
 
@@ -3932,7 +3932,7 @@ Directory- and sources nodes are handled appropriately."
       (ecb-undo-maximize-ecb-buffer t)))
   (ecb-set-selected-source (tree-node->data node)
                            (ecb-combine-ecb-button/edit-win-nr ecb-button edit-window-nr)
-			   shift-mode)
+                           shift-mode)
   )
 
 (defecb-tree-buffer-callback ecb-source-clicked ecb-sources-buffer-name select nil
@@ -3971,11 +3971,11 @@ can last a long time - depending of machine- and disk-performance."
   "Return a file-info string for a file in the ECB sources buffer"
   (let ((attrs (ecb-file-attributes file)))
     (format "%s %8s %4d %10d %s %s"
-	    (nth 8 attrs)
-	    (user-login-name (nth 2 attrs))
-	    (nth 3 attrs)
-	    (nth 7 attrs)
-	    (format-time-string "%Y/%m/%d %H:%M" (nth 5 attrs))
+            (nth 8 attrs)
+            (user-login-name (nth 2 attrs))
+            (nth 3 attrs)
+            (nth 7 attrs)
+            (format-time-string "%Y/%m/%d %H:%M" (nth 5 attrs))
             (if (equal (cdr ecb-sources-show-node-info) 'file-info-full)
                 file
               (ecb-file-name-nondirectory file)))
@@ -4171,11 +4171,11 @@ the help-text should be printed here."
          (ecb-dired-directory "Open in Dired")
          (ecb-dired-directory-other-window "Open in Dired other window"))
         ("---")
-	(ecb-create-source "Create Sourcefile")
-	(ecb-create-directory "Create Child Directory")
-	(ecb-delete-directory "Delete Directory")
+        (ecb-create-source "Create Sourcefile")
+        (ecb-create-directory "Create Child Directory")
+        (ecb-delete-directory "Delete Directory")
         ("---")
-	(ecb-add-source-path-node "Add Source Path")))
+        (ecb-add-source-path-node "Add Source Path")))
 
 
 (defvar ecb-directories-menu nil
@@ -4360,10 +4360,11 @@ edit-windows. Otherwise return nil."
          (ecb-popup-sources-filter-by-regexp "Filter by a regexp")
          (ecb-popup-sources-filter-none "No filter"))
         ("---")        
-	(ecb-create-source "Create Sourcefile")
+        (ecb-create-source "Create Sourcefile")
         (ecb-delete-source "Delete Sourcefile")
         ("---")
         (ecb-maximize-ecb-window-menu-wrapper "Maximize window")))
+
 
 
 (defvar ecb-sources-menu-title-creator

@@ -76,7 +76,58 @@
 (setq ecb-compile-window-height 30)
 (setq ecb-options-version "2.40")
 (setq ecb-tip-of-the-day nil)
-(setq ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
+(setq ecb-toggle-layout-sequence '("top1" "left2" "leftright2"))
+
+;; (setq ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
+
+(setq ecb-common-directories-menu
+      '((ecb-grep-directory "Grep Directory")
+        (ecb-grep-find-directory "Grep Directory recursive")
+        (ecb-dired-directory "Open in Dired")
+        (ecb-dired-directory-other-window "Open in Dired other window")
+        ("---")
+        (ecb-create-source "Create Sourcefile")
+        (ecb-create-directory "Create Child Directory")
+        (ecb-delete-directory "Delete Directory")
+        ("---")
+        (ecb-add-source-path-node "Add Source Path")))
+
+(setq ecb-directories-menu ecb-common-directories-menu)
+
+
+(setq ecb-history-menu
+      (append
+      '((ecb-grep-directory "Grep Directory")
+        (ecb-grep-find-directory "Grep Directory recursive")
+        (ecb-dired-directory "Open in Dired")
+        (ecb-dired-directory-other-window "Open in Dired other window")
+        ("---")
+         ("Filter"
+          (ecb-popup-history-filter-by-ext "Filter by extension")
+          (ecb-popup-history-filter-by-regexp "Filter by regexp")
+          (ecb-popup-history-filter-all-existing "No filter"))
+         ("---")
+         (ecb-history-kill-buffer "Kill Buffer")
+         (ecb-delete-source "Delete Sourcefile"))
+       ecb-history-common-menu))
+
+
+(setq ecb-sources-menu
+      '((ecb-grep-directory "Grep Directory")
+        (ecb-grep-find-directory "Grep Directory recursive")
+        (ecb-dired-directory "Open in Dired")
+        (ecb-dired-directory-other-window "Open in Dired other window")
+        ("Filter"
+         (ecb-popup-sources-filter-by-ext "Filter by extension")
+         (ecb-popup-sources-filter-by-regexp "Filter by a regexp")
+         (ecb-popup-sources-filter-none "No filter"))
+        ("---")        
+        (ecb-create-source "Create Sourcefile")
+        (ecb-delete-source "Delete Sourcefile")
+        ("---")
+        (ecb-maximize-ecb-window-menu-wrapper "Maximize window")))
+
+
 
 
 (require 'browse-kill-ring)
@@ -711,13 +762,20 @@
 (global-set-key (kbd "C-c u") 'view-url)
 (global-set-key (kbd "C-c b") 'ibuffer)
 
+(defun toggle-ecb ()
+  (interactive)
+  (if ecb-minor-mode
+      (ecb-minor-mode 0)
+      (ecb-minor-mode 1)))
+
 (global-set-key (kbd "M-1") 'ecb-goto-window-directories)
 (global-set-key (kbd "M-2") 'ecb-goto-window-sources)
-(global-set-key (kbd "M-3") 'ecb-goto-window-methods)
-(global-set-key (kbd "M-4") 'ecb-goto-window-history)
-(global-set-key (kbd "M-5") 'ecb-goto-window-compilation)
+(global-set-key (kbd "M-3") 'ecb-goto-window-edit1)
+(global-set-key (kbd "M-4") 'ecb-goto-window-methods)
+(global-set-key (kbd "M-5") 'ecb-goto-window-history)
+(global-set-key (kbd "M-6") 'ecb-goto-window-compilation)
 (global-set-key (kbd "M-0") 'tree-buffer-show-node-menu-keyboard)
-(global-set-key (kbd "M-e") 'ecb-goto-window-edit1)
+(global-set-key (kbd "M-e") 'toggle-ecb)
 (global-set-key (kbd "M-w") 'ecb-toggle-layout)
 (global-set-key (kbd "M-c") 'ecb-toggle-compile-window)
 
@@ -755,10 +813,10 @@
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 
-(global-set-key (kbd "<C-S-iso-lefttab>") 'tabbar-backward-tab)
-(global-set-key (kbd "<C-tab>") 'tabbar-forward-tab)
-(global-set-key (kbd "<C-prior>") 'tabbar-backward-tab)
-(global-set-key (kbd "<C-next>") 'tabbar-forward-tab)
+(global-set-key (kbd "<M-left>") 'tabbar-backward-tab)
+(global-set-key (kbd "<M-right>") 'tabbar-forward-tab)
+(global-set-key (kbd "<C-M-left>") 'tabbar-backward-group)
+(global-set-key (kbd "<C-M-right>") 'tabbar-forward-group)
 
 (require 'magit)
 (define-key magit-mode-map (kbd "M-1") nil)
