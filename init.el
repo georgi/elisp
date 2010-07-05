@@ -818,6 +818,11 @@
 (global-set-key (kbd "<M-up>") 'tabbar-backward-group)
 (global-set-key (kbd "<M-down>") 'tabbar-forward-group)
 
+(global-set-key (kbd "<C-left>") 'tabbar-backward-tab)
+(global-set-key (kbd "<C-right>") 'tabbar-forward-tab)
+(global-set-key (kbd "<C-up>") 'tabbar-backward-group)
+(global-set-key (kbd "<C-down>") 'tabbar-forward-group)
+
 (require 'magit)
 (define-key magit-mode-map (kbd "M-1") nil)
 (define-key magit-mode-map (kbd "M-2") nil)
