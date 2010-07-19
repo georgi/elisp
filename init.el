@@ -810,6 +810,7 @@
 (global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-k") 'kill-current-buffer)
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
+(global-set-key (kbd "<ESC C-j>") 'ido-switch-buffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 
