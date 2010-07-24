@@ -34,7 +34,7 @@
 (setq use-file-dialog t)
 (setq tags-revert-without-query t)
 (setq tab-width 4)
-(setq tooltip-delay 0)
+(setq tooltip-delay 10)
 
 ;; ********************************************************************************
 ;; CEDET.
