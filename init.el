@@ -34,7 +34,7 @@
 (setq use-file-dialog t)
 (setq tags-revert-without-query t)
 (setq tab-width 4)
-(setq tooltip-delay 0)
+(setq tooltip-delay 10)
 
 ;; ********************************************************************************
 ;; CEDET.
@@ -809,8 +809,8 @@
     ("M-r" . term-send-reverse-search-history)))
 
 (global-set-key (kbd "M-t") 'multi-term)
-(global-set-key (kbd "<M-right>") 'multi-term-next)
-(global-set-key (kbd "<M-left>") 'multi-term-prev)
+;; (global-set-key (kbd "<M-right>") 'multi-term-next)
+;; (global-set-key (kbd "<M-left>") 'multi-term-prev)
 
 (global-set-key (kbd "M-/") 'tags-search)
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
@@ -825,6 +825,7 @@
 (global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-k") 'kill-current-buffer)
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
+(global-set-key (kbd "ESC C-j") 'ido-switch-buffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 
