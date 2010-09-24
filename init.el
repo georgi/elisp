@@ -58,6 +58,7 @@
 
 
 (require 'auto-complete-config)
+(require 'auto-complete-yasnippet)
 (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
 (ac-config-default)
 (ac-set-trigger-key "TAB")
@@ -73,7 +74,7 @@
 (setq ecb-add-path-for-not-matching-files (quote (nil)))
 (setq ecb-auto-activate nil)
 (setq ecb-clear-caches-before-activate t)
-(setq ecb-compile-window-height 30)
+(setq ecb-compile-window-height 20)
 (setq ecb-options-version "2.40")
 (setq ecb-tip-of-the-day nil)
 (setq ecb-toggle-layout-sequence '("top1" "left2" "leftright2"))
@@ -353,6 +354,17 @@
 (require 'rinari)
 (require 'rinari-extensions)
 (require 'rspec-mode)
+  
+(defun rspec-verify ()
+  "Runs the specified spec, or the spec file for the current buffer."
+  (interactive)
+  (rspec-run-single-file (rspec-spec-file-for (buffer-file-name)) "--backtrace" "--format specdoc" "--reverse"))
+
+(defun rspec-verify-single ()
+  "Runs the specified example at the point of the current buffer."
+  (interactive)
+  (rspec-run-single-file (rspec-spec-file-for (buffer-file-name)) "--backtrace" "--format specdoc" "--reverse" (concat "--line " (number-to-string (line-number-at-pos)))))
+
 
 (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
@@ -388,6 +400,9 @@
 
   (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
   (define-key ruby-mode-map (kbd "C-c C-v") 'rspec-verify)
+  (define-key ruby-mode-map (kbd "C-c C-s") 'rspec-verify-single)
+  (define-key ruby-mode-map (kbd "C-c C-a") 'rspec-verify-single)
+  (define-key ruby-mode-map (kbd "C-c C-d") 'rspec-toggle-example-pendingness)
   (define-key ruby-mode-map (kbd "C-c C-t") 'rspec-toggle-spec-and-target)
   )
 
