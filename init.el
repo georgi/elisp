@@ -354,17 +354,6 @@
 (require 'rinari)
 (require 'rinari-extensions)
 (require 'rspec-mode)
-  
-(defun rspec-verify ()
-  "Runs the specified spec, or the spec file for the current buffer."
-  (interactive)
-  (rspec-run-single-file (rspec-spec-file-for (buffer-file-name)) "--backtrace" "--format specdoc" "--reverse"))
-
-(defun rspec-verify-single ()
-  "Runs the specified example at the point of the current buffer."
-  (interactive)
-  (rspec-run-single-file (rspec-spec-file-for (buffer-file-name)) "--backtrace" "--format specdoc" "--reverse" (concat "--line " (number-to-string (line-number-at-pos)))))
-
 
 (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
