@@ -64,6 +64,7 @@
 (ac-set-trigger-key "TAB")
 (setq ac-auto-start nil)
 
+
 ;; (setq rsense-home (expand-file-name "~/rsense-0.2"))
 ;; (add-to-list 'load-path (concat rsense-home "/etc"))
 ;; (require 'rsense)
@@ -382,10 +383,7 @@
   (add-hook 'before-save-hook 'untabify-buffer)
 
   (setq ac-sources '(ac-source-yasnippet
-                     ;; ac-source-rsense-method
-                     ;; ac-source-rsense-constant
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
+                     ac-source-words-in-buffer))
 
   (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
   (define-key ruby-mode-map (kbd "C-c C-v") 'rspec-verify)
@@ -414,12 +412,6 @@
   (setq indent-tabs-mode nil)
   (make-local-variable 'tags-file-name)
 
-  (setq ac-sources '(ac-source-yasnippet
-                     ;; ac-source-rsense-method
-                     ;; ac-source-rsense-constant
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
-
   (set-face-attribute 'erb-delim-face nil :background "#fff")
   (set-face-attribute 'erb-face nil :background "#fff")
   (set-face-attribute 'erb-out-delim-face nil :foreground "#933")
@@ -432,13 +424,6 @@
 ;; IRB Mode
 ;;
 (defun inferior-ruby-mode-on-init ()
-
-  (setq ac-sources '(ac-source-yasnippet
-                     ac-source-rsense-method
-                     ac-source-rsense-constant
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
-
   )
 
 (add-hook 'inferior-ruby-mode-hook 'inferior-ruby-mode-on-init)
@@ -496,11 +481,6 @@
 ;;   (setq js2-strict-var-redeclaration-warning t)
 ;;   (setq indent-tabs-mode nil)
 
-;;   (setq ac-sources '(ac-source-yasnippet
-;;                      ac-source-semantic
-;;                      ac-source-words-in-buffer
-;;                      ac-source-words-in-same-mode-buffers))
-
 ;;   (add-hook 'before-save-hook 'untabify-buffer)
   
 ;;   ;; (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
@@ -514,8 +494,7 @@
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
+                     ac-source-words-in-buffer))
 
   (add-hook 'before-save-hook 'untabify-buffer))
 
@@ -534,8 +513,7 @@
                      ac-source-functions
                      ac-source-symbols
                      ac-source-variables
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
+                     ac-source-words-in-buffer))
 
   )
 
@@ -552,11 +530,6 @@
 (defun html-mode-on-init ()
   (linum-mode t)
   (add-hook 'before-save-hook 'untabify-buffer)
-
-  (setq ac-sources '(ac-source-yasnippet
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
-
   )
 
 (add-hook 'html-mode-hook 'html-mode-on-init)
@@ -574,10 +547,6 @@
 
 (defun css-mode-on-init ()
   (add-hook 'before-save-hook 'untabify-buffer)
-
-  (setq ac-sources '(ac-source-yasnippet
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
 
   (setq cssm-indent-level 4)
   (setq cssm-indent-function #'cssm-c-style-indenter)
@@ -597,8 +566,7 @@
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
+                     ac-source-words-in-buffer))
 
   )
 
@@ -623,8 +591,7 @@
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
+                     ac-source-words-in-buffer))
 
   )
 
@@ -814,6 +781,7 @@
 (global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-k") 'kill-current-buffer)
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
+(global-set-key (kbd "<C-M-return>") 'recentf-ido-find-file)
 (global-set-key (kbd "ESC C-j") 'ido-switch-buffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
