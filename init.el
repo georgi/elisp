@@ -73,7 +73,7 @@
 (setq ecb-add-path-for-not-matching-files (quote (nil)))
 (setq ecb-auto-activate nil)
 (setq ecb-clear-caches-before-activate t)
-(setq ecb-compile-window-height 30)
+(setq ecb-compile-window-height 20)
 (setq ecb-options-version "2.40")
 (setq ecb-tip-of-the-day nil)
 (setq ecb-toggle-layout-sequence '("top1" "left2" "leftright2"))
@@ -180,7 +180,6 @@
 (mouse-wheel-mode t)
 (partial-completion-mode nil)
 (tool-bar-mode nil)
-(menu-bar-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
 (recentf-mode)
@@ -188,8 +187,12 @@
 (if window-system
     (global-hl-line-mode t))
 
+(if window-system
+    (menu-bar-mode t)
+  (menu-bar-mode nil))
+
 (if (fboundp 'set-scroll-bar-mode)
-    (set-scroll-bar-mode 'right))
+    (set-scroll-bar-mode nil))
 
 (setq scroll-conservatively 5)
 (setq scroll-step 1)
@@ -230,8 +233,24 @@
 (load "find-tags-file")
 (load "move-lines")
 
-(if window-system
-    (load "theme"))
+;; (if window-system
+;;     (load "theme"))
+
+(require 'color-theme)
+
+(set-face-attribute 'tabbar-default nil
+                    :height 1.0
+                    :inherit 'default)
+
+(set-face-attribute 'tabbar-selected nil
+                    :weight 'bold
+                    :box nil)
+
+(set-face-attribute 'tabbar-unselected nil
+                    :box nil)
+
+(set-face-attribute 'tabbar-button nil
+                    :box '(:line-width 1 :color "#fff"))
 
 
 
@@ -507,6 +526,7 @@
 (defun js-mode-on-init ()
   (make-local-variable 'tags-file-name)
   (linum-mode t)
+  (auto-complete-mode t)
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
@@ -793,7 +813,10 @@
     ("<M-backspace>" . term-send-backward-kill-word)
     ("M-r" . term-send-reverse-search-history)))
 
-(global-set-key (kbd "M-t") 'multi-term)
+(global-set-key (kbd "M-t") 'multi-term-next)
+(global-set-key (kbd "M-T") 'multi-term)
+
+
 ;; (global-set-key (kbd "<M-right>") 'multi-term-next)
 ;; (global-set-key (kbd "<M-left>") 'multi-term-prev)
 
@@ -871,7 +894,7 @@
                   (comint-send-string (inferior-moz-process)
                                       "BrowserReload();")))
 
-(defvar current-font-size 140)
+(defvar current-font-size 120)
 
 (defun decrease-font-size()
   (interactive)
