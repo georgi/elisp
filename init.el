@@ -431,9 +431,9 @@
   (setq indent-tabs-mode nil)
   (make-local-variable 'tags-file-name)
 
-  (set-face-attribute 'erb-delim-face nil :background "#fff")
-  (set-face-attribute 'erb-face nil :background "#fff")
-  (set-face-attribute 'erb-out-delim-face nil :foreground "#933")
+  ;; (set-face-attribute 'erb-delim-face nil :background "#fff")
+  ;; (set-face-attribute 'erb-face nil :background "#fff")
+  ;; (set-face-attribute 'erb-out-delim-face nil :foreground "#933")
   )
 
 (add-hook 'rhtml-mode-hook 'rhtml-mode-on-init)
