@@ -36,20 +36,6 @@
 (setq tab-width 4)
 (setq tooltip-delay 10)
 
-;; ********************************************************************************
-;; CEDET.
-(load-file "~/.emacs.d/cedet/common/cedet.el")
-
-(global-ede-mode 1)
-
-;; ********************************************************************************
-;; Semantic
-(semantic-load-enable-minimum-features)
-;; (semantic-load-enable-code-helpers)
-;; (semantic-load-enable-gaudy-code-helpers)
-;; (semantic-load-enable-all-exuberent-ctags-support)
-
-
 (require 'yasnippet)
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/yasnippet/snippets")
@@ -58,77 +44,19 @@
 
 
 (require 'auto-complete-config)
+(require 'auto-complete-yasnippet)
 (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
 (ac-config-default)
 (ac-set-trigger-key "TAB")
 (setq ac-auto-start nil)
 
+
 ;; (setq rsense-home (expand-file-name "~/rsense-0.2"))
 ;; (add-to-list 'load-path (concat rsense-home "/etc"))
 ;; (require 'rsense)
 
-(require 'ecb)
-(setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
-(setq ecb-history-make-buckets 'mode)
-(setq ecb-add-path-for-not-matching-files (quote (nil)))
-(setq ecb-auto-activate nil)
-(setq ecb-clear-caches-before-activate t)
-(setq ecb-compile-window-height 20)
-(setq ecb-options-version "2.40")
-(setq ecb-tip-of-the-day nil)
-(setq ecb-toggle-layout-sequence '("top1" "left2" "leftright2"))
-
-;; (setq ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
-
-(setq ecb-common-directories-menu
-      '((ecb-grep-directory "Grep Directory")
-        (ecb-grep-find-directory "Grep Directory recursive")
-        (ecb-dired-directory "Open in Dired")
-        (ecb-dired-directory-other-window "Open in Dired other window")
-        ("---")
-        (ecb-create-source "Create Sourcefile")
-        (ecb-create-directory "Create Child Directory")
-        (ecb-delete-directory "Delete Directory")
-        ("---")
-        (ecb-add-source-path-node "Add Source Path")))
-
-(setq ecb-directories-menu ecb-common-directories-menu)
-
-
-(setq ecb-history-menu
-      (append
-      '((ecb-grep-directory "Grep Directory")
-        (ecb-grep-find-directory "Grep Directory recursive")
-        (ecb-dired-directory "Open in Dired")
-        (ecb-dired-directory-other-window "Open in Dired other window")
-        ("---")
-         ("Filter"
-          (ecb-popup-history-filter-by-ext "Filter by extension")
-          (ecb-popup-history-filter-by-regexp "Filter by regexp")
-          (ecb-popup-history-filter-all-existing "No filter"))
-         ("---")
-         (ecb-history-kill-buffer "Kill Buffer")
-         (ecb-delete-source "Delete Sourcefile"))
-       ecb-history-common-menu))
-
-
-(setq ecb-sources-menu
-      '((ecb-grep-directory "Grep Directory")
-        (ecb-grep-find-directory "Grep Directory recursive")
-        (ecb-dired-directory "Open in Dired")
-        (ecb-dired-directory-other-window "Open in Dired other window")
-        ("Filter"
-         (ecb-popup-sources-filter-by-ext "Filter by extension")
-         (ecb-popup-sources-filter-by-regexp "Filter by a regexp")
-         (ecb-popup-sources-filter-none "No filter"))
-        ("---")        
-        (ecb-create-source "Create Sourcefile")
-        (ecb-delete-source "Delete Sourcefile")
-        ("---")
-        (ecb-maximize-ecb-window-menu-wrapper "Maximize window")))
-
-
-
+(if (not (eq system-type 'windows-nt))
+    (require 'ecb-init))
 
 (require 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
@@ -192,7 +120,7 @@
   (menu-bar-mode nil))
 
 (if (fboundp 'set-scroll-bar-mode)
-    (set-scroll-bar-mode 'right))
+    (set-scroll-bar-mode nil))
 
 (setq scroll-conservatively 5)
 (setq scroll-step 1)
@@ -233,8 +161,24 @@
 (load "find-tags-file")
 (load "move-lines")
 
-(if window-system
-    (load "theme"))
+;; (if window-system
+;;     (load "theme"))
+
+(require 'color-theme)
+
+(set-face-attribute 'tabbar-default nil
+                    :height 1.0
+                    :inherit 'default)
+
+(set-face-attribute 'tabbar-selected nil
+                    :weight 'bold
+                    :box nil)
+
+(set-face-attribute 'tabbar-unselected nil
+                    :box nil)
+
+(set-face-attribute 'tabbar-button nil
+                    :box '(:line-width 1 :color "#fff"))
 
 
 
@@ -384,13 +328,13 @@
   (add-hook 'before-save-hook 'untabify-buffer)
 
   (setq ac-sources '(ac-source-yasnippet
-                     ;; ac-source-rsense-method
-                     ;; ac-source-rsense-constant
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
+                     ac-source-words-in-buffer))
 
   (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
   (define-key ruby-mode-map (kbd "C-c C-v") 'rspec-verify)
+  (define-key ruby-mode-map (kbd "C-c C-s") 'rspec-verify-single)
+  (define-key ruby-mode-map (kbd "C-c C-a") 'rspec-verify-single)
+  (define-key ruby-mode-map (kbd "C-c C-d") 'rspec-toggle-example-pendingness)
   (define-key ruby-mode-map (kbd "C-c C-t") 'rspec-toggle-spec-and-target)
   )
 
@@ -413,15 +357,9 @@
   (setq indent-tabs-mode nil)
   (make-local-variable 'tags-file-name)
 
-  (setq ac-sources '(ac-source-yasnippet
-                     ;; ac-source-rsense-method
-                     ;; ac-source-rsense-constant
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
-
-  (set-face-attribute 'erb-delim-face nil :background "#fff")
-  (set-face-attribute 'erb-face nil :background "#fff")
-  (set-face-attribute 'erb-out-delim-face nil :foreground "#933")
+  ;; (set-face-attribute 'erb-delim-face nil :background "#fff")
+  ;; (set-face-attribute 'erb-face nil :background "#fff")
+  ;; (set-face-attribute 'erb-out-delim-face nil :foreground "#933")
   )
 
 (add-hook 'rhtml-mode-hook 'rhtml-mode-on-init)
@@ -431,13 +369,6 @@
 ;; IRB Mode
 ;;
 (defun inferior-ruby-mode-on-init ()
-
-  (setq ac-sources '(ac-source-yasnippet
-                     ac-source-rsense-method
-                     ac-source-rsense-constant
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
-
   )
 
 (add-hook 'inferior-ruby-mode-hook 'inferior-ruby-mode-on-init)
@@ -495,11 +426,6 @@
 ;;   (setq js2-strict-var-redeclaration-warning t)
 ;;   (setq indent-tabs-mode nil)
 
-;;   (setq ac-sources '(ac-source-yasnippet
-;;                      ac-source-semantic
-;;                      ac-source-words-in-buffer
-;;                      ac-source-words-in-same-mode-buffers))
-
 ;;   (add-hook 'before-save-hook 'untabify-buffer)
   
 ;;   ;; (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
@@ -514,8 +440,7 @@
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
+                     ac-source-words-in-buffer))
 
   (add-hook 'before-save-hook 'untabify-buffer))
 
@@ -534,8 +459,7 @@
                      ac-source-functions
                      ac-source-symbols
                      ac-source-variables
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
+                     ac-source-words-in-buffer))
 
   )
 
@@ -552,11 +476,6 @@
 (defun html-mode-on-init ()
   (linum-mode t)
   (add-hook 'before-save-hook 'untabify-buffer)
-
-  (setq ac-sources '(ac-source-yasnippet
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
-
   )
 
 (add-hook 'html-mode-hook 'html-mode-on-init)
@@ -574,10 +493,6 @@
 
 (defun css-mode-on-init ()
   (add-hook 'before-save-hook 'untabify-buffer)
-
-  (setq ac-sources '(ac-source-yasnippet
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
 
   (setq cssm-indent-level 4)
   (setq cssm-indent-function #'cssm-c-style-indenter)
@@ -597,8 +512,7 @@
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
+                     ac-source-words-in-buffer))
 
   )
 
@@ -623,8 +537,7 @@
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
+                     ac-source-words-in-buffer))
 
   )
 
@@ -797,7 +710,10 @@
     ("<M-backspace>" . term-send-backward-kill-word)
     ("M-r" . term-send-reverse-search-history)))
 
-(global-set-key (kbd "M-t") 'multi-term)
+(global-set-key (kbd "M-t") 'multi-term-next)
+(global-set-key (kbd "M-T") 'multi-term)
+
+
 ;; (global-set-key (kbd "<M-right>") 'multi-term-next)
 ;; (global-set-key (kbd "<M-left>") 'multi-term-prev)
 
@@ -814,6 +730,7 @@
 (global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-k") 'kill-current-buffer)
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
+(global-set-key (kbd "<C-M-return>") 'recentf-ido-find-file)
 (global-set-key (kbd "ESC C-j") 'ido-switch-buffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
@@ -892,3 +809,13 @@
 (global-set-key (kbd "C-=") 'increase-font-size)
 
 (set-face-attribute 'default nil :height current-font-size)
+
+(require 'server)
+
+(when (and (= emacs-major-version 23)
+           (= emacs-minor-version 1)
+           (equal window-system 'w32))
+  (defun server-ensure-safe-dir (dir) "Noop" t)) ; Suppress error "directory
+                                                 ; ~/.emacs.d/server is unsafe"
+                                                 ; on windows.
+(server-start)
