@@ -73,7 +73,7 @@
 (setq ecb-add-path-for-not-matching-files (quote (nil)))
 (setq ecb-auto-activate nil)
 (setq ecb-clear-caches-before-activate t)
-(setq ecb-compile-window-height 30)
+(setq ecb-compile-window-height 20)
 (setq ecb-options-version "2.40")
 (setq ecb-tip-of-the-day nil)
 (setq ecb-toggle-layout-sequence '("top1" "left2" "leftright2"))
@@ -180,13 +180,16 @@
 (mouse-wheel-mode t)
 (partial-completion-mode nil)
 (tool-bar-mode nil)
-(menu-bar-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
 (recentf-mode)
 
 (if window-system
     (global-hl-line-mode t))
+
+(if window-system
+    (menu-bar-mode t)
+  (menu-bar-mode nil))
 
 (if (fboundp 'set-scroll-bar-mode)
     (set-scroll-bar-mode 'right))
@@ -507,6 +510,7 @@
 (defun js-mode-on-init ()
   (make-local-variable 'tags-file-name)
   (linum-mode t)
+  (auto-complete-mode t)
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
@@ -871,7 +875,7 @@
                   (comint-send-string (inferior-moz-process)
                                       "BrowserReload();")))
 
-(defvar current-font-size 140)
+(defvar current-font-size 120)
 
 (defun decrease-font-size()
   (interactive)
