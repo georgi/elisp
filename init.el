@@ -318,6 +318,7 @@
   (rinari-launch)
   (linum-mode t)
   (setq indent-tabs-mode nil)  
+  (setq ruby-deep-indent-paren nil)
 
   (make-local-variable 'tags-file-name)
 
