@@ -163,11 +163,16 @@
     '("Python"))
    ((eq major-mode 'dired-mode)
     '("Dired"))
-   ((eq major-mode 'dired-mode)
-    '("Dired"))
    (t
     '("Other"))
    ))
+
+(setq tabbar-buffer-list-function
+        (lambda ()
+          (remove-if
+           (lambda(buffer)
+             (find (aref (buffer-name buffer) 0) " *"))
+           (buffer-list))))
 
 (setq tabbar-buffer-groups-function 'tabbar-buffer-groups)
 ;; ********************************************************************************
