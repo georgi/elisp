@@ -157,6 +157,8 @@
     '("Javascript"))
    ((eq major-mode 'html-mode)
     '("HTML"))
+   ((eq major-mode 'rhtml-mode)
+    '("RHTML"))
    ((eq major-mode 'python-mode)
     '("Python"))
    ((eq major-mode 'dired-mode)
