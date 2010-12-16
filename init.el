@@ -329,6 +329,7 @@
 (require 'rinari-extensions)
 (require 'rspec-mode)
 
+(setq ruby-deep-indent-paren nil)
 (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
 ;; (setq ruby-deep-indent-paren t)
