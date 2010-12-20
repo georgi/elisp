@@ -145,8 +145,36 @@
 
 (remove-hook 'kill-buffer-hook 'tabbar-buffer-track-killed)
 
+(defun tabbar-buffer-groups ()
+  "Return the list of group names BUFFER belongs to.
+ Return only one group for each buffer."
+  (cond
+   ((eq major-mode 'ruby-mode)
+    '("Ruby"))
+   ((eq major-mode 'css-mode)
+    '("CSS"))
+   ((eq major-mode 'javascript-mode)
+    '("Javascript"))
+   ((eq major-mode 'html-mode)
+    '("HTML"))
+   ((eq major-mode 'rhtml-mode)
+    '("RHTML"))
+   ((eq major-mode 'python-mode)
+    '("Python"))
+   ((eq major-mode 'dired-mode)
+    '("Dired"))
+   (t
+    '("Other"))
+   ))
 
+(setq tabbar-buffer-list-function
+        (lambda ()
+          (remove-if
+           (lambda(buffer)
+             (find (aref (buffer-name buffer) 0) " *"))
+           (buffer-list))))
 
+(setq tabbar-buffer-groups-function 'tabbar-buffer-groups)
 ;; ********************************************************************************
 ;; Load my own elisp stuff
 ;;
@@ -301,6 +329,7 @@
 (require 'rinari-extensions)
 (require 'rspec-mode)
 
+(setq ruby-deep-indent-paren nil)
 (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
 ;; (setq ruby-deep-indent-paren t)
@@ -428,7 +457,7 @@
 ;;   (setq indent-tabs-mode nil)
 
 ;;   (add-hook 'before-save-hook 'untabify-buffer)
-  
+
 ;;   ;; (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
 ;;   )
 
@@ -684,7 +713,7 @@
   (interactive)
   (if ecb-minor-mode
       (ecb-minor-mode 0)
-      (ecb-minor-mode 1)))
+    (ecb-minor-mode 1)))
 
 (global-set-key (kbd "M-1") 'ecb-goto-window-directories)
 (global-set-key (kbd "M-2") 'ecb-goto-window-sources)
@@ -700,16 +729,16 @@
 (require 'multi-term)
 
 (setq term-bind-key-alist
-  '(
-    ("C-c C-c" . term-interrupt-subjob)
-    ("C-s" . isearch-forward)
-    ("C-r" . isearch-backward)
-    ("C-m" . term-send-raw)
-    ("<C-right>" . term-send-forward-word)
-    ("<C-right>" . term-send-backward-word)
-    ("<C-backspace>" . term-send-backward-kill-word)
-    ("<M-backspace>" . term-send-backward-kill-word)
-    ("M-r" . term-send-reverse-search-history)))
+      '(
+        ("C-c C-c" . term-interrupt-subjob)
+        ("C-s" . isearch-forward)
+        ("C-r" . isearch-backward)
+        ("C-m" . term-send-raw)
+        ("<C-right>" . term-send-forward-word)
+        ("<C-right>" . term-send-backward-word)
+        ("<C-backspace>" . term-send-backward-kill-word)
+        ("<M-backspace>" . term-send-backward-kill-word)
+        ("M-r" . term-send-reverse-search-history)))
 
 (global-set-key (kbd "M-t") 'multi-term-next)
 (global-set-key (kbd "M-T") 'multi-term)
@@ -817,6 +846,6 @@
            (= emacs-minor-version 1)
            (equal window-system 'w32))
   (defun server-ensure-safe-dir (dir) "Noop" t)) ; Suppress error "directory
-                                                 ; ~/.emacs.d/server is unsafe"
-                                                 ; on windows.
+                                        ; ~/.emacs.d/server is unsafe"
+                                        ; on windows.
 (server-start)
