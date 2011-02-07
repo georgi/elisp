@@ -93,7 +93,7 @@
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere nil)
 (setq ido-enable-tramp-completion nil)
-(setq ido-separator "   ")
+(setq ido-separator "  ")
 (setq ido-use-filename-at-point (quote guess))
 
 (load "ido-goto-symbol")
@@ -848,4 +848,47 @@
   (defun server-ensure-safe-dir (dir) "Noop" t)) ; Suppress error "directory
                                         ; ~/.emacs.d/server is unsafe"
                                         ; on windows.
+
+
+; hide mode line, from 
+; http://dse.livejournal.com/66834.html / http://webonastick.com
+(autoload 'hide-mode-line "hide-mode-line" nil t)
+
+(require 'w32-fullscreen)
+(setq w32-fullscreen-toggletitle-cmd "~/.emacs.d/w32toggletitle.exe")
+
+; simple darkroom with fullscreen, 
+; fringe, mode-line, menu-bar and scroll-bar hiding.
+(defvar darkroom-enabled nil)
+
+(defun toggle-darkroom ()
+  (interactive)
+  (if (not darkroom-enabled)
+      (setq darkroom-enabled t)
+    (setq darkroom-enabled nil))
+  (toggle-fullscreen)
+  (hide-mode-line)
+  (if darkroom-enabled
+      (progn
+	;; (w32-fullscreen-on)
+	(w32-fullscreen-toggle-titlebar)
+        (fringe-mode 'both)
+        (menu-bar-mode -1)
+	(tabbar-mode -1)
+        (scroll-bar-mode -1)
+        ;; (set-fringe-mode 80)
+	)
+    (progn 
+      (w32-fullscreen-toggle-titlebar)
+      (fringe-mode 'default)
+      (menu-bar-mode)
+      (tabbar-mode)
+      (setq tabbar-tab-label-function 'tab-label)
+      (scroll-bar-mode t)
+      ;; (set-fringe-mode 8)
+      )))
+
+; Activate with F11 - enhanced fullscreen :)
+(global-set-key [f11] 'toggle-darkroom)
+
 (server-start)
