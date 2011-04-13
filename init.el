@@ -739,8 +739,10 @@
         ("<M-backspace>" . term-send-backward-kill-word)
         ("M-r" . term-send-reverse-search-history)))
 
-(global-set-key (kbd "M-t") 'multi-term-next)
-(global-set-key (kbd "M-T") 'multi-term)
+;; (global-set-key (kbd "M-t") 'multi-term-next)
+;; (global-set-key (kbd "M-T") 'multi-term)
+
+(global-set-key (kbd "M-t") 'eshell)
 
 
 ;; (global-set-key (kbd "<M-right>") 'multi-term-next)
@@ -869,14 +871,14 @@
   (hide-mode-line)
   (if darkroom-enabled
       (progn
-	;; (w32-fullscreen-on)
-	(w32-fullscreen-toggle-titlebar)
+        ;; (w32-fullscreen-on)
+        (w32-fullscreen-toggle-titlebar)
         (fringe-mode 'both)
         (menu-bar-mode -1)
-	(tabbar-mode -1)
+        (tabbar-mode -1)
         (scroll-bar-mode -1)
         ;; (set-fringe-mode 80)
-	)
+        )
     (progn 
       (w32-fullscreen-toggle-titlebar)
       (fringe-mode 'default)
