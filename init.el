@@ -168,11 +168,11 @@
    ))
 
 (setq tabbar-buffer-list-function
-        (lambda ()
-          (remove-if
-           (lambda(buffer)
-             (find (aref (buffer-name buffer) 0) " *"))
-           (buffer-list))))
+      (lambda ()
+        (remove-if
+         (lambda(buffer)
+           (find (aref (buffer-name buffer) 0) " *"))
+         (buffer-list))))
 
 (setq tabbar-buffer-groups-function 'tabbar-buffer-groups)
 ;; ********************************************************************************
@@ -369,6 +369,29 @@
   )
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init)
+
+(defun rspec-run-single-file (spec-file &rest opts)
+  "Runs spec with the specified options"
+  (rspec-register-verify-redo (cons 'rspec-run-single-file (cons spec-file opts)))
+  (compile (concat "spec " spec-file " --drb " (mapconcat (lambda (x) x) opts " ")))
+  (end-of-buffer-other-window 0))
+
+(defun rspec-verify ()
+  "Runs the specified spec, or the spec file for the current buffer."
+  (interactive)
+  (rspec-run-single-file (rspec-spec-file-for (buffer-file-name))))
+
+(defun rspec-verify-single ()
+  "Runs the specified example at the point of the current buffer."
+  (interactive)
+  (rspec-run-single-file (rspec-spec-file-for (buffer-file-name)) (concat "--line " (number-to-string (line-number-at-pos)))))
+ 
+(defun rspec-verify-all ()
+  "Runs the 'spec' rake task for the project of the current file."
+  (interactive)
+  (let ((default-directory (or (rspec-project-root) default-directory)))
+    (rspec-run "--format=progress")))
+
 
 
 ;; ********************************************************************************
@@ -740,8 +763,10 @@
         ("<M-backspace>" . term-send-backward-kill-word)
         ("M-r" . term-send-reverse-search-history)))
 
-(global-set-key (kbd "M-t") 'multi-term-next)
-(global-set-key (kbd "M-T") 'multi-term)
+;; (global-set-key (kbd "M-t") 'multi-term-next)
+;; (global-set-key (kbd "M-T") 'multi-term)
+
+(global-set-key (kbd "M-t") 'eshell)
 
 
 ;; (global-set-key (kbd "<M-right>") 'multi-term-next)
@@ -870,14 +895,14 @@
   (hide-mode-line)
   (if darkroom-enabled
       (progn
-	;; (w32-fullscreen-on)
-	(w32-fullscreen-toggle-titlebar)
+        ;; (w32-fullscreen-on)
+        (w32-fullscreen-toggle-titlebar)
         (fringe-mode 'both)
         (menu-bar-mode -1)
-	(tabbar-mode -1)
+        (tabbar-mode -1)
         (scroll-bar-mode -1)
         ;; (set-fringe-mode 80)
-	)
+        )
     (progn 
       (w32-fullscreen-toggle-titlebar)
       (fringe-mode 'default)
