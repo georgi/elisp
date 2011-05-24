@@ -168,11 +168,11 @@
    ))
 
 (setq tabbar-buffer-list-function
-        (lambda ()
-          (remove-if
-           (lambda(buffer)
-             (find (aref (buffer-name buffer) 0) " *"))
-           (buffer-list))))
+      (lambda ()
+        (remove-if
+         (lambda(buffer)
+           (find (aref (buffer-name buffer) 0) " *"))
+         (buffer-list))))
 
 (setq tabbar-buffer-groups-function 'tabbar-buffer-groups)
 ;; ********************************************************************************
@@ -368,6 +368,29 @@
   )
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init)
+
+(defun rspec-run-single-file (spec-file &rest opts)
+  "Runs spec with the specified options"
+  (rspec-register-verify-redo (cons 'rspec-run-single-file (cons spec-file opts)))
+  (compile (concat "spec " spec-file " --drb " (mapconcat (lambda (x) x) opts " ")))
+  (end-of-buffer-other-window 0))
+
+(defun rspec-verify ()
+  "Runs the specified spec, or the spec file for the current buffer."
+  (interactive)
+  (rspec-run-single-file (rspec-spec-file-for (buffer-file-name))))
+
+(defun rspec-verify-single ()
+  "Runs the specified example at the point of the current buffer."
+  (interactive)
+  (rspec-run-single-file (rspec-spec-file-for (buffer-file-name)) (concat "--line " (number-to-string (line-number-at-pos)))))
+ 
+(defun rspec-verify-all ()
+  "Runs the 'spec' rake task for the project of the current file."
+  (interactive)
+  (let ((default-directory (or (rspec-project-root) default-directory)))
+    (rspec-run "--format=progress")))
+
 
 
 ;; ********************************************************************************
