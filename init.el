@@ -2,11 +2,8 @@
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/.emacs.d/")
-(add-to-list 'load-path "~/.emacs.d/cedet")
-(add-to-list 'load-path "~/.emacs.d/ecb")
-(add-to-list 'load-path "~/.emacs.d/magit")
-;; (add-to-list 'load-path "~/.emacs.d/js2-mode")
-(add-to-list 'load-path "~/.emacs.d/mozrepl")
+(add-to-list 'load-path "~/.emacs.d/apel")
+(add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
@@ -18,8 +15,6 @@
 ;;
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq x-select-enable-clipboard t)
-;; (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
-;; (setq browse-url-browser-function 'browse-url-firefox)
 (setq case-fold-search t)
 (setq compilation-read-command t)
 (setq compilation-window-height nil)
@@ -50,17 +45,13 @@
 (ac-set-trigger-key "TAB")
 (setq ac-auto-start nil)
 
-
-;; (setq rsense-home (expand-file-name "~/rsense-0.2"))
-;; (add-to-list 'load-path (concat rsense-home "/etc"))
-;; (require 'rsense)
-
-(if (not (eq system-type 'windows-nt))
-    (require 'ecb-init))
-
 (require 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
 (setq kill-ring-max 20)
+
+(require 'sr-speedbar)
+(global-set-key (kbd "M-t") 'sr-speedbar-toggle)
+(global-set-key (kbd "M-w") 'sr-speedbar-select-window)
 
 ;; Cua
 (cua-mode t)
@@ -70,10 +61,9 @@
 (setq current-language-environment "UTF-8")
 (setq default-input-method "rfc1345")
 
+(load "elscreen" "ElScreen" t)
 
-;; (require 'window-numbering)
-
-;; (window-numbering-mode)
+(elscreen-set-prefix-key (kbd "C-."))
 
 ;; Desktop 
 (desktop-save-mode t)
@@ -87,7 +77,6 @@
 (setq ibuffer-expert t)
 
 ;; Ido
-
 (ido-mode t)
 (setq ido-case-fold t)
 (setq ido-enable-flex-matching t)
@@ -115,10 +104,6 @@
 (if window-system
     (global-hl-line-mode t))
 
-(if window-system
-    (menu-bar-mode t)
-  (menu-bar-mode nil))
-
 (if (fboundp 'set-scroll-bar-mode)
     (set-scroll-bar-mode nil))
 
@@ -129,85 +114,14 @@
 (setq woman-fill-column 80)
 (setq woman-use-own-frame nil)
 
-;; ********************************************************************************
-;; Tabbar
+(load "elscreen" "ElScreen" t)
 
-(require 'tabbar)
-
-(tabbar-mode t)
-
-(defun tab-label (tab)
-  (if tabbar--buffer-show-groups
-      (format " [%s] " (tabbar-tab-tabset tab))
-    (format " %s " (tabbar-tab-value tab))))
-
-(setq tabbar-tab-label-function 'tab-label)
-
-(remove-hook 'kill-buffer-hook 'tabbar-buffer-track-killed)
-
-(defun tabbar-buffer-groups ()
-  "Return the list of group names BUFFER belongs to.
- Return only one group for each buffer."
-  (cond
-   ((eq major-mode 'ruby-mode)
-    '("Ruby"))
-   ((eq major-mode 'css-mode)
-    '("CSS"))
-   ((eq major-mode 'javascript-mode)
-    '("Javascript"))
-   ((eq major-mode 'html-mode)
-    '("HTML"))
-   ((eq major-mode 'rhtml-mode)
-    '("RHTML"))
-   ((eq major-mode 'python-mode)
-    '("Python"))
-   ((eq major-mode 'dired-mode)
-    '("Dired"))
-   (t
-    '("Other"))
-   ))
-
-(setq tabbar-buffer-list-function
-      (lambda ()
-        (remove-if
-         (lambda(buffer)
-           (find (aref (buffer-name buffer) 0) " *"))
-         (buffer-list))))
-
-(setq tabbar-buffer-groups-function 'tabbar-buffer-groups)
-;; ********************************************************************************
-;; Load my own elisp stuff
-;;
-(require 'ruby-mode)
-
-;; (load "abbrevs")
-(load "browser-help")
-
+;; (load "abbrevs")c
 ;; (load "completions")
 ;; (load "menu-from-pattern")
 
 (load "find-tags-file")
 (load "move-lines")
-
-;; (if window-system
-;;     (load "theme"))
-
-(require 'color-theme)
-
-(set-face-attribute 'tabbar-default nil
-                    :height 1.0
-                    :inherit 'default)
-
-(set-face-attribute 'tabbar-selected nil
-                    :weight 'bold
-                    :box nil)
-
-(set-face-attribute 'tabbar-unselected nil
-                    :box nil)
-
-(set-face-attribute 'tabbar-button nil
-                    :box '(:line-width 1 :color "#fff"))
-
 
 
 ;; ********************************************************************************
@@ -215,7 +129,6 @@
 ;;
 (autoload 'worklog "worklog" "work log" t)
 (autoload 'rdebug "rdebug" "ruby Debug" t)
-(autoload 'magit-status "magit" "magit" t)
 
 
 ;; ********************************************************************************
@@ -226,26 +139,6 @@
 
 (setq tags-add-tables nil)
 (setq etags-table-search-up-depth 5)
-;; (setq etags-table-alist
-;;       (list
-;;        '(".*\\.rb$" "/usr/lib/ruby/1.8/TAGS")
-;;        '(".*\\.rb$" "/usr/lib/ruby/gems/1.8/gems")
-;;        ))
-
-;; ********************************************************************************
-;; Mozilla
-;;
-(require 'moz)
-
-
-(defun moz-update (&rest ignored)
-  "Update the remote mozrepl instance"
-  (interactive)
-  (comint-send-string (inferior-moz-process)
-                      (concat "content.document.body.innerHTML="
-                              (json-encode (buffer-string)) ";")))
-
-;; (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
 
 
 ;; ********************************************************************************
@@ -255,17 +148,6 @@
 
 (setq session-initialize t)
 (add-hook 'after-init-hook 'session-initialize)
-
-
-;; ********************************************************************************
-;; Org Mode
-;;
-;; (require 'org-install)
-;; (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-;; (define-key global-map "\C-cl" 'org-store-link)
-;; (define-key global-map "\C-ca" 'org-agenda)
-;; (setq org-log-done t)
-
 
 ;; ********************************************************************************
 ;; RI
@@ -301,7 +183,6 @@
 (add-to-list 'interpreter-mode-alist '("php" . php-mode))
 
 (defun php-mode-on-init ()
-  (linum-mode t)
   (setq tab-width 4)
   (setq c-basic-offset 4)
   (setq indent-tabs-mode nil)
@@ -345,7 +226,6 @@
   (setq ffip-find-options "-not -regex '.*vendor.*'")
 
   (rinari-launch)
-  (linum-mode t)
   (setq indent-tabs-mode nil)  
   (setq ruby-deep-indent-paren nil)
 
@@ -359,7 +239,7 @@
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-words-in-buffer))
-
+ 
   (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
   (define-key ruby-mode-map (kbd "C-c C-v") 'rspec-verify)
   (define-key ruby-mode-map (kbd "C-c C-s") 'rspec-verify-single)
@@ -373,7 +253,7 @@
 (defun rspec-run-single-file (spec-file &rest opts)
   "Runs spec with the specified options"
   (rspec-register-verify-redo (cons 'rspec-run-single-file (cons spec-file opts)))
-  (compile (concat "spec " spec-file " --drb " (mapconcat (lambda (x) x) opts " ")))
+  (compile (concat "rspec " spec-file " --drb " (mapconcat (lambda (x) x) opts " ")))
   (end-of-buffer-other-window 0))
 
 (defun rspec-verify ()
@@ -405,14 +285,9 @@
 
 (defun rhtml-mode-on-init ()
   (abbrev-mode nil)
-  (linum-mode t)
   (add-hook 'before-save-hook 'untabify-buffer)
   (setq indent-tabs-mode nil)
   (make-local-variable 'tags-file-name)
-
-  ;; (set-face-attribute 'erb-delim-face nil :background "#fff")
-  ;; (set-face-attribute 'erb-face nil :background "#fff")
-  ;; (set-face-attribute 'erb-out-delim-face nil :foreground "#933")
   )
 
 (add-hook 'rhtml-mode-hook 'rhtml-mode-on-init)
@@ -421,8 +296,7 @@
 ;; ********************************************************************************
 ;; IRB Mode
 ;;
-(defun inferior-ruby-mode-on-init ()
-  )
+(defun inferior-ruby-mode-on-init ())
 
 (add-hook 'inferior-ruby-mode-hook 'inferior-ruby-mode-on-init)
 
@@ -446,60 +320,58 @@
 ;; ********************************************************************************
 ;; JS2 Mode
 ;;
-;; (eval-when-compile (require 'js2-mode))
+(eval-when-compile (require 'js2-mode))
 
-;; (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
-;; (setq js2-mode-dev-mode-p t)
-;; (setq js2-mode-must-byte-compile nil)
+(setq js2-mode-dev-mode-p t)
+(setq js2-mode-must-byte-compile nil)
 
-;; (defun js2-mode-on-init ()
-;;   (make-local-variable 'tags-file-name)
-;;   (linum-mode t)
-
-;;   (setq js2-allow-keywords-as-property-names nil)
-;;   (setq js2-allow-rhino-new-expr-initializer t)
-;;   (setq js2-basic-offset 4)
-;;   (setq js2-bounce-indent-flag nil)
-;;   (setq js2-dynamic-idle-timer-adjust 2)
-;;   (setq js2-highlight-level 4)
-;;   (setq js2-idle-timer-delay 5)
-;;   (setq js2-include-browser-externs t)
-;;   (setq js2-include-rhino-externs t)
-;;   (setq js2-language-version 150)
-;;   (setq js2-missing-semi-one-line-override t)
-;;   (setq js2-mode-show-overlay nil)
-;;   (setq js2-mode-show-strict-warnings t)
-;;   (setq js2-skip-preprocessor-directives t)
-;;   (setq js2-strict-cond-assign-warning t)
-;;   (setq js2-strict-inconsistent-return-warning nil)
-;;   (setq js2-strict-missing-semi-warning t)
-;;   (setq js2-strict-trailing-comma-warning t)
-;;   (setq js2-strict-var-hides-function-arg-warning t)
-;;   (setq js2-strict-var-redeclaration-warning t)
-;;   (setq indent-tabs-mode nil)
-
-;;   (add-hook 'before-save-hook 'untabify-buffer)
-
-;;   ;; (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-;;   )
-
-;; (add-hook 'js2-mode-hook 'js2-mode-on-init)
-
-(defun js-mode-on-init ()
+(defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
-  (linum-mode t)
-  (auto-complete-mode t)
 
-  (setq ac-sources '(ac-source-yasnippet
-                     ac-source-semantic
-                     ac-source-words-in-buffer))
+  (setq js2-allow-keywords-as-property-names nil)
+  (setq js2-allow-rhino-new-expr-initializer t)
+  (setq js2-basic-offset 4)
+  (setq js2-bounce-indent-flag nil)
+  (setq js2-dynamic-idle-timer-adjust 2)
+  (setq js2-highlight-level 4)
+  (setq js2-idle-timer-delay 5)
+  (setq js2-include-browser-externs t)
+  (setq js2-include-rhino-externs t)
+  (setq js2-language-version 150)
+  (setq js2-missing-semi-one-line-override t)
+  (setq js2-mode-show-overlay nil)
+  (setq js2-mode-show-strict-warnings t)
+  (setq js2-skip-preprocessor-directives t)
+  (setq js2-strict-cond-assign-warning t)
+  (setq js2-strict-inconsistent-return-warning nil)
+  (setq js2-strict-missing-semi-warning t)
+  (setq js2-strict-trailing-comma-warning t)
+  (setq js2-strict-var-hides-function-arg-warning t)
+  (setq js2-strict-var-redeclaration-warning t)
+  (setq indent-tabs-mode nil)
 
-  (add-hook 'before-save-hook 'untabify-buffer))
+  (add-hook 'before-save-hook 'untabify-buffer)
 
-(add-hook 'js-mode-hook 'js-mode-on-init)
+  ;; (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
+  )
 
-(add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
+(add-hook 'js2-mode-hook 'js2-mode-on-init)
+
+;; (defun js-mode-on-init ()
+;;   (make-local-variable 'tags-file-name)
+;;   (auto-complete-mode t)
+
+;;   (setq ac-sources '(ac-source-yasnippet
+;;                      ac-source-semantic
+;;                      ac-source-words-in-buffer))
+
+;;   (add-hook 'before-save-hook 'untabify-buffer))
+
+;; (add-hook 'js-mode-hook 'js-mode-on-init)
+
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 
 ;; ********************************************************************************
@@ -527,7 +399,6 @@
 (add-to-list 'auto-mode-alist  '("\\.liquid$" . html-mode))  
 
 (defun html-mode-on-init ()
-  (linum-mode t)
   (add-hook 'before-save-hook 'untabify-buffer)
   )
 
@@ -560,7 +431,6 @@
 ;; C Mode
 ;;
 (defun c-mode-on-init ()
-  (linum-mode t)
   (add-hook 'before-save-hook 'untabify-buffer)
 
   (setq ac-sources '(ac-source-yasnippet
@@ -586,8 +456,6 @@
 ;; (add-to-list 'auto-mode-alist '("\\.html$" . nxml-mode))
 
 (defun nxml-mode-on-init ()
-  (linum-mode t)
-
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
                      ac-source-words-in-buffer))
@@ -671,11 +539,6 @@
   (interactive) 
   (kill-buffer (buffer-name)))
 
-(defun toggle-fullscreen()
-  (interactive)
-  (set-frame-parameter nil 'fullscreen
-                       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
-
 (defun indent-buffer ()
   (interactive)
   (save-excursion
@@ -686,17 +549,6 @@
   (save-excursion
     (untabify (point-min) (point-max))))
 
-
-(defun view-url ()
-  "Open a new buffer containing the contents of URL."
-  (interactive)
-  (let* ((default (thing-at-point-url-at-point))
-         (url (read-from-minibuffer "URL: " default)))
-    (switch-to-buffer (url-retrieve-synchronously url))
-    (rename-buffer url t)
-    ;; TODO: switch to nxml/nxhtml mode
-    (cond ((search-forward "<?xml" nil t) (xml-mode))
-          ((search-forward "<html" nil t) (html-mode)))))
 
 (defun sudo-edit (&optional arg)
   (interactive "p")
@@ -719,103 +571,42 @@
 ;; Function keys
 (global-set-key (kbd "<f10>") 'smart-compile)
 
-;; Help keys
-(global-set-key (kbd "C-h C-d") 'dictionary-lookup)
-(global-set-key (kbd "C-h C-h") 'html-help)
-(global-set-key (kbd "C-h C-j") 'javascript-help)
-(global-set-key (kbd "C-h C-r") 'ruby-help)
-(global-set-key (kbd "C-h C-e") 'rails-help)
-
 (global-set-key (kbd "C-c f") 'find-file-in-project)
-(global-set-key (kbd "C-c g") 'rgrep)
-(global-set-key (kbd "C-c s") 'shell)
-(global-set-key (kbd "C-c u") 'view-url)
+(global-set-key (kbd "C-c s") 'eshell)
 (global-set-key (kbd "C-c b") 'ibuffer)
-
-(defun toggle-ecb ()
-  (interactive)
-  (if ecb-minor-mode
-      (ecb-minor-mode 0)
-    (ecb-minor-mode 1)))
-
-(global-set-key (kbd "M-1") 'ecb-goto-window-directories)
-(global-set-key (kbd "M-2") 'ecb-goto-window-sources)
-(global-set-key (kbd "M-3") 'ecb-goto-window-edit1)
-(global-set-key (kbd "M-4") 'ecb-goto-window-methods)
-(global-set-key (kbd "M-5") 'ecb-goto-window-history)
-(global-set-key (kbd "M-6") 'ecb-goto-window-compilation)
-(global-set-key (kbd "M-0") 'tree-buffer-show-node-menu-keyboard)
-(global-set-key (kbd "M-e") 'toggle-ecb)
-(global-set-key (kbd "M-w") 'ecb-toggle-layout)
-(global-set-key (kbd "M-c") 'ecb-toggle-compile-window)
-
-(require 'multi-term)
-
-(setq term-bind-key-alist
-      '(
-        ("C-c C-c" . term-interrupt-subjob)
-        ("C-s" . isearch-forward)
-        ("C-r" . isearch-backward)
-        ("C-m" . term-send-raw)
-        ("<C-right>" . term-send-forward-word)
-        ("<C-right>" . term-send-backward-word)
-        ("<C-backspace>" . term-send-backward-kill-word)
-        ("<M-backspace>" . term-send-backward-kill-word)
-        ("M-r" . term-send-reverse-search-history)))
-
-;; (global-set-key (kbd "M-t") 'multi-term-next)
-;; (global-set-key (kbd "M-T") 'multi-term)
-
-(global-set-key (kbd "M-t") 'eshell)
-
-
-;; (global-set-key (kbd "<M-right>") 'multi-term-next)
-;; (global-set-key (kbd "<M-left>") 'multi-term-prev)
+(global-set-key (kbd "C-c r") 'revert-buffer)
 
 (global-set-key (kbd "M-/") 'tags-search)
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
 
 (global-set-key (kbd "M-a") 'align-regexp)
-(global-set-key (kbd "M-b") 'bury-buffer)
-(global-set-key (kbd "M-f") 'ido-find-file)
 (global-set-key (kbd "M-i") 'indent-buffer)
-(global-set-key (kbd "M-y") 'popup-yank-menu)
-(global-set-key (kbd "M-n") 'svn-status)
-(global-set-key (kbd "M-s") 'save-buffer)
-(global-set-key (kbd "M-k") 'kill-current-buffer)
+(global-set-key (kbd "M-s") 'shell)
+(global-set-key (kbd "M-r") 'rgrep)
+
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
 (global-set-key (kbd "<C-M-return>") 'recentf-ido-find-file)
-(global-set-key (kbd "ESC C-j") 'ido-switch-buffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 
-(global-set-key (kbd "<M-left>") 'tabbar-backward-tab)
-(global-set-key (kbd "<M-right>") 'tabbar-forward-tab)
+(global-set-key (kbd "M-1") (lambda () (interactive) (elscreen-goto 0)))
+(global-set-key (kbd "M-2") (lambda () (interactive) (elscreen-goto 1)))
+(global-set-key (kbd "M-3") (lambda () (interactive) (elscreen-goto 2)))
+
+(global-set-key (kbd "M-c") 'elscreen-create)
+(global-set-key (kbd "M-k") 'elscreen-kill)
+(global-set-key (kbd "M-d") 'elscreen-dired)
+(global-set-key (kbd "<M-left>") 'elscreen-previous)
+(global-set-key (kbd "<M-right>") 'elscreen-next)
 (global-set-key (kbd "<M-up>") 'tabbar-backward-group)
 (global-set-key (kbd "<M-down>") 'tabbar-forward-group)
-
-(require 'magit)
-(define-key magit-mode-map (kbd "M-1") nil)
-(define-key magit-mode-map (kbd "M-2") nil)
-(define-key magit-mode-map (kbd "M-3") nil)
-(define-key magit-mode-map (kbd "M-4") nil)
-(global-set-key (kbd "M-m") 'magit-status)
-
-
-(global-set-key (kbd "<C-M-up>") 'move-line-up)
-(global-set-key (kbd "<C-M-down>") 'move-line-down)
-
-(global-set-key (kbd "<M-S-up>") 'copy-line-up)
-(global-set-key (kbd "<M-S-down>") 'copy-line-down)
 
 (global-set-key (kbd "<C-delete>") 'kill-word)
 (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
 
 (global-set-key (kbd "<C-left>") 'backward-word)
 (global-set-key (kbd "<C-right>") 'forward-word)
-
-(global-set-key (kbd "C-c r") 'revert-buffer)
 
 (define-key isearch-mode-map (kbd "C-o") 
   (lambda () (interactive) 
@@ -840,12 +631,6 @@
 (global-set-key (kbd "C-x g") 'rinari-rgrep)
 
 (global-set-key (kbd "C-c o") 'toggle-buffer)
-
-(global-set-key (kbd "C-x p")
-                (lambda ()
-                  (interactive)
-                  (comint-send-string (inferior-moz-process)
-                                      "BrowserReload();")))
 
 (defvar current-font-size 120)
 
@@ -878,42 +663,5 @@
 ; hide mode line, from 
 ; http://dse.livejournal.com/66834.html / http://webonastick.com
 (autoload 'hide-mode-line "hide-mode-line" nil t)
-
-(require 'w32-fullscreen)
-(setq w32-fullscreen-toggletitle-cmd "~/.emacs.d/w32toggletitle.exe")
-
-; simple darkroom with fullscreen, 
-; fringe, mode-line, menu-bar and scroll-bar hiding.
-(defvar darkroom-enabled nil)
-
-(defun toggle-darkroom ()
-  (interactive)
-  (if (not darkroom-enabled)
-      (setq darkroom-enabled t)
-    (setq darkroom-enabled nil))
-  (toggle-fullscreen)
-  (hide-mode-line)
-  (if darkroom-enabled
-      (progn
-        ;; (w32-fullscreen-on)
-        (w32-fullscreen-toggle-titlebar)
-        (fringe-mode 'both)
-        (menu-bar-mode -1)
-        (tabbar-mode -1)
-        (scroll-bar-mode -1)
-        ;; (set-fringe-mode 80)
-        )
-    (progn 
-      (w32-fullscreen-toggle-titlebar)
-      (fringe-mode 'default)
-      (menu-bar-mode)
-      (tabbar-mode)
-      (setq tabbar-tab-label-function 'tab-label)
-      (scroll-bar-mode t)
-      ;; (set-fringe-mode 8)
-      )))
-
-; Activate with F11 - enhanced fullscreen :)
-(global-set-key [f11] 'toggle-darkroom)
 
 (server-start)
