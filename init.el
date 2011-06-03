@@ -31,6 +31,51 @@
 (setq tab-width 4)
 (setq tooltip-delay 10)
 
+
+(set-face-attribute 'default nil
+                    :background "grey20"
+                    :foreground "grey90")
+
+(set-face-attribute 'cursor nil
+                    :background "white")
+
+(set-face-attribute 'font-lock-builtin-face nil
+                    :foreground "grey60")
+
+(set-face-attribute 'font-lock-comment-face nil
+                    :foreground "grey60")
+
+(set-face-attribute 'font-lock-constant-face nil
+                    :foreground "grey60")
+
+(set-face-attribute 'font-lock-keyword-face nil
+                    :foreground "white")
+
+(set-face-attribute 'font-lock-string-face nil
+                    :foreground "white")
+
+(set-face-attribute 'font-lock-function-name-face nil
+                    :foreground "lightblue")
+
+(set-face-attribute 'region nil
+                    :background "#111")
+                    
+
+ '(default ((t (:stipple nil :background "grey20" :foreground "grey90" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 116 :width normal :foundry "unknown" :family "DejaVu Sans Mono"))))
+ '(cursor ((t (:background "white"))))
+ '(font-lock-builtin-face ((((class color) (min-colors 88) (background dark)) (:foreground "grey60"))))
+ '(font-lock-comment-face ((((class color) (min-colors 88) (background dark)) (:foreground "grey70"))))
+ '(font-lock-constant-face ((((class color) (min-colors 88) (background dark)) nil)))
+ '(font-lock-keyword-face ((t (:foreground "white"))))
+ '(font-lock-string-face ((((class color) (min-colors 88) (background dark)) (:foreground "white"))))
+ '(font-lock-type-face ((((class color) (min-colors 88) (background dark)) nil)))
+ '(font-lock-variable-name-face ((((class color) (min-colors 88) (background dark)) nil)))
+ '(fringe ((((class color) (background dark)) nil)))
+ '(highlight ((t (:background "#111"))))
+
+
+
+
 (require 'yasnippet)
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/yasnippet/snippets")
@@ -101,8 +146,8 @@
 (transient-mark-mode t)
 (recentf-mode)
 
-(if window-system
-    (global-hl-line-mode t))
+;; (if window-system
+;;     (global-hl-line-mode t))
 
 (if (fboundp 'set-scroll-bar-mode)
     (set-scroll-bar-mode nil))
