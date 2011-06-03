@@ -99,7 +99,6 @@
 (setq initial-major-mode 'text-mode)
 (column-number-mode t)
 (mouse-wheel-mode t)
-(menu-bar-mode nil)
 (partial-completion-mode nil)
 (tool-bar-mode nil)
 (show-paren-mode t)
@@ -645,7 +644,7 @@
 (global-set-key (kbd "M-s") 'shell)
 (global-set-key (kbd "M-r") 'rgrep)
 (global-set-key (kbd "M-t") 'sr-speedbar-toggle)
-(global-set-key (kbd "M-w") 'sr-speedbar-select-window)
+(global-set-key (kbd "M-o") 'other-window)
 
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
 (global-set-key (kbd "<C-M-return>") 'recentf-ido-find-file)
