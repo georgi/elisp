@@ -623,6 +623,10 @@
                     :foreground "white")
 
 
+ (defun new-shell (arg)
+   (interactive "P")
+     (shell (generate-new-buffer-name "*shell*")))
+
 ;; ********************************************************************************
 ;; Global Key Bindings
 ;;
@@ -641,7 +645,7 @@
 
 (global-set-key (kbd "M-a") 'align-regexp)
 (global-set-key (kbd "M-i") 'indent-buffer)
-(global-set-key (kbd "M-s") 'shell)
+(global-set-key (kbd "M-s") 'new-shell)
 (global-set-key (kbd "M-r") 'rgrep)
 (global-set-key (kbd "M-t") 'sr-speedbar-toggle)
 (global-set-key (kbd "M-o") 'other-window)
@@ -658,6 +662,7 @@
 (global-set-key (kbd "M-c") 'elscreen-create)
 (global-set-key (kbd "M-k") 'elscreen-kill)
 (global-set-key (kbd "M-d") 'elscreen-dired)
+(global-set-key (kbd "M-f") 'elscreen-find-file)
 (global-set-key (kbd "<M-left>") 'elscreen-previous)
 (global-set-key (kbd "<M-right>") 'elscreen-next)
 
@@ -717,10 +722,5 @@
   (defun server-ensure-safe-dir (dir) "Noop" t)) ; Suppress error "directory
                                         ; ~/.emacs.d/server is unsafe"
                                         ; on windows.
-
-
-; hide mode line, from 
-; http://dse.livejournal.com/66834.html / http://webonastick.com
-(autoload 'hide-mode-line "hide-mode-line" nil t)
 
 (server-start)
