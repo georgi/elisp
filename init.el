@@ -32,50 +32,6 @@
 (setq tooltip-delay 10)
 
 
-(set-face-attribute 'default nil
-                    :background "grey20"
-                    :foreground "grey90")
-
-(set-face-attribute 'cursor nil
-                    :background "white")
-
-(set-face-attribute 'font-lock-builtin-face nil
-                    :foreground "grey60")
-
-(set-face-attribute 'font-lock-comment-face nil
-                    :foreground "grey60")
-
-(set-face-attribute 'font-lock-constant-face nil
-                    :foreground "grey60")
-
-(set-face-attribute 'font-lock-keyword-face nil
-                    :foreground "white")
-
-(set-face-attribute 'font-lock-string-face nil
-                    :foreground "white")
-
-(set-face-attribute 'font-lock-function-name-face nil
-                    :foreground "lightblue")
-
-(set-face-attribute 'region nil
-                    :background "#111")
-                    
-
- '(default ((t (:stipple nil :background "grey20" :foreground "grey90" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 116 :width normal :foundry "unknown" :family "DejaVu Sans Mono"))))
- '(cursor ((t (:background "white"))))
- '(font-lock-builtin-face ((((class color) (min-colors 88) (background dark)) (:foreground "grey60"))))
- '(font-lock-comment-face ((((class color) (min-colors 88) (background dark)) (:foreground "grey70"))))
- '(font-lock-constant-face ((((class color) (min-colors 88) (background dark)) nil)))
- '(font-lock-keyword-face ((t (:foreground "white"))))
- '(font-lock-string-face ((((class color) (min-colors 88) (background dark)) (:foreground "white"))))
- '(font-lock-type-face ((((class color) (min-colors 88) (background dark)) nil)))
- '(font-lock-variable-name-face ((((class color) (min-colors 88) (background dark)) nil)))
- '(fringe ((((class color) (background dark)) nil)))
- '(highlight ((t (:background "#111"))))
-
-
-
-
 (require 'yasnippet)
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/yasnippet/snippets")
@@ -95,8 +51,11 @@
 (setq kill-ring-max 20)
 
 (require 'sr-speedbar)
-(global-set-key (kbd "M-t") 'sr-speedbar-toggle)
-(global-set-key (kbd "M-w") 'sr-speedbar-select-window)
+(setq speedbar-show-unknown t)
+(setq speedbar-show-unknown-files t)
+(setq speedbar-vc-do-check nil)
+(setq sr-speedbar-width 30)
+
 
 ;; Cua
 (cua-mode t)
@@ -140,6 +99,7 @@
 (setq initial-major-mode 'text-mode)
 (column-number-mode t)
 (mouse-wheel-mode t)
+(menu-bar-mode nil)
 (partial-completion-mode nil)
 (tool-bar-mode nil)
 (show-paren-mode t)
@@ -608,6 +568,62 @@
       (find-file file))))
 
 
+
+(set-face-attribute 'default nil
+                    :background "grey20"
+                    :foreground "grey90")
+
+(set-face-attribute 'modeline nil
+                    :background "grey10"
+                    :foreground "grey90")
+
+(set-face-attribute 'elscreen-tab-background-face nil
+                    :background "grey10"
+                    :foreground "grey90")
+
+(set-face-attribute 'elscreen-tab-control-face nil
+                    :background "grey20"
+                    :foreground "grey90")
+
+(set-face-attribute 'elscreen-tab-current-screen-face nil
+                    :background "grey20"
+                    :foreground "grey90")
+
+(set-face-attribute 'elscreen-tab-other-screen-face nil
+                    :background "grey30"
+                    :foreground "grey60")
+
+(set-face-attribute 'cursor nil
+                    :background "white")
+
+(set-face-attribute 'font-lock-builtin-face nil
+                    :foreground "grey60")
+
+(set-face-attribute 'font-lock-comment-face nil
+                    :foreground "grey60")
+
+(set-face-attribute 'font-lock-constant-face nil
+                    :foreground "grey60")
+
+(set-face-attribute 'font-lock-keyword-face nil
+                    :foreground "white")
+
+(set-face-attribute 'font-lock-string-face nil
+                    :foreground "white")
+
+(set-face-attribute 'font-lock-variable-name-face nil
+                    :foreground "lightblue")
+
+(set-face-attribute 'font-lock-function-name-face nil
+                    :foreground "lightblue")
+
+(set-face-attribute 'region nil
+                    :background "#111")                    
+
+(set-face-attribute 'speedbar-file-face nil
+                    :foreground "white")
+
+
 ;; ********************************************************************************
 ;; Global Key Bindings
 ;;
@@ -628,6 +644,8 @@
 (global-set-key (kbd "M-i") 'indent-buffer)
 (global-set-key (kbd "M-s") 'shell)
 (global-set-key (kbd "M-r") 'rgrep)
+(global-set-key (kbd "M-t") 'sr-speedbar-toggle)
+(global-set-key (kbd "M-w") 'sr-speedbar-select-window)
 
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
 (global-set-key (kbd "<C-M-return>") 'recentf-ido-find-file)
@@ -643,8 +661,6 @@
 (global-set-key (kbd "M-d") 'elscreen-dired)
 (global-set-key (kbd "<M-left>") 'elscreen-previous)
 (global-set-key (kbd "<M-right>") 'elscreen-next)
-(global-set-key (kbd "<M-up>") 'tabbar-backward-group)
-(global-set-key (kbd "<M-down>") 'tabbar-forward-group)
 
 (global-set-key (kbd "<C-delete>") 'kill-word)
 (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
