@@ -46,6 +46,21 @@
 (ac-set-trigger-key "TAB")
 (setq ac-auto-start nil)
 
+(defun indent-and-complete ()
+  "Indent line and complete"
+  (interactive)
+
+  (cond
+   ((and (boundp 'snippet) snippet)
+    (snippet-next-field))
+   
+   ((looking-at "\\_>")
+    (unless (ac-menu-live-p)
+      (ac-fuzzy-complete))
+
+   ((indent-for-tab-command)))))
+
+
 (require 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
 (setq kill-ring-max 20)
@@ -362,19 +377,19 @@
 
 (add-hook 'js2-mode-hook 'js2-mode-on-init)
 
-;; (defun js-mode-on-init ()
-;;   (make-local-variable 'tags-file-name)
-;;   (auto-complete-mode t)
+(defun js-mode-on-init ()
+  (make-local-variable 'tags-file-name)
+  (auto-complete-mode t)
 
-;;   (setq ac-sources '(ac-source-yasnippet
-;;                      ac-source-semantic
-;;                      ac-source-words-in-buffer))
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-semantic
+                     ac-source-words-in-buffer))
 
-;;   (add-hook 'before-save-hook 'untabify-buffer))
+  (add-hook 'before-save-hook 'untabify-buffer))
 
-;; (add-hook 'js-mode-hook 'js-mode-on-init)
+(add-hook 'js-mode-hook 'js-mode-on-init)
 
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
 
 
 ;; ********************************************************************************
@@ -622,11 +637,6 @@
 (set-face-attribute 'speedbar-file-face nil
                     :foreground "white")
 
-
- (defun new-shell (arg)
-   (interactive "P")
-     (shell (generate-new-buffer-name "*shell*")))
-
 ;; ********************************************************************************
 ;; Global Key Bindings
 ;;
@@ -635,7 +645,7 @@
 (global-set-key (kbd "<f10>") 'smart-compile)
 
 (global-set-key (kbd "C-c f") 'find-file-in-project)
-(global-set-key (kbd "C-c s") 'eshell)
+(global-set-key (kbd "C-c s") 'shell)
 (global-set-key (kbd "C-c b") 'ibuffer)
 (global-set-key (kbd "C-c r") 'revert-buffer)
 
@@ -645,13 +655,15 @@
 
 (global-set-key (kbd "M-a") 'align-regexp)
 (global-set-key (kbd "M-i") 'indent-buffer)
-(global-set-key (kbd "M-s") 'new-shell)
+(global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-r") 'rgrep)
 (global-set-key (kbd "M-t") 'sr-speedbar-toggle)
 (global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "M-k") 'kill-current-buffer)
+(global-set-key (kbd "M-f") 'recentf-ido-find-file)
 
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
-(global-set-key (kbd "<C-M-return>") 'recentf-ido-find-file)
+(global-set-key (kbd "<S-return>") 'ido-goto-symbol)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 
@@ -660,7 +672,6 @@
 (global-set-key (kbd "M-3") (lambda () (interactive) (elscreen-goto 2)))
 
 (global-set-key (kbd "M-c") 'elscreen-create)
-(global-set-key (kbd "M-k") 'elscreen-kill)
 (global-set-key (kbd "M-d") 'elscreen-dired)
 (global-set-key (kbd "M-f") 'elscreen-find-file)
 (global-set-key (kbd "<M-left>") 'elscreen-previous)
@@ -679,7 +690,6 @@
 
 
 ;; Rinari
-(global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c m") 'rinari-find-model)
 (global-set-key (kbd "C-c v") 'rinari-find-view-or-select)
 (global-set-key (kbd "C-c c") 'rinari-find-controller-or-select)
