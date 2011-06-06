@@ -83,6 +83,9 @@
 (load "elscreen" "ElScreen" t)
 
 (elscreen-set-prefix-key (kbd "C-."))
+(setq elscreen-tab-display-kill-screen "None")
+(setq elscreen-tab-display-control nil)
+(setq elscreen-display-screen-number nil)
 
 ;; Desktop 
 (desktop-save-mode t)
