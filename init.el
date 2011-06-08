@@ -637,6 +637,16 @@
 (set-face-attribute 'speedbar-file-face nil
                     :foreground "white")
 
+(set-face-attribute 'erb-exec-face nil
+                    :background "grey10"
+                    :foreground "grey90")
+
+(set-face-attribute 'erb-out-face nil
+                    :background "grey10"
+                    :foreground "grey90")
+
+
+
 ;; ********************************************************************************
 ;; Global Key Bindings
 ;;
