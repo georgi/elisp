@@ -604,8 +604,8 @@
                     :foreground "grey90")
 
 (set-face-attribute 'elscreen-tab-other-screen-face nil
-                    :background "grey30"
-                    :foreground "grey60")
+                    :background "grey60"
+                    :foreground "black")
 
 (set-face-attribute 'cursor nil
                     :background "white")
