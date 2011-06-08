@@ -632,7 +632,7 @@
                     :foreground "lightblue")
 
 (set-face-attribute 'region nil
-                    :background "#111")                    
+                    :background "#009")                    
 
 (set-face-attribute 'speedbar-file-face nil
                     :foreground "white")
