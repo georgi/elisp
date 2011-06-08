@@ -599,11 +599,11 @@
                     :background "grey20"
                     :foreground "grey90")
 
-(set-face-attribute 'elscreen-tab-current-screen-face nil
+(set-face-attribute 'elscreen-tab-other-screen-face nil
                     :background "grey20"
                     :foreground "grey90")
 
-(set-face-attribute 'elscreen-tab-other-screen-face nil
+(set-face-attribute 'elscreen-tab-current-screen-face nil
                     :background "grey60"
                     :foreground "black")
 
