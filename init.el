@@ -610,13 +610,13 @@
                     :background "grey20"
                     :foreground "grey90")
 
-(set-face-attribute 'elscreen-tab-current-screen-face nil
+(set-face-attribute 'elscreen-tab-other-screen-face nil
                     :background "grey20"
                     :foreground "grey90")
 
-(set-face-attribute 'elscreen-tab-other-screen-face nil
-                    :background "grey30"
-                    :foreground "grey60")
+(set-face-attribute 'elscreen-tab-current-screen-face nil
+                    :background "grey60"
+                    :foreground "black")
 
 (set-face-attribute 'cursor nil
                     :background "white")
@@ -643,10 +643,19 @@
                     :foreground "lightblue")
 
 (set-face-attribute 'region nil
-                    :background "#111")                    
+                    :background "#009")                    
 
 (set-face-attribute 'speedbar-file-face nil
                     :foreground "white")
+
+(set-face-attribute 'erb-exec-face nil
+                    :background "grey10"
+                    :foreground "grey90")
+
+(set-face-attribute 'erb-out-face nil
+                    :background "grey10"
+                    :foreground "grey90")
+
 
 
 ;; ********************************************************************************
@@ -685,6 +694,7 @@
 
 (global-set-key (kbd "M-c") 'elscreen-create)
 (global-set-key (kbd "M-d") 'elscreen-dired)
+(global-set-key (kbd "M-f") 'elscreen-find-file)
 (global-set-key (kbd "<M-left>") 'elscreen-previous)
 (global-set-key (kbd "<M-right>") 'elscreen-next)
 
@@ -743,10 +753,5 @@
   (defun server-ensure-safe-dir (dir) "Noop" t)) ; Suppress error "directory
                                         ; ~/.emacs.d/server is unsafe"
                                         ; on windows.
-
-
-; hide mode line, from 
-; http://dse.livejournal.com/66834.html / http://webonastick.com
-(autoload 'hide-mode-line "hide-mode-line" nil t)
 
 (server-start)
