@@ -3,6 +3,7 @@
 ;;
 (add-to-list 'load-path "~/.emacs.d/")
 (add-to-list 'load-path "~/.emacs.d/apel")
+(add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
@@ -220,6 +221,13 @@
 
 (autoload 'chuck-mode "chuck-mode" "Chuck Mode." t)
 (add-to-list 'auto-mode-alist '("\\.ck\\'" . chuck-mode))
+
+
+;; ********************************************************************************
+;; Erlang Mode
+;;
+
+(require 'erlang-start)
 
 
 
