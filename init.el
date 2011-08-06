@@ -228,6 +228,7 @@
 ;;
 
 (require 'erlang-start)
+(add-to-list 'auto-mode-alist '("\\.yaws\\'" . html-mode))
 
 
 
@@ -390,7 +391,6 @@
 
 (defun js-mode-on-init ()
   (make-local-variable 'tags-file-name)
-  (auto-complete-mode t)
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
