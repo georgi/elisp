@@ -32,6 +32,9 @@
 (setq tab-width 4)
 (setq tooltip-delay 10)
 
+(when (boundp 'aquamacs-version)
+  (setq mac-command-modifier 'meta)
+  (aquamacs-autoface-mode -1))
 
 (require 'yasnippet)
 (yas/initialize)
@@ -72,6 +75,8 @@
 (setq speedbar-vc-do-check nil)
 (setq sr-speedbar-width 30)
 
+(add-hook 'before-save-hook 'untabify-buffer)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; Cua
 (cua-mode t)
@@ -81,12 +86,12 @@
 (setq current-language-environment "UTF-8")
 (setq default-input-method "rfc1345")
 
-(load "elscreen" "ElScreen" t)
+;; (load "elscreen" "ElScreen" t)
 
-(elscreen-set-prefix-key (kbd "C-."))
-(setq elscreen-tab-display-kill-screen "None")
-(setq elscreen-tab-display-control nil)
-(setq elscreen-display-screen-number nil)
+;; (elscreen-set-prefix-key (kbd "C-."))
+;; (setq elscreen-tab-display-kill-screen "None")
+;; (setq elscreen-tab-display-control nil)
+;; (setq elscreen-display-screen-number nil)
 
 ;; Desktop 
 (desktop-save-mode t)
@@ -104,7 +109,7 @@
 (setq ido-case-fold t)
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere nil)
-(setq ido-enable-tramp-completion nil)
+;; (setq ido-enable-tramp-completion nil)
 (setq ido-separator "  ")
 (setq ido-use-filename-at-point (quote guess))
 
@@ -119,7 +124,6 @@
 (column-number-mode t)
 (mouse-wheel-mode t)
 (partial-completion-mode nil)
-(tool-bar-mode nil)
 (show-paren-mode t)
 (transient-mark-mode t)
 (recentf-mode)
@@ -136,8 +140,6 @@
 ;; Woman
 (setq woman-fill-column 80)
 (setq woman-use-own-frame nil)
-
-(load "elscreen" "ElScreen" t)
 
 ;; (load "abbrevs")c
 ;; (load "completions")
@@ -264,8 +266,6 @@
   (set (make-local-variable 'tab-width) 2)
 
   (setq toggle-mapping-style 'rspec)
-
-  (add-hook 'before-save-hook 'untabify-buffer)
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-words-in-buffer))
@@ -602,21 +602,21 @@
                     :background "grey10"
                     :foreground "grey90")
 
-(set-face-attribute 'elscreen-tab-background-face nil
-                    :background "grey10"
-                    :foreground "grey90")
+;; (set-face-attribute 'elscreen-tab-background-face nil
+;;                     :background "grey10"
+;;                     :foreground "grey90")
 
-(set-face-attribute 'elscreen-tab-control-face nil
-                    :background "grey20"
-                    :foreground "grey90")
+;; (set-face-attribute 'elscreen-tab-control-face nil
+;;                     :background "grey20"
+;;                     :foreground "grey90")
 
-(set-face-attribute 'elscreen-tab-other-screen-face nil
-                    :background "grey20"
-                    :foreground "grey90")
+;; (set-face-attribute 'elscreen-tab-other-screen-face nil
+;;                     :background "grey20"
+;;                     :foreground "grey90")
 
-(set-face-attribute 'elscreen-tab-current-screen-face nil
-                    :background "grey60"
-                    :foreground "black")
+;; (set-face-attribute 'elscreen-tab-current-screen-face nil
+;;                     :background "grey60"
+;;                     :foreground "black")
 
 (set-face-attribute 'cursor nil
                     :background "white")
@@ -667,36 +667,61 @@
 
 (global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c s") 'shell)
-(global-set-key (kbd "C-c b") 'ibuffer)
 (global-set-key (kbd "C-c r") 'revert-buffer)
 
 (global-set-key (kbd "M-/") 'tags-search)
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
+(global-set-key (kbd "M-[") 'start-kbd-macro)
+(global-set-key (kbd "M-]") 'end-kbd-macro)
+(global-set-key (kbd "M-\\") 'call-last-kbd-macro)
 
 (global-set-key (kbd "M-a") 'align-regexp)
+(global-set-key (kbd "M-c") 'kill-ring-save)
+(global-set-key (kbd "M-v") 'yank)
+(global-set-key (kbd "M-z") 'undo)
 (global-set-key (kbd "M-i") 'indent-buffer)
 (global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-r") 'rgrep)
+(global-set-key (kbd "M-b") 'ibuffer)
 (global-set-key (kbd "M-t") 'sr-speedbar-toggle)
 (global-set-key (kbd "M-o") 'other-window)
-(global-set-key (kbd "M-k") 'kill-current-buffer)
-(global-set-key (kbd "M-f") 'recentf-ido-find-file)
+(global-set-key (kbd "M-w") 'kill-current-buffer)
+(global-set-key (kbd "M-f") 'ido-find-file)
+(global-set-key (kbd "M-d") 'ido-dired)
 
 (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
+(global-set-key (kbd "<A-return>") 'ido-switch-buffer)
 (global-set-key (kbd "<S-return>") 'ido-goto-symbol)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 
-(global-set-key (kbd "M-1") (lambda () (interactive) (elscreen-goto 0)))
-(global-set-key (kbd "M-2") (lambda () (interactive) (elscreen-goto 1)))
-(global-set-key (kbd "M-3") (lambda () (interactive) (elscreen-goto 2)))
+(when (boundp 'aquamacs-version)
+  (global-set-key (kbd "M-1") 'tabbar-select-tab-1)
+  (global-set-key (kbd "M-2") 'tabbar-select-tab-2)
+  (global-set-key (kbd "M-3") 'tabbar-select-tab-3)
+  (global-set-key (kbd "M-4") 'tabbar-select-tab-4)
+  (global-set-key (kbd "M-5") 'tabbar-select-tab-5)
+  (global-set-key (kbd "M-6") 'tabbar-select-tab-6)
+  (global-set-key (kbd "M-7") 'tabbar-select-tab-7)
+  (global-set-key (kbd "M-8") 'tabbar-select-tab-8)
+  (global-set-key (kbd "M-9") 'tabbar-select-tab-9)
 
-(global-set-key (kbd "M-c") 'elscreen-create)
-(global-set-key (kbd "M-d") 'elscreen-dired)
-(global-set-key (kbd "M-f") 'elscreen-find-file)
-(global-set-key (kbd "<M-left>") 'elscreen-previous)
-(global-set-key (kbd "<M-right>") 'elscreen-next)
+  (global-set-key (kbd "M-F") 'aquamacs-toggle-full-frame)
+  (global-set-key (kbd "<M-left>") 'tabbar-backward)
+  (global-set-key (kbd "<M-right>") 'tabbar-forward))
+
+(unless (boundp 'aquamacs-version)
+  (global-set-key (kbd "M-1") (lambda () (interactive) (elscreen-goto 0)))
+  (global-set-key (kbd "M-2") (lambda () (interactive) (elscreen-goto 1)))
+  (global-set-key (kbd "M-3") (lambda () (interactive) (elscreen-goto 2)))
+
+  (global-set-key (kbd "M-c") 'elscreen-create)
+  (global-set-key (kbd "M-d") 'elscreen-dired)
+  (global-set-key (kbd "M-f") 'elscreen-find-file)
+  (global-set-key (kbd "<M-left>") 'elscreen-previous)
+  (global-set-key (kbd "<M-right>") 'elscreen-next))
+
 
 (global-set-key (kbd "<C-delete>") 'kill-word)
 (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
@@ -753,5 +778,6 @@
   (defun server-ensure-safe-dir (dir) "Noop" t)) ; Suppress error "directory
                                         ; ~/.emacs.d/server is unsafe"
                                         ; on windows.
+
 
 (server-start)
