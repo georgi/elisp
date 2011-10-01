@@ -50,20 +50,54 @@
 (ac-set-trigger-key "TAB")
 (setq ac-auto-start nil)
 
+(global-auto-complete-mode t)
+
 (defun indent-and-complete ()
   "Indent line and complete"
   (interactive)
-
   (cond
    ((and (boundp 'snippet) snippet)
     (snippet-next-field))
-   
    ((looking-at "\\_>")
     (unless (ac-menu-live-p)
       (ac-fuzzy-complete))
-
    ((indent-for-tab-command)))))
 
+(defun lgrep-from-isearch ()
+  (interactive)
+  (let ((shk-search-string isearch-string))
+    (grep-compute-defaults)
+    (lgrep (if isearch-regexp shk-search-string (regexp-quote shk-search-string))
+           (format "*.%s" (file-name-extension (buffer-file-name)))
+           default-directory)
+    (isearch-abort)))
+
+(defun occur-from-isearch ()
+  (interactive)
+  (let ((case-fold-search isearch-case-fold-search))
+    (occur (if isearch-regexp isearch-string (regexp-quote isearch-string)))))
+
+(define-key isearch-mode-map (kbd "C-O") 'lgrep-from-isearch)
+(define-key isearch-mode-map (kbd "C-o") 'occur-from-isearch)
+
+(defun ido-complete-command ()
+  (interactive)
+  (call-interactively
+   (intern
+    (ido-completing-read
+     "M-x "
+     (all-completions "" obarray 'commandp)))))
+
+(defun ido-find-tag ()
+  "Find a tag using ido"
+  (interactive)
+  (tags-completion-table)
+  (let (tag-names)
+    (mapc (lambda (x)
+            (unless (integerp x)
+              (push (prin1-to-string x t) tag-names)))
+          tags-completion-table)
+    (find-tag (ido-completing-read "Tag: " tag-names))))
 
 (require 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
@@ -93,7 +127,7 @@
 ;; (setq elscreen-tab-display-control nil)
 ;; (setq elscreen-display-screen-number nil)
 
-;; Desktop 
+;; Desktop
 (desktop-save-mode t)
 (setq desktop-globals-to-save nil)
 (setq desktop-load-locked-desktop t)
@@ -237,39 +271,31 @@
 ;; ********************************************************************************
 ;; Ruby Mode
 ;;
-
-(require 'rinari)
-(require 'rinari-extensions)
 (require 'rspec-mode)
 
 (setq ruby-deep-indent-paren nil)
 (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
 ;; (setq ruby-deep-indent-paren t)
-
+;;
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.ru$" . ruby-mode))
-(add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))  
+(add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))
 
 (defun ruby-mode-on-init ()
   (require 'inflections)
 
-  (setq ffip-find-options "-not -regex '.*vendor.*'")
-
-  (rinari-launch)
-  (setq indent-tabs-mode nil)  
+  (setq indent-tabs-mode nil)
   (setq ruby-deep-indent-paren nil)
 
   (make-local-variable 'tags-file-name)
-
-  (set (make-local-variable 'tab-width) 2)
-
   (setq toggle-mapping-style 'rspec)
 
   (setq ac-sources '(ac-source-yasnippet
-                     ac-source-words-in-buffer))
- 
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
+
   (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
   (define-key ruby-mode-map (kbd "C-c C-v") 'rspec-verify)
   (define-key ruby-mode-map (kbd "C-c C-s") 'rspec-verify-single)
@@ -283,7 +309,7 @@
 (defun rspec-run-single-file (spec-file &rest opts)
   "Runs spec with the specified options"
   (rspec-register-verify-redo (cons 'rspec-run-single-file (cons spec-file opts)))
-  (compile (concat "rspec " spec-file " --drb " (mapconcat (lambda (x) x) opts " ")))
+  (compile (concat "spec " spec-file " --drb " (mapconcat (lambda (x) x) opts " ")))
   (end-of-buffer-other-window 0))
 
 (defun rspec-verify ()
@@ -295,7 +321,7 @@
   "Runs the specified example at the point of the current buffer."
   (interactive)
   (rspec-run-single-file (rspec-spec-file-for (buffer-file-name)) (concat "--line " (number-to-string (line-number-at-pos)))))
- 
+
 (defun rspec-verify-all ()
   "Runs the 'spec' rake task for the project of the current file."
   (interactive)
@@ -346,6 +372,8 @@
 
 (add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
 
+(require 'sass-mode)
+
 
 ;; ********************************************************************************
 ;; JS2 Mode
@@ -362,7 +390,7 @@
 
   (setq js2-allow-keywords-as-property-names nil)
   (setq js2-allow-rhino-new-expr-initializer t)
-  (setq js2-basic-offset 4)
+  (setq js2-basic-offset 2)
   (setq js2-bounce-indent-flag nil)
   (setq js2-dynamic-idle-timer-adjust 2)
   (setq js2-highlight-level 4)
@@ -394,28 +422,26 @@
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
-                     ac-source-words-in-buffer))
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
 
   (add-hook 'before-save-hook 'untabify-buffer))
 
 (add-hook 'js-mode-hook 'js-mode-on-init)
 
-(add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 
 ;; ********************************************************************************
 ;; Emacs-Lisp Mode
 ;;
 (defun emacs-lisp-mode-on-init ()
-
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-features
                      ac-source-functions
                      ac-source-symbols
                      ac-source-variables
-                     ac-source-words-in-buffer))
-
-  )
+                     ac-source-words-in-buffer)))
 
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init)
 
@@ -425,7 +451,7 @@
 ;; HTML Mode
 ;;
 (add-to-list 'auto-mode-alist  '("\\.html$" . html-mode))
-(add-to-list 'auto-mode-alist  '("\\.liquid$" . html-mode))  
+(add-to-list 'auto-mode-alist  '("\\.liquid$" . html-mode))
 
 (defun html-mode-on-init ()
   (add-hook 'before-save-hook 'untabify-buffer)
@@ -464,10 +490,7 @@
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
-                     ac-source-words-in-buffer))
-
-  )
-
+                     ac-source-words-in-buffer)))
 
 (add-hook 'c-mode-hook 'c-mode-on-init)
 
@@ -487,9 +510,7 @@
 (defun nxml-mode-on-init ()
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
-                     ac-source-words-in-buffer))
-
-  )
+                     ac-source-words-in-buffer)))
 
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
 
@@ -529,7 +550,7 @@
 
 (defadvice other-window (after auto-refresh-dired (arg &optional all-frame) activate)
   (if (equal major-mode 'dired-mode)
-      (revert-buffer))) 
+      (revert-buffer)))
 
 
 
@@ -539,12 +560,12 @@
 
 (require 'smart-compile)
 
-(add-to-list 'smart-compile-alist '("^Rakefile$"  . "rake -f %f"))
+(add-to-list 'smart-compile-alist '("^Rakefile$"  . "rake -f %f")) ;
+(add-to-list 'smart-compile-alist '("\\.js$"      . "node %f"))
 (add-to-list 'smart-compile-alist '("\\.rb$"      . "ruby %f"))
 (add-to-list 'smart-compile-alist '("_spec\\.rb$" . "spec %f"))
 (add-to-list 'smart-compile-alist '("\\.scm$"     . "scheme %f"))
-(add-to-list 'smart-compile-alist '("\\.hx$"      . "haxe compile.hxml"))
-(add-to-list 'smart-compile-alist '(haskell-mode  . "ghc -o %n %f"))
+(add-to-list 'smart-compile-alist '(haskell-mode  . "ghc -o %n %f")) ;
 (add-to-list 'smart-compile-alist '("\\.mxml$"    . (compile-mxmlc)))
 (add-to-list 'smart-compile-alist '("\\.as$"      . (compile-mxmlc)))
 
@@ -565,7 +586,7 @@
   (save-buffers-kill-terminal))
 
 (defun kill-current-buffer()
-  (interactive) 
+  (interactive)
   (kill-buffer (buffer-name)))
 
 (defun indent-buffer ()
@@ -592,58 +613,45 @@
     (when file
       (find-file file))))
 
+(setq ffip-patterns
+  '("*.haml" "*.sass" "*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
+    "*.sh" "*.erl" "*.hs" "*.ml" "*.yml" "*.css"))
 
 
 (set-face-attribute 'default nil
-                    :background "grey20"
+                    :background "black"
                     :foreground "grey90")
 
 (set-face-attribute 'modeline nil
                     :background "grey10"
                     :foreground "grey90")
 
-;; (set-face-attribute 'elscreen-tab-background-face nil
-;;                     :background "grey10"
-;;                     :foreground "grey90")
-
-;; (set-face-attribute 'elscreen-tab-control-face nil
-;;                     :background "grey20"
-;;                     :foreground "grey90")
-
-;; (set-face-attribute 'elscreen-tab-other-screen-face nil
-;;                     :background "grey20"
-;;                     :foreground "grey90")
-
-;; (set-face-attribute 'elscreen-tab-current-screen-face nil
-;;                     :background "grey60"
-;;                     :foreground "black")
-
 (set-face-attribute 'cursor nil
                     :background "white")
 
 (set-face-attribute 'font-lock-builtin-face nil
-                    :foreground "grey60")
+                    :foreground "cyan")
 
 (set-face-attribute 'font-lock-comment-face nil
-                    :foreground "grey60")
+                    :foreground "grey50")
 
 (set-face-attribute 'font-lock-constant-face nil
-                    :foreground "grey60")
+                    :foreground "SkyBlue")
 
 (set-face-attribute 'font-lock-keyword-face nil
-                    :foreground "white")
+                    :foreground "lightgreen")
 
 (set-face-attribute 'font-lock-string-face nil
-                    :foreground "white")
+                    :foreground "chocolate1")
 
 (set-face-attribute 'font-lock-variable-name-face nil
                     :foreground "lightblue")
 
 (set-face-attribute 'font-lock-function-name-face nil
-                    :foreground "lightblue")
+                    :foreground "LimeGreen")
 
 (set-face-attribute 'region nil
-                    :background "#009")                    
+                    :background "blue")
 
 (set-face-attribute 'speedbar-file-face nil
                     :foreground "white")
@@ -663,8 +671,7 @@
 ;;
 
 ;; Function keys
-(global-set-key (kbd "<f10>") 'smart-compile)
-
+(global-set-key (kbd "C-c c") 'smart-compile)
 (global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c s") 'shell)
 (global-set-key (kbd "C-c r") 'revert-buffer)
@@ -676,15 +683,18 @@
 (global-set-key (kbd "M-]") 'end-kbd-macro)
 (global-set-key (kbd "M-\\") 'call-last-kbd-macro)
 
-(global-set-key (kbd "M-a") 'align-regexp)
+(global-set-key (kbd "M-a") 'mark-whole-buffer)
 (global-set-key (kbd "M-c") 'kill-ring-save)
+;; (global-set-key (kbd "M-x") 'ido-complete-command)
 (global-set-key (kbd "M-v") 'yank)
 (global-set-key (kbd "M-z") 'undo)
 (global-set-key (kbd "M-i") 'indent-buffer)
 (global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-r") 'rgrep)
+(global-set-key (kbd "M-l") 'lgrep)
+(global-set-key (kbd "M-n") 'next-error)
 (global-set-key (kbd "M-b") 'ibuffer)
-(global-set-key (kbd "M-t") 'sr-speedbar-toggle)
+(global-set-key (kbd "M-t") 'tool-bar-mode)
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-w") 'kill-current-buffer)
 (global-set-key (kbd "M-f") 'ido-find-file)
@@ -729,28 +739,6 @@
 (global-set-key (kbd "<C-left>") 'backward-word)
 (global-set-key (kbd "<C-right>") 'forward-word)
 
-(define-key isearch-mode-map (kbd "C-o") 
-  (lambda () (interactive) 
-    (let ((case-fold-search isearch-case-fold-search)) 
-      (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
-
-
-;; Rinari
-(global-set-key (kbd "C-c m") 'rinari-find-model)
-(global-set-key (kbd "C-c v") 'rinari-find-view-or-select)
-(global-set-key (kbd "C-c c") 'rinari-find-controller-or-select)
-(global-set-key (kbd "C-c j") 'rinari-find-javascript)
-;; (global-set-key (kbd "C-c s") 'rinari-find-stylesheet)
-;; (global-set-key (kbd "C-c t") 'rinari-find-test)
-;; (global-set-key (kbd "C-c t") 'rinari-find-test)
-;; (global-set-key (kbd "C-x t") 'rinari-test)
-;; (global-set-key (kbd "C-x r") 'rinari-rake)
-(global-set-key (kbd "C-x c") 'rinari-console)
-(global-set-key (kbd "C-x s") 'rinari-sql)
-(global-set-key (kbd "C-x w") 'rinari-web-server)
-(global-set-key (kbd "C-x g") 'rinari-rgrep)
-
-(global-set-key (kbd "C-c o") 'toggle-buffer)
 
 (defvar current-font-size 120)
 
