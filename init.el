@@ -34,7 +34,7 @@
 (require 'smart-compile)
 
 (unless (boundp 'aquamacs-version)
-  (require 'tabbbar))
+  (require 'tabbar))
 
 
 ;; ********************************************************************************
