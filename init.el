@@ -12,14 +12,37 @@
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 ;; ********************************************************************************
+;; Requires
+
+(require 'find-file-in-project)
+(require 'yasnippet)
+(require 'auto-complete-config)
+(require 'auto-complete-yasnippet)
+(require 'browse-kill-ring)
+(require 'etags-table)
+(require 'etags-select)
+(require 'session)
+(eval-when-compile (require 'markdown-mode))
+(require 'erlang-start)
+(require 'sass-mode)
+(eval-when-compile (require 'js2-mode))
+(eval-when-compile (require 'css-mode))
+(eval-when-compile (require 'regexp-opt))
+(require 'dired)
+(require 'dired-single)
+(require 'wdired)
+(require 'smart-compile)
+
+(unless (boundp 'aquamacs-version)
+  (require 'tabbbar))
+
+
+;; ********************************************************************************
 ;; Variables
 ;;
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq x-select-enable-clipboard t)
 (setq case-fold-search t)
-(setq compilation-read-command t)
-(setq compilation-window-height nil)
-(setq emacs-goodies-el-defaults t)
 (setq enable-recursive-minibuffers nil)
 (setq inhibit-startup-screen t)
 (setq list-directory-verbose-switches "")
@@ -30,27 +53,26 @@
 (setq use-file-dialog t)
 (setq tags-revert-without-query t)
 (setq tab-width 4)
-(setq tooltip-delay 10)
 
 (when (boundp 'aquamacs-version)
   (setq mac-command-modifier 'meta)
   (aquamacs-autoface-mode -1))
 
-(require 'yasnippet)
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/yasnippet/snippets")
 (yas/load-directory "~/.emacs.d/snippets/")
 (setq yas/trigger-key "TAB")
 
 
-(require 'auto-complete-config)
-(require 'auto-complete-yasnippet)
 (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
 (ac-config-default)
 (ac-set-trigger-key "TAB")
 (setq ac-auto-start nil)
 
 (global-auto-complete-mode t)
+
+;; ********************************************************************************
+;; Defuns
 
 (defun indent-and-complete ()
   "Indent line and complete"
@@ -99,33 +121,62 @@
           tags-completion-table)
     (find-tag (ido-completing-read "Tag: " tag-names))))
 
-(require 'browse-kill-ring)
+(defun popup-yank-menu()
+  (interactive)
+  (let ((x-y (posn-x-y (posn-at-point (point)))))
+    (popup-menu 'yank-menu (list (list (+ (car x-y) 10)
+                                       (+ (cdr x-y) 20))
+                                 (selected-window)))))
+
+(defun save-and-exit()
+  (interactive)
+  (save-buffer)
+  (save-buffers-kill-terminal))
+
+(defun kill-current-buffer()
+  (interactive)
+  (kill-buffer (buffer-name)))
+
+(defun indent-buffer ()
+  (interactive)
+  (save-excursion
+    (indent-region (point-min) (point-max) nil)))
+
+(defun untabify-buffer ()
+  (interactive)
+  (save-excursion
+    (untabify (point-min) (point-max))))
+
+
+(defun sudo-edit (&optional arg)
+  (interactive "p")
+  (if (or arg (not buffer-file-name))
+      (find-file (concat "/sudo:root@localhost:" (ido-read-file-name "File: ")))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
+(defun recentf-ido-find-file ()
+  "Find a recent file using ido."
+  (interactive)
+  (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
+    (when file
+      (find-file file))))
+
+
+
+
 (browse-kill-ring-default-keybindings)
 (setq kill-ring-max 20)
-
-(require 'sr-speedbar)
-(setq speedbar-show-unknown t)
-(setq speedbar-show-unknown-files t)
-(setq speedbar-vc-do-check nil)
-(setq sr-speedbar-width 30)
 
 (add-hook 'before-save-hook 'untabify-buffer)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; Cua
-(cua-mode t)
-(setq cua-enable-region-auto-help t)
-(setq cua-highlight-region-shift-only nil)
-
-(setq current-language-environment "UTF-8")
-(setq default-input-method "rfc1345")
-
-;; (load "elscreen" "ElScreen" t)
-
-;; (elscreen-set-prefix-key (kbd "C-."))
-;; (setq elscreen-tab-display-kill-screen "None")
-;; (setq elscreen-tab-display-control nil)
-;; (setq elscreen-display-screen-number nil)
+(when (boundp 'aquamacs-version)
+  (cua-mode t)
+  (setq cua-enable-region-auto-help t)
+  (setq cua-highlight-region-shift-only nil)
+  (setq current-language-environment "UTF-8")
+  (setq default-input-method "rfc1345"))
 
 ;; Desktop
 (desktop-save-mode t)
@@ -133,12 +184,16 @@
 (setq desktop-load-locked-desktop t)
 (setq desktop-save t)
 
+;; ********************************************************************************
 ;; ibuffer
+;;
 (setq ibuffer-default-sorting-mode 'major-mode)
 (setq ibuffer-enable nil)
 (setq ibuffer-expert t)
 
+;; ********************************************************************************
 ;; Ido
+;;
 (ido-mode t)
 (setq ido-case-fold t)
 (setq ido-enable-flex-matching t)
@@ -146,10 +201,11 @@
 ;; (setq ido-enable-tramp-completion nil)
 (setq ido-separator "  ")
 (setq ido-use-filename-at-point (quote guess))
-
 (load "ido-goto-symbol")
 
+;; ********************************************************************************
 ;; I-Menu
+;;
 (setq imenu-auto-rescan t)
 (setq imenu-sort-function 'imenu--sort-by-name)
 
@@ -162,22 +218,14 @@
 (transient-mark-mode t)
 (recentf-mode)
 
-;; (if window-system
-;;     (global-hl-line-mode t))
+(if window-system
+    (global-hl-line-mode t))
 
 (if (fboundp 'set-scroll-bar-mode)
     (set-scroll-bar-mode nil))
 
 (setq scroll-conservatively 5)
 (setq scroll-step 1)
-
-;; Woman
-(setq woman-fill-column 80)
-(setq woman-use-own-frame nil)
-
-;; (load "abbrevs")c
-;; (load "completions")
-;; (load "menu-from-pattern")
 
 (load "find-tags-file")
 
@@ -192,9 +240,6 @@
 ;; ********************************************************************************
 ;; Tags
 ;;
-(require 'etags-table)
-(require 'etags-select)
-
 (setq tags-add-tables nil)
 (setq etags-table-search-up-depth 5)
 
@@ -202,8 +247,6 @@
 ;; ********************************************************************************
 ;; Session
 ;;
-(require 'session)
-
 (setq session-initialize t)
 (add-hook 'after-init-hook 'session-initialize)
 
@@ -217,8 +260,6 @@
 ;; ********************************************************************************
 ;; Markdown Mode
 ;;
-(eval-when-compile (require 'markdown-mode))
-
 (autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
@@ -262,8 +303,6 @@
 ;; ********************************************************************************
 ;; Erlang Mode
 ;;
-
-(require 'erlang-start)
 (add-to-list 'auto-mode-alist '("\\.yaws\\'" . html-mode))
 
 
@@ -271,7 +310,7 @@
 ;; ********************************************************************************
 ;; Ruby Mode
 ;;
-(require 'rspec-mode)
+;; (require 'rspec-mode)
 
 (setq ruby-deep-indent-paren nil)
 (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
@@ -284,8 +323,6 @@
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))
 
 (defun ruby-mode-on-init ()
-  (require 'inflections)
-
   (setq indent-tabs-mode nil)
   (setq ruby-deep-indent-paren nil)
 
@@ -343,8 +380,7 @@
   (abbrev-mode nil)
   (add-hook 'before-save-hook 'untabify-buffer)
   (setq indent-tabs-mode nil)
-  (make-local-variable 'tags-file-name)
-  )
+  (make-local-variable 'tags-file-name))
 
 (add-hook 'rhtml-mode-hook 'rhtml-mode-on-init)
 
@@ -372,14 +408,10 @@
 
 (add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
 
-(require 'sass-mode)
-
 
 ;; ********************************************************************************
 ;; JS2 Mode
 ;;
-(eval-when-compile (require 'js2-mode))
-
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 (setq js2-mode-dev-mode-p t)
@@ -463,9 +495,6 @@
 ;; ********************************************************************************
 ;; CSS Mode
 ;;
-(eval-when-compile (require 'css-mode))
-(eval-when-compile (require 'regexp-opt))
-
 (defconst css-imenu-generic-expression
   '((nil "^[ \t]*\\([[:word:].:#, \t]+\\)\\s-*{" 1))
   "Regular expression matching any selector. Used by imenu.")
@@ -499,13 +528,8 @@
 ;; ********************************************************************************
 ;; XML Mode
 ;;
-
-(setq rng-schema-locating-file-schema-file "/home/matti/.emacs.d/nxml-mode/schema/schemas.xml")
-
 (autoload 'nxml-mode "nxml-mode" "XML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.xml$" . nxml-mode))
-(add-to-list 'auto-mode-alist '("\\.mxml$" . nxml-mode))
-;; (add-to-list 'auto-mode-alist '("\\.html$" . nxml-mode))
 
 (defun nxml-mode-on-init ()
   (setq ac-sources '(ac-source-yasnippet
@@ -518,10 +542,6 @@
 ;; ********************************************************************************
 ;; dired
 ;;
-(require 'dired)
-(require 'dired-single)
-(require 'wdired)
-
 (defun joc-dired-up-directory()
   (interactive)
   (joc-dired-single-buffer ".."))
@@ -558,8 +578,6 @@
 ;; Smart Compile
 ;;
 
-(require 'smart-compile)
-
 (add-to-list 'smart-compile-alist '("^Rakefile$"  . "rake -f %f")) ;
 (add-to-list 'smart-compile-alist '("\\.js$"      . "node %f"))
 (add-to-list 'smart-compile-alist '("\\.rb$"      . "ruby %f"))
@@ -569,49 +587,6 @@
 (add-to-list 'smart-compile-alist '("\\.mxml$"    . (compile-mxmlc)))
 (add-to-list 'smart-compile-alist '("\\.as$"      . (compile-mxmlc)))
 
-
-
-;; ********************************************************************************
-;; Defuns
-(defun popup-yank-menu()
-  (interactive)
-  (let ((x-y (posn-x-y (posn-at-point (point)))))
-    (popup-menu 'yank-menu (list (list (+ (car x-y) 10)
-                                       (+ (cdr x-y) 20))
-                                 (selected-window)))))
-
-(defun save-and-exit()
-  (interactive)
-  (save-buffer)
-  (save-buffers-kill-terminal))
-
-(defun kill-current-buffer()
-  (interactive)
-  (kill-buffer (buffer-name)))
-
-(defun indent-buffer ()
-  (interactive)
-  (save-excursion
-    (indent-region (point-min) (point-max) nil)))
-
-(defun untabify-buffer ()
-  (interactive)
-  (save-excursion
-    (untabify (point-min) (point-max))))
-
-
-(defun sudo-edit (&optional arg)
-  (interactive "p")
-  (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo:root@localhost:" (ido-read-file-name "File: ")))
-    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
-
-(defun recentf-ido-find-file ()
-  "Find a recent file using ido."
-  (interactive)
-  (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
-    (when file
-      (find-file file))))
 
 (setq ffip-patterns
   '("*.haml" "*.sass" "*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
@@ -623,6 +598,10 @@
                     :foreground "grey90")
 
 (set-face-attribute 'modeline nil
+                    :background "grey10"
+                    :foreground "grey90")
+
+(set-face-attribute 'hl-line nil
                     :background "grey10"
                     :foreground "grey90")
 
@@ -652,9 +631,6 @@
 
 (set-face-attribute 'region nil
                     :background "blue")
-
-(set-face-attribute 'speedbar-file-face nil
-                    :foreground "white")
 
 (set-face-attribute 'erb-exec-face nil
                     :background "grey10"
@@ -706,31 +682,21 @@
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 
+(global-set-key (kbd "M-1") 'tabbar-select-tab-1)
+(global-set-key (kbd "M-2") 'tabbar-select-tab-2)
+(global-set-key (kbd "M-3") 'tabbar-select-tab-3)
+(global-set-key (kbd "M-4") 'tabbar-select-tab-4)
+(global-set-key (kbd "M-5") 'tabbar-select-tab-5)
+(global-set-key (kbd "M-6") 'tabbar-select-tab-6)
+(global-set-key (kbd "M-7") 'tabbar-select-tab-7)
+(global-set-key (kbd "M-8") 'tabbar-select-tab-8)
+(global-set-key (kbd "M-9") 'tabbar-select-tab-9)
+
 (when (boundp 'aquamacs-version)
-  (global-set-key (kbd "M-1") 'tabbar-select-tab-1)
-  (global-set-key (kbd "M-2") 'tabbar-select-tab-2)
-  (global-set-key (kbd "M-3") 'tabbar-select-tab-3)
-  (global-set-key (kbd "M-4") 'tabbar-select-tab-4)
-  (global-set-key (kbd "M-5") 'tabbar-select-tab-5)
-  (global-set-key (kbd "M-6") 'tabbar-select-tab-6)
-  (global-set-key (kbd "M-7") 'tabbar-select-tab-7)
-  (global-set-key (kbd "M-8") 'tabbar-select-tab-8)
-  (global-set-key (kbd "M-9") 'tabbar-select-tab-9)
+  (global-set-key (kbd "C-x") 'aquamacs-toggle-full-frame)
 
-  (global-set-key (kbd "M-F") 'aquamacs-toggle-full-frame)
-  (global-set-key (kbd "<M-left>") 'tabbar-backward)
-  (global-set-key (kbd "<M-right>") 'tabbar-forward))
-
-(unless (boundp 'aquamacs-version)
-  (global-set-key (kbd "M-1") (lambda () (interactive) (elscreen-goto 0)))
-  (global-set-key (kbd "M-2") (lambda () (interactive) (elscreen-goto 1)))
-  (global-set-key (kbd "M-3") (lambda () (interactive) (elscreen-goto 2)))
-
-  (global-set-key (kbd "M-c") 'elscreen-create)
-  (global-set-key (kbd "M-d") 'elscreen-dired)
-  (global-set-key (kbd "M-f") 'elscreen-find-file)
-  (global-set-key (kbd "<M-left>") 'elscreen-previous)
-  (global-set-key (kbd "<M-right>") 'elscreen-next))
+(global-set-key (kbd "<M-left>") 'tabbar-backward)
+(global-set-key (kbd "<M-right>") 'tabbar-forward)
 
 
 (global-set-key (kbd "<C-delete>") 'kill-word)
@@ -739,33 +705,9 @@
 (global-set-key (kbd "<C-left>") 'backward-word)
 (global-set-key (kbd "<C-right>") 'forward-word)
 
-
-(defvar current-font-size 120)
-
-(defun decrease-font-size()
-  (interactive)
-  (setq current-font-size (- current-font-size 10))
-  (set-face-attribute 'default nil :height current-font-size))
-
-(defun increase-font-size()
-  (interactive)
-  (setq current-font-size (+ current-font-size 10))
-  (set-face-attribute 'default nil :height current-font-size))
-
-
-(global-set-key (kbd "C--") 'decrease-font-size)
-(global-set-key (kbd "C-=") 'increase-font-size)
-
-(set-face-attribute 'default nil :height current-font-size)
-
-(require 'server)
-
 (when (and (= emacs-major-version 23)
            (= emacs-minor-version 1)
            (equal window-system 'w32))
   (defun server-ensure-safe-dir (dir) "Noop" t)) ; Suppress error "directory
                                         ; ~/.emacs.d/server is unsafe"
                                         ; on windows.
-
-
-(server-start)
