@@ -693,14 +693,13 @@
 (global-set-key (kbd "M-9") 'tabbar-select-tab-9)
 
 (when (boundp 'aquamacs-version)
-  (global-set-key (kbd "C-x") 'aquamacs-toggle-full-frame)
+  (global-set-key (kbd "M-F") 'aquamacs-toggle-full-frame))
 
 (global-set-key (kbd "<M-left>") 'tabbar-backward)
 (global-set-key (kbd "<M-right>") 'tabbar-forward)
 
-
-(global-set-key (kbd "<C-delete>") 'kill-word)
-(global-set-key (kbd "<C-backspace>") 'backward-kill-word)
+;; (global-set-key (kbd "<C-delete>") 'kill-word)
+;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
 
 (global-set-key (kbd "<C-left>") 'backward-word)
 (global-set-key (kbd "<C-right>") 'forward-word)
