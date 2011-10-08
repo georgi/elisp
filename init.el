@@ -167,7 +167,6 @@
 (browse-kill-ring-default-keybindings)
 (setq kill-ring-max 20)
 
-(add-hook 'before-save-hook 'untabify-buffer)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; Cua
@@ -378,7 +377,7 @@
 
 (defun rhtml-mode-on-init ()
   (abbrev-mode nil)
-  (add-hook 'before-save-hook 'untabify-buffer)
+  (add-hook 'before-save-hook 'untabify-buffer nil t)
   (setq indent-tabs-mode nil)
   (make-local-variable 'tags-file-name))
 
@@ -442,7 +441,7 @@
   (setq js2-strict-var-redeclaration-warning t)
   (setq indent-tabs-mode nil)
 
-  (add-hook 'before-save-hook 'untabify-buffer)
+  (add-hook 'before-save-hook 'untabify-buffer nil t)
 
   ;; (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   )
@@ -457,7 +456,7 @@
                      ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers))
 
-  (add-hook 'before-save-hook 'untabify-buffer))
+  (add-hook 'before-save-hook 'untabify-buffer nil t))
 
 (add-hook 'js-mode-hook 'js-mode-on-init)
 
@@ -473,7 +472,9 @@
                      ac-source-functions
                      ac-source-symbols
                      ac-source-variables
-                     ac-source-words-in-buffer)))
+                     ac-source-words-in-buffer))
+
+  (add-hook 'before-save-hook 'untabify-buffer nil t))
 
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init)
 
@@ -486,8 +487,7 @@
 (add-to-list 'auto-mode-alist  '("\\.liquid$" . html-mode))
 
 (defun html-mode-on-init ()
-  (add-hook 'before-save-hook 'untabify-buffer)
-  )
+  (add-hook 'before-save-hook 'untabify-buffer nil t))
 
 (add-hook 'html-mode-hook 'html-mode-on-init)
 
@@ -500,13 +500,12 @@
   "Regular expression matching any selector. Used by imenu.")
 
 (defun css-mode-on-init ()
-  (add-hook 'before-save-hook 'untabify-buffer)
+  (add-hook 'before-save-hook 'untabify-buffer nil t)
 
   (setq cssm-indent-level 4)
   (setq cssm-indent-function #'cssm-c-style-indenter)
   (set (make-local-variable 'imenu-generic-expression)
-       css-imenu-generic-expression)
-  )
+       css-imenu-generic-expression))
 
 (add-hook 'css-mode-hook 'css-mode-on-init)
 
@@ -515,7 +514,7 @@
 ;; C Mode
 ;;
 (defun c-mode-on-init ()
-  (add-hook 'before-save-hook 'untabify-buffer)
+  (add-hook 'before-save-hook 'untabify-buffer nil t)
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
@@ -532,6 +531,7 @@
 (add-to-list 'auto-mode-alist '("\\.xml$" . nxml-mode))
 
 (defun nxml-mode-on-init ()
+  (add-hook 'before-save-hook 'untabify-buffer nil t)
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
                      ac-source-words-in-buffer)))
@@ -627,7 +627,7 @@
                     :foreground "lightblue")
 
 (set-face-attribute 'font-lock-function-name-face nil
-                    :foreground "LimeGreen")
+                    :foreground "green")
 
 (set-face-attribute 'region nil
                     :background "blue")
