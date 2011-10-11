@@ -483,6 +483,7 @@
 ;; ********************************************************************************
 ;; HTML Mode
 ;;
+(setq auto-mode-alist (remove-if (lambda (item) (string-equal (car item) "\\.html$")) auto-mode-alist))
 (add-to-list 'auto-mode-alist  '("\\.html$" . html-mode))
 (add-to-list 'auto-mode-alist  '("\\.liquid$" . html-mode))
 
@@ -695,8 +696,8 @@
 (when (boundp 'aquamacs-version)
   (global-set-key (kbd "M-F") 'aquamacs-toggle-full-frame))
 
-(global-set-key (kbd "<M-left>") 'tabbar-backward)
-(global-set-key (kbd "<M-right>") 'tabbar-forward)
+(global-set-key (kbd "<C-S-tab>") 'tabbar-backward)
+(global-set-key (kbd "<C-tab>") 'tabbar-forward)
 
 ;; (global-set-key (kbd "<C-delete>") 'kill-word)
 ;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
