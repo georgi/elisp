@@ -699,11 +699,17 @@
 (global-set-key (kbd "<C-S-tab>") 'tabbar-backward)
 (global-set-key (kbd "<C-tab>") 'tabbar-forward)
 
-;; (global-set-key (kbd "<C-delete>") 'kill-word)
-;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
-
 (global-set-key (kbd "<C-left>") 'backward-word)
 (global-set-key (kbd "<C-right>") 'forward-word)
+
+(global-set-key (kbd "<C-up>") 'backward-sexp)
+(global-set-key (kbd "<C-down>") 'forward-sexp)
+
+(global-set-key (kbd "<M-up>") 'backward-paragraph)
+(global-set-key (kbd "<M-down>") 'forward-paragraph)
+
+;; (global-set-key (kbd "<C-delete>") 'kill-word)
+;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
 
 (when (and (= emacs-major-version 23)
            (= emacs-minor-version 1)
