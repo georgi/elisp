@@ -36,6 +36,8 @@
 (unless (boundp 'aquamacs-version)
   (require 'tabbar))
 
+(setenv "PATH"
+        (shell-command-to-string "source $HOME/.zshrc>/dev/null && printf $PATH"))
 
 ;; ********************************************************************************
 ;; Variables
@@ -217,8 +219,8 @@
 (transient-mark-mode t)
 (recentf-mode)
 
-(if window-system
-    (global-hl-line-mode t))
+;; (if window-system
+(global-hl-line-mode t)
 
 (if (fboundp 'set-scroll-bar-mode)
     (set-scroll-bar-mode nil))
@@ -309,7 +311,9 @@
 ;; ********************************************************************************
 ;; Ruby Mode
 ;;
-;; (require 'rspec-mode)
+(require 'compile)
+(require 'ruby-mode)
+(require 'rspec-mode)
 
 (setq ruby-deep-indent-paren nil)
 (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
@@ -340,7 +344,7 @@
   (define-key ruby-mode-map (kbd "C-c C-t") 'rspec-toggle-spec-and-target)
   )
 
-(add-hook 'ruby-mode-hook 'ruby-mode-on-init)
+(add-hook 'ruby-mode-hook 'ruby-mode-on-init) ;
 
 (defun rspec-run-single-file (spec-file &rest opts)
   "Runs spec with the specified options"
@@ -419,6 +423,11 @@
 (defun js2-mode-on-init ()
   (make-local-variable 'tags-file-name)
 
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-semantic
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
+
   (setq js2-allow-keywords-as-property-names nil)
   (setq js2-allow-rhino-new-expr-initializer t)
   (setq js2-basic-offset 2)
@@ -432,6 +441,7 @@
   (setq js2-missing-semi-one-line-override t)
   (setq js2-mode-show-overlay nil)
   (setq js2-mode-show-strict-warnings t)
+  (setq js2-mirror-mode t)
   (setq js2-skip-preprocessor-directives t)
   (setq js2-strict-cond-assign-warning t)
   (setq js2-strict-inconsistent-return-warning nil)
@@ -702,8 +712,11 @@
 (global-set-key (kbd "<C-left>") 'backward-word)
 (global-set-key (kbd "<C-right>") 'forward-word)
 
-(global-set-key (kbd "<C-up>") 'backward-sexp)
-(global-set-key (kbd "<C-down>") 'forward-sexp)
+(global-set-key (kbd "<M-left>") 'backward-word)
+(global-set-key (kbd "<M-right>") 'forward-word)
+
+(global-set-key (kbd "<C-up>") 'backward-paragraph)
+(global-set-key (kbd "<C-down>") 'forward-paragraph)
 
 (global-set-key (kbd "<M-up>") 'backward-paragraph)
 (global-set-key (kbd "<M-down>") 'forward-paragraph)
