@@ -12,28 +12,88 @@
 (add-to-list 'load-path "~/.emacs.d/python")
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 
+
+(defun init-mode ()
+  (require 'yasnippet)
+  (require 'auto-complete-config)
+  (require 'auto-complete-yasnippet)
+
+  (global-auto-complete-mode t)
+  (yas/initialize)
+  (yas/load-directory "~/.emacs.d/yasnippet/snippets")
+  (yas/load-directory "~/.emacs.d/snippets/")
+  (setq yas/trigger-key "TAB")
+
+  (add-hook 'before-save-hook 'untabify-buffer nil t)
+  (setq indent-tabs-mode nil)
+  (make-local-variable 'tags-file-name)
+
+  (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
+  (ac-config-default)
+  (ac-set-trigger-key "TAB")
+  (setq ac-auto-start nil)
+
+  (init-faces)
+  )
+
+(defun init-faces ()
+  (set-face-attribute 'default nil
+                      :background "black"
+                      :foreground "grey90")
+
+  (set-face-attribute 'modeline nil
+                      :background "grey10"
+                      :foreground "grey90")
+
+  (set-face-attribute 'hl-line nil
+                      :background "grey10"
+                      :foreground nil)
+
+  (set-face-attribute 'cursor nil
+                      :background "white")
+
+  (set-face-attribute 'font-lock-builtin-face nil
+                      :foreground "cyan")
+
+  (set-face-attribute 'font-lock-comment-face nil
+                      :foreground "grey50")
+
+  (set-face-attribute 'font-lock-constant-face nil
+                      :foreground "SkyBlue")
+
+  (set-face-attribute 'font-lock-keyword-face nil
+                      :foreground "lightgreen")
+
+  (set-face-attribute 'font-lock-string-face nil
+                      :foreground "chocolate1")
+
+  (set-face-attribute 'font-lock-variable-name-face nil
+                      :foreground "lightblue")
+
+  (set-face-attribute 'font-lock-function-name-face nil
+                      :foreground "green")
+
+  (set-face-attribute 'region nil
+                      :background "blue")
+
+  (set-face-attribute 'erb-exec-face nil
+                      :background "grey10"
+                      :foreground "grey90")
+
+  (set-face-attribute 'erb-out-face nil
+                      :background "grey10"
+                      :foreground "grey90"))
+
 ;; ********************************************************************************
 ;; Requires
 
+(require 'evil)
 (require 'find-file-in-project)
-(require 'yasnippet)
-(require 'auto-complete-config)
-(require 'auto-complete-yasnippet)
 (require 'browse-kill-ring)
 (require 'etags-table)
 (require 'etags-select)
 (require 'session)
-(eval-when-compile (require 'markdown-mode))
-(require 'erlang-start)
-(require 'sass-mode)
-(eval-when-compile (require 'js2-mode))
-(eval-when-compile (require 'css-mode))
-(eval-when-compile (require 'regexp-opt))
-(require 'dired)
-(require 'dired-single)
-(require 'wdired)
 (require 'smart-compile)
-
 (unless (boundp 'aquamacs-version)
   (require 'tabbar))
 
@@ -61,20 +121,6 @@
   (setq mac-command-modifier 'meta)
   (aquamacs-autoface-mode -1))
 
-(yas/initialize)
-(yas/load-directory "~/.emacs.d/yasnippet/snippets")
-(yas/load-directory "~/.emacs.d/snippets/")
-(setq yas/trigger-key "TAB")
-
-
-(add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
-(ac-config-default)
-(ac-set-trigger-key "TAB")
-(setq ac-auto-start nil)
-
-(global-auto-complete-mode t)
-
-(require 'evil)
 (evil-mode 1)
 (define-key evil-normal-state-map (kbd "M-.") nil)
 
@@ -90,7 +136,7 @@
    ((looking-at "\\_>")
     (unless (ac-menu-live-p)
       (ac-fuzzy-complete))
-   ((indent-for-tab-command)))))
+    (indent-for-tab-command))))
 
 (defun lgrep-from-isearch ()
   (interactive)
@@ -137,7 +183,7 @@
 
 (defun save-and-exit()
   (interactive)
-  (save-buffer)
+  ;; (save-buffer)
   (save-buffers-kill-terminal))
 
 (defun kill-current-buffer()
@@ -185,10 +231,10 @@
   (setq default-input-method "rfc1345"))
 
 ;; Desktop
-(desktop-save-mode t)
-(setq desktop-globals-to-save nil)
-(setq desktop-load-locked-desktop t)
-(setq desktop-save t)
+;; (desktop-save-mode t)
+;; (setq desktop-globals-to-save nil)
+;; (setq desktop-load-locked-desktop t)
+;; (setq desktop-save t)
 
 ;; ********************************************************************************
 ;; ibuffer
@@ -264,6 +310,14 @@
 
 
 ;; ********************************************************************************
+;; Erlang Mode
+;;
+(autoload 'erlang-mode "erlang-mode.el" "Major mode for editing erlang files" t)
+(add-to-list 'auto-mode-alist '("\\.erl\\'" . erlang-mode))
+(add-to-list 'auto-mode-alist '("\\.hrl\\'" . erlang-mode))
+
+
+;; ********************************************************************************
 ;; Markdown Mode
 ;;
 (autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
@@ -288,9 +342,9 @@
 (add-to-list 'interpreter-mode-alist '("php" . php-mode))
 
 (defun php-mode-on-init ()
+  (init-mode)
   (setq tab-width 4)
   (setq c-basic-offset 4)
-  (setq indent-tabs-mode nil)
   (c-set-style "k&r")
   )
 
@@ -309,19 +363,13 @@
 ;; ********************************************************************************
 ;; Erlang Mode
 ;;
-(add-to-list 'auto-mode-alist '("\\.yaws\\'" . html-mode))
+(add-to-list 'auto-mode-alist '("\\.yaws\\'" . erlang-mode))
 
 
 
 ;; ********************************************************************************
 ;; Ruby Mode
 ;;
-(require 'compile)
-(require 'ruby-mode)
-(require 'rspec-mode)
-
-(setq ruby-deep-indent-paren nil)
-(setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
 ;; (setq ruby-deep-indent-paren t)
 ;;
@@ -330,59 +378,47 @@
 (add-to-list 'auto-mode-alist  '("\\.ru$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))
 
-(defun ruby-mode-on-init ()
-  (setq indent-tabs-mode nil)
-  (setq ruby-deep-indent-paren nil)
+(defun spec-run-single-file (spec-file &rest opts)
+  "Runs spec with the specified options"
+  (compile (concat "~/.emacs.d/spec " spec-file " --drb " (mapconcat (lambda (x) x) opts " ")))
+  (end-of-buffer-other-window 0))
 
-  (make-local-variable 'tags-file-name)
+(defun spec-verify ()
+  "Runs the specified spec for the current buffer."
+  (interactive)
+  (spec-run-single-file (buffer-file-name) "--format" "progress"))
+
+(defun rspec-verify-single ()
+  "Runs the specified example at the point of the current buffer."
+  (interactive)
+  (spec-run-single-file (buffer-file-name) (concat "--line " (number-to-string (line-number-at-pos)))))
+
+(defun ruby-mode-on-init ()
+  (init-mode)
+
+  (setq ruby-deep-indent-paren nil)
+  (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
+
   (setq toggle-mapping-style 'rspec)
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers))
-
-  (define-key ruby-mode-map (kbd "C-c =") 'ruby-xmp-region)
-  (define-key ruby-mode-map (kbd "C-c C-v") 'rspec-verify)
-  (define-key ruby-mode-map (kbd "C-c C-s") 'rspec-verify-single)
-  (define-key ruby-mode-map (kbd "C-c C-a") 'rspec-verify-single)
-  (define-key ruby-mode-map (kbd "C-c C-d") 'rspec-toggle-example-pendingness)
-  (define-key ruby-mode-map (kbd "C-c C-t") 'rspec-toggle-spec-and-target)
-  )
+ )
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init) ;
-
-(defun rspec-run-single-file (spec-file &rest opts)
-  "Runs spec with the specified options"
-  (rspec-register-verify-redo (cons 'rspec-run-single-file (cons spec-file opts)))
-  (compile (concat "~/.emacs.d/spec " spec-file " --drb " (mapconcat (lambda (x) x) opts " ")))
-  (end-of-buffer-other-window 0))
-
-(defun rspec-verify ()
-  "Runs the specified spec, or the spec file for the current buffer."
-  (interactive)
-  (rspec-run-single-file (rspec-spec-file-for (buffer-file-name)) "--format" "progress"))
-
-(defun rspec-verify-single ()
-  "Runs the specified example at the point of the current buffer."
-  (interactive)
-  (rspec-run-single-file (rspec-spec-file-for (buffer-file-name)) (concat "--line " (number-to-string (line-number-at-pos)))))
-
 
 
 ;; ********************************************************************************
 ;; RHTML Mode
 ;;
-(eval-when-compile (require 'rhtml-mode))
-
 (autoload 'rhtml-mode "rhtml-mode" "RHTML Mode" t)
 (add-to-list 'auto-mode-alist '("\\.rhtml$" . rhtml-mode))
 (add-to-list 'auto-mode-alist '("\\.html.erb$" . rhtml-mode))
 
 (defun rhtml-mode-on-init ()
-  (abbrev-mode nil)
-  (add-hook 'before-save-hook 'untabify-buffer nil t)
-  (setq indent-tabs-mode nil)
-  (make-local-variable 'tags-file-name))
+  (init-mode)
+  (abbrev-mode nil))
 
 (add-hook 'rhtml-mode-hook 'rhtml-mode-on-init)
 
@@ -420,7 +456,7 @@
 (setq js2-mode-must-byte-compile nil)
 
 (defun js2-mode-on-init ()
-  (make-local-variable 'tags-file-name)
+  (init-mode)
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
@@ -448,9 +484,6 @@
   (setq js2-strict-trailing-comma-warning t)
   (setq js2-strict-var-hides-function-arg-warning t)
   (setq js2-strict-var-redeclaration-warning t)
-  (setq indent-tabs-mode nil)
-
-  (add-hook 'before-save-hook 'untabify-buffer nil t)
 
   ;; (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
   )
@@ -458,34 +491,33 @@
 (add-hook 'js2-mode-hook 'js2-mode-on-init)
 
 (defun js-mode-on-init ()
-  (make-local-variable 'tags-file-name)
+  (init-mode)
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-semantic
                      ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers))
 
-  (add-hook 'before-save-hook 'untabify-buffer nil t))
 
-(add-hook 'js-mode-hook 'js-mode-on-init)
+  (add-hook 'js-mode-hook 'js-mode-on-init)
 
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
 
 
 ;; ********************************************************************************
 ;; Emacs-Lisp Mode
 ;;
 (defun emacs-lisp-mode-on-init ()
+  (init-mode)
+
   (setq ac-sources '(ac-source-yasnippet
-                     ac-source-features
-                     ac-source-functions
-                     ac-source-symbols
-                     ac-source-variables
-                     ac-source-words-in-buffer))
+		     ac-source-features
+		     ac-source-functions
+		     ac-source-symbols
+		     ac-source-variables
+		     ac-source-words-in-buffer))
 
-  (add-hook 'before-save-hook 'untabify-buffer nil t))
-
-(add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init)
+  (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init))
 
 
 
@@ -497,7 +529,7 @@
 (add-to-list 'auto-mode-alist  '("\\.liquid$" . html-mode))
 
 (defun html-mode-on-init ()
-  (add-hook 'before-save-hook 'untabify-buffer nil t))
+  )
 
 (add-hook 'html-mode-hook 'html-mode-on-init)
 
@@ -510,8 +542,7 @@
   "Regular expression matching any selector. Used by imenu.")
 
 (defun css-mode-on-init ()
-  (add-hook 'before-save-hook 'untabify-buffer nil t)
-
+  (init-mode)
   (setq cssm-indent-level 4)
   (setq cssm-indent-function #'cssm-c-style-indenter)
   (set (make-local-variable 'imenu-generic-expression)
@@ -524,11 +555,11 @@
 ;; C Mode
 ;;
 (defun c-mode-on-init ()
-  (add-hook 'before-save-hook 'untabify-buffer nil t)
+  (init-mode)
 
   (setq ac-sources '(ac-source-yasnippet
-                     ac-source-semantic
-                     ac-source-words-in-buffer)))
+		     ac-source-semantic
+		     ac-source-words-in-buffer)))
 
 (add-hook 'c-mode-hook 'c-mode-on-init)
 
@@ -541,10 +572,10 @@
 (add-to-list 'auto-mode-alist '("\\.xml$" . nxml-mode))
 
 (defun nxml-mode-on-init ()
-  (add-hook 'before-save-hook 'untabify-buffer nil t)
+  (init-mode)
   (setq ac-sources '(ac-source-yasnippet
-                     ac-source-semantic
-                     ac-source-words-in-buffer)))
+		     ac-source-semantic
+		     ac-source-words-in-buffer)))
 
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
 
@@ -556,15 +587,22 @@
   (interactive)
   (joc-dired-single-buffer ".."))
 
-(define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
-(define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
-(define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
+(defun dired-mode-on-init ()
+  (require 'dired-single)
+  (require 'wdired)
 
-(define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
+  (define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
+  (define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
+  (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
 
-(setq dired-backup-overwrite t)
-(setq dired-listing-switches "-al")
-;; (setq dired-omit-files "^\\.")
+  (define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
+
+  (setq dired-backup-overwrite t)
+  (setq dired-listing-switches "-al")
+  ;; (setq dired-omit-files "^\\.")
+  )
+
+(add-hook 'dired-mode-hook 'dired-mode-on-init)
 
 (defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
   (if (equal major-mode 'dired-mode)
@@ -594,61 +632,11 @@
 (add-to-list 'smart-compile-alist '("_spec\\.rb$" . "spec %f"))
 (add-to-list 'smart-compile-alist '("\\.scm$"     . "scheme %f"))
 (add-to-list 'smart-compile-alist '(haskell-mode  . "ghc -o %n %f")) ;
-(add-to-list 'smart-compile-alist '("\\.mxml$"    . (compile-mxmlc)))
-(add-to-list 'smart-compile-alist '("\\.as$"      . (compile-mxmlc)))
-
 
 (setq ffip-patterns
-  '("*.haml" "*.sass" "*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
-    "*.sh" "*.erl" "*.hs" "*.ml" "*.yml" "*.css"))
+      '("*.haml" "*.sass" "*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
+	"*.sh" "*.erl" "*.hs" "*.ml" "*.yml" "*.css"))
 
-
-(set-face-attribute 'default nil
-                    :background "black"
-                    :foreground "grey90")
-
-(set-face-attribute 'modeline nil
-                    :background "grey10"
-                    :foreground "grey90")
-
-(set-face-attribute 'hl-line nil
-                    :background "grey10"
-                    :foreground "grey90")
-
-(set-face-attribute 'cursor nil
-                    :background "white")
-
-(set-face-attribute 'font-lock-builtin-face nil
-                    :foreground "cyan")
-
-(set-face-attribute 'font-lock-comment-face nil
-                    :foreground "grey50")
-
-(set-face-attribute 'font-lock-constant-face nil
-                    :foreground "SkyBlue")
-
-(set-face-attribute 'font-lock-keyword-face nil
-                    :foreground "lightgreen")
-
-(set-face-attribute 'font-lock-string-face nil
-                    :foreground "chocolate1")
-
-(set-face-attribute 'font-lock-variable-name-face nil
-                    :foreground "lightblue")
-
-(set-face-attribute 'font-lock-function-name-face nil
-                    :foreground "green")
-
-(set-face-attribute 'region nil
-                    :background "blue")
-
-(set-face-attribute 'erb-exec-face nil
-                    :background "grey10"
-                    :foreground "grey90")
-
-(set-face-attribute 'erb-out-face nil
-                    :background "grey10"
-                    :foreground "grey90")
 
 
 
@@ -661,6 +649,8 @@
 (global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c s") 'shell)
 (global-set-key (kbd "C-c r") 'revert-buffer)
+(global-set-key (kbd "C-c C-v") 'spec-verify)
+(global-set-key (kbd "C-c C-s") 'spec-verify-single)
 
 (global-set-key (kbd "M-/") 'tags-search)
 (global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
@@ -722,10 +712,3 @@
 
 ;; (global-set-key (kbd "<C-delete>") 'kill-word)
 ;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
-
-(when (and (= emacs-major-version 23)
-           (= emacs-minor-version 1)
-           (equal window-system 'w32))
-  (defun server-ensure-safe-dir (dir) "Noop" t)) ; Suppress error "directory
-                                        ; ~/.emacs.d/server is unsafe"
-                                        ; on windows.
