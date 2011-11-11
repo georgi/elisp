@@ -13,81 +13,11 @@
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 
-(defun init-mode ()
-  (require 'yasnippet)
-  (require 'auto-complete-config)
-  (require 'auto-complete-yasnippet)
-
-  (global-auto-complete-mode t)
-  (yas/initialize)
-  (yas/load-directory "~/.emacs.d/yasnippet/snippets")
-  (yas/load-directory "~/.emacs.d/snippets/")
-  (setq yas/trigger-key "TAB")
-
-  (add-hook 'before-save-hook 'untabify-buffer nil t)
-  (setq indent-tabs-mode nil)
-  (make-local-variable 'tags-file-name)
-
-  (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
-  (ac-config-default)
-  (ac-set-trigger-key "TAB")
-  (setq ac-auto-start nil)
-
-  (init-faces)
-  )
-
-(defun init-faces ()
-  (set-face-attribute 'default nil
-                      :background "black"
-                      :foreground "grey90")
-
-  (set-face-attribute 'modeline nil
-                      :background "grey10"
-                      :foreground "grey90")
-
-  (set-face-attribute 'hl-line nil
-                      :background "grey10"
-                      :foreground nil)
-
-  (set-face-attribute 'cursor nil
-                      :background "white")
-
-  (set-face-attribute 'font-lock-builtin-face nil
-                      :foreground "cyan")
-
-  (set-face-attribute 'font-lock-comment-face nil
-                      :foreground "grey50")
-
-  (set-face-attribute 'font-lock-constant-face nil
-                      :foreground "SkyBlue")
-
-  (set-face-attribute 'font-lock-keyword-face nil
-                      :foreground "lightgreen")
-
-  (set-face-attribute 'font-lock-string-face nil
-                      :foreground "chocolate1")
-
-  (set-face-attribute 'font-lock-variable-name-face nil
-                      :foreground "lightblue")
-
-  (set-face-attribute 'font-lock-function-name-face nil
-                      :foreground "green")
-
-  (set-face-attribute 'region nil
-                      :background "blue")
-
-  (set-face-attribute 'erb-exec-face nil
-                      :background "grey10"
-                      :foreground "grey90")
-
-  (set-face-attribute 'erb-out-face nil
-                      :background "grey10"
-                      :foreground "grey90"))
-
 ;; ********************************************************************************
 ;; Requires
 
 (require 'evil)
+(require 'cl)
 (require 'find-file-in-project)
 (require 'browse-kill-ring)
 (require 'etags-table)
@@ -124,19 +54,34 @@
 (evil-mode 1)
 (define-key evil-normal-state-map (kbd "M-.") nil)
 
+(defvar autocomplete-initialized nil)
+
+(defun init-autocomplete ()
+  (require 'yasnippet)
+  (require 'auto-complete-config)
+  (require 'auto-complete-yasnippet)
+
+  (yas/initialize)
+  (yas/load-directory "~/.emacs.d/yasnippet/snippets")
+  (yas/load-directory "~/.emacs.d/snippets/")
+  (setq yas/trigger-key "TAB")
+  (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
+  (ac-config-default)
+  (ac-set-trigger-key "TAB")
+  (setq ac-auto-start nil)
+  (global-auto-complete-mode t))
+
+(defun init-mode ()
+  (unless autocomplete-initialized
+    (init-autocomplete)
+    (setq autocomplete-initialized t))
+
+  (add-hook 'before-save-hook 'untabify-buffer nil t)
+  (setq indent-tabs-mode nil)
+  (make-local-variable 'tags-file-name))
+
 ;; ********************************************************************************
 ;; Defuns
-
-(defun indent-and-complete ()
-  "Indent line and complete"
-  (interactive)
-  (cond
-   ((and (boundp 'snippet) snippet)
-    (snippet-next-field))
-   ((looking-at "\\_>")
-    (unless (ac-menu-live-p)
-      (ac-fuzzy-complete))
-    (indent-for-tab-command))))
 
 (defun lgrep-from-isearch ()
   (interactive)
@@ -248,11 +193,14 @@
 ;;
 (ido-mode t)
 (setq ido-case-fold t)
-(setq ido-enable-flex-matching t)
+(setq ido-enable-flex-matching nil)
 (setq ido-everywhere nil)
-;; (setq ido-enable-tramp-completion nil)
-(setq ido-separator "  ")
-(setq ido-use-filename-at-point (quote guess))
+(setq ido-create-new-buffer 'always)
+(setq ido-max-prospects 3)
+(setq ido-enable-tramp-:completion nil)
+(setq ido-separator "    ")
+(setq ido-auto-merge-work-directories-length -1)
+(setq ido-rotate-file-list-default t)
 (load "ido-goto-symbol")
 
 ;; ********************************************************************************
@@ -270,8 +218,11 @@
 (transient-mark-mode t)
 (recentf-mode)
 
-;; (if window-system
-(global-hl-line-mode t)
+(if window-system
+    (global-hl-line-mode t))
+
+(unless window-system
+  (menu-bar-mode 0))
 
 (if (fboundp 'set-scroll-bar-mode)
     (set-scroll-bar-mode nil))
@@ -281,6 +232,46 @@
 
 (load "find-tags-file")
 
+(set-face-attribute 'default nil
+		    :background "black"
+		    :foreground "grey90")
+
+(set-face-attribute 'modeline nil
+		    :background "grey10"
+		    :foreground "grey90")
+
+(if window-system
+    (set-face-attribute 'hl-line nil
+			:background "grey10"
+			:foreground nil))
+
+(set-face-attribute 'cursor nil
+		    :background "white")
+
+(set-face-attribute 'font-lock-builtin-face nil
+		    :foreground "cyan")
+
+(set-face-attribute 'font-lock-comment-face nil
+		    :foreground "grey50")
+
+(set-face-attribute 'font-lock-constant-face nil
+		    :foreground "SkyBlue")
+
+(set-face-attribute 'font-lock-keyword-face nil
+		    :foreground "lightgreen")
+
+(set-face-attribute 'font-lock-string-face nil
+		    :foreground "chocolate1")
+
+(set-face-attribute 'font-lock-variable-name-face nil
+		    :foreground "lightblue")
+
+(set-face-attribute 'font-lock-function-name-face nil
+		    :foreground "green")
+
+(set-face-attribute 'region nil
+		    :background "blue")
+;
 
 ;; ********************************************************************************
 ;; Autoloads
@@ -380,18 +371,18 @@
 
 (defun spec-run-single-file (spec-file &rest opts)
   "Runs spec with the specified options"
-  (compile (concat "~/.emacs.d/spec " spec-file " --drb " (mapconcat (lambda (x) x) opts " ")))
+  (compile (concat "~/.emacs.d/spin " spec-file " " (mapconcat (lambda (x) x) opts " ")))
   (end-of-buffer-other-window 0))
 
 (defun spec-verify ()
   "Runs the specified spec for the current buffer."
   (interactive)
-  (spec-run-single-file (buffer-file-name) "--format" "progress"))
+  (spec-run-single-file (buffer-file-name) "--format" "nested"))
 
-(defun rspec-verify-single ()
+(defun spec-verify-single ()
   "Runs the specified example at the point of the current buffer."
   (interactive)
-  (spec-run-single-file (buffer-file-name) (concat "--line " (number-to-string (line-number-at-pos)))))
+  (spec-run-single-file (buffer-file-name) "--format" "nested" "--line " (number-to-string (line-number-at-pos))))
 
 (defun ruby-mode-on-init ()
   (init-mode)
@@ -399,12 +390,10 @@
   (setq ruby-deep-indent-paren nil)
   (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
-  (setq toggle-mapping-style 'rspec)
-
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers))
- )
+  )
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init) ;
 
@@ -418,6 +407,14 @@
 
 (defun rhtml-mode-on-init ()
   (init-mode)
+
+  (set-face-attribute 'erb-exec-face nil
+                      :background "grey10"
+                      :foreground "grey90")
+
+  (set-face-attribute 'erb-out-face nil
+                      :background "grey10"
+                      :foreground "grey90")
   (abbrev-mode nil))
 
 (add-hook 'rhtml-mode-hook 'rhtml-mode-on-init)
@@ -452,6 +449,8 @@
 ;;
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
+(autoload 'js2-mode "js2-mode" "JS2 Mode." t)
+
 (setq js2-mode-dev-mode-p t)
 (setq js2-mode-must-byte-compile nil)
 
@@ -466,7 +465,6 @@
   (setq js2-allow-keywords-as-property-names nil)
   (setq js2-allow-rhino-new-expr-initializer t)
   (setq js2-basic-offset 2)
-  (setq js2-bounce-indent-flag nil)
   (setq js2-dynamic-idle-timer-adjust 2)
   (setq js2-highlight-level 4)
   (setq js2-idle-timer-delay 5)
@@ -499,9 +497,9 @@
                      ac-source-words-in-same-mode-buffers))
 
 
-  (add-hook 'js-mode-hook 'js-mode-on-init)
+  (add-hook 'js-mode-hook 'js-mode-on-init))
 
-  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
+;; (add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
 
 
 ;; ********************************************************************************
@@ -529,7 +527,7 @@
 (add-to-list 'auto-mode-alist  '("\\.liquid$" . html-mode))
 
 (defun html-mode-on-init ()
-  )
+  (init-mode))
 
 (add-hook 'html-mode-hook 'html-mode-on-init)
 
@@ -549,6 +547,16 @@
        css-imenu-generic-expression))
 
 (add-hook 'css-mode-hook 'css-mode-on-init)
+
+;; ********************************************************************************
+;; SASS Mode
+;;
+(defun sass-mode-on-init ()
+  (init-mode))
+
+(add-hook 'sass-mode-hook 'sass-mode-on-init)
+(autoload 'sass-mode "sass-mode" "Sass Mode" t)
+(add-to-list 'auto-mode-alist '("\\.sass$" . sass-mode))
 
 
 ;; ********************************************************************************
