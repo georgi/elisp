@@ -5,10 +5,12 @@
 (add-to-list 'load-path "~/.emacs.d/apel")
 (add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
+(add-to-list 'load-path "~/.emacs.d/icicles")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
+;; (add-to-list 'load-path "~/.emacs.d/Enhanced-Ruby-Mode")
 (add-to-list 'load-path "~/.emacs.d/python")
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 
@@ -18,6 +20,7 @@
 
 (require 'evil)
 (require 'cl)
+(require 'icicles)
 (require 'find-file-in-project)
 (require 'browse-kill-ring)
 (require 'etags-table)
@@ -27,32 +30,26 @@
 (unless (boundp 'aquamacs-version)
   (require 'tabbar))
 
-(setenv "PATH"
-        (concat (shell-command-to-string "source $HOME/.zshrc>/dev/null && printf $PATH")))
-
 ;; ********************************************************************************
 ;; Variables
 ;;
 (fset 'yes-or-no-p 'y-or-n-p)
-(setq x-select-enable-clipboard t)
 (setq case-fold-search t)
 (setq enable-recursive-minibuffers nil)
 (setq inhibit-startup-screen t)
 (setq list-directory-verbose-switches "")
-(setq next-line-add-newlines nil)
 (setq nxml-slash-auto-complete-flag t)
 (setq session-initialize t)
 (setq standard-indent 2)
-(setq use-file-dialog t)
 (setq tags-revert-without-query t)
 (setq tab-width 4)
 
 (when (boundp 'aquamacs-version)
-  (setq mac-command-modifier 'meta)
   (aquamacs-autoface-mode -1))
 
 (evil-mode 1)
-(define-key evil-normal-state-map (kbd "M-.") nil)
+(icy-mode)
+
 
 (defvar autocomplete-initialized nil)
 
@@ -100,25 +97,6 @@
 (define-key isearch-mode-map (kbd "C-O") 'lgrep-from-isearch)
 (define-key isearch-mode-map (kbd "C-o") 'occur-from-isearch)
 
-(defun ido-complete-command ()
-  (interactive)
-  (call-interactively
-   (intern
-    (ido-completing-read
-     "M-x "
-     (all-completions "" obarray 'commandp)))))
-
-(defun ido-find-tag ()
-  "Find a tag using ido"
-  (interactive)
-  (tags-completion-table)
-  (let (tag-names)
-    (mapc (lambda (x)
-            (unless (integerp x)
-              (push (prin1-to-string x t) tag-names)))
-          tags-completion-table)
-    (find-tag (ido-completing-read "Tag: " tag-names))))
-
 (defun popup-yank-menu()
   (interactive)
   (let ((x-y (posn-x-y (posn-at-point (point)))))
@@ -131,9 +109,14 @@
   ;; (save-buffer)
   (save-buffers-kill-terminal))
 
-(defun kill-current-buffer()
+(defun close-tab()
   (interactive)
-  (kill-buffer (buffer-name)))
+  (let ((tabs (length (tabbar-tabs tabbar-current-tabset))))
+    (kill-buffer (buffer-name))
+    (if (= tabs 1)
+	(if (boundp 'aquamacs-version)
+	    (aquamacs-delete-window)
+ 	  (delete-frame)))))
 
 (defun indent-buffer ()
   (interactive)
@@ -149,16 +132,8 @@
 (defun sudo-edit (&optional arg)
   (interactive "p")
   (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo:root@localhost:" (ido-read-file-name "File: ")))
+      (find-file (concat "/sudo:root@localhost:" (read-file-name "File: ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
-
-(defun recentf-ido-find-file ()
-  "Find a recent file using ido."
-  (interactive)
-  (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
-    (when file
-      (find-file file))))
-
 
 
 
@@ -166,14 +141,6 @@
 (setq kill-ring-max 20)
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-;; Cua
-(when (boundp 'aquamacs-version)
-  (cua-mode t)
-  (setq cua-enable-region-auto-help t)
-  (setq cua-highlight-region-shift-only nil)
-  (setq current-language-environment "UTF-8")
-  (setq default-input-method "rfc1345"))
 
 ;; Desktop
 ;; (desktop-save-mode t)
@@ -191,17 +158,17 @@
 ;; ********************************************************************************
 ;; Ido
 ;;
-(ido-mode t)
-(setq ido-case-fold t)
-(setq ido-enable-flex-matching nil)
-(setq ido-everywhere nil)
-(setq ido-create-new-buffer 'always)
-(setq ido-max-prospects 3)
-(setq ido-enable-tramp-:completion nil)
-(setq ido-separator "    ")
-(setq ido-auto-merge-work-directories-length -1)
-(setq ido-rotate-file-list-default t)
-(load "ido-goto-symbol")
+;; (ido-mode t)
+;; (setq ido-case-fold t)
+;; (setq ido-enable-flex-matching nil)
+;; (setq ido-everywhere nil)
+;; (setq ido-create-new-buffer 'always)
+;; (setq ido-max-prospects 3)
+;; (setq ido-enable-tramp-:completion nil)
+;; (setq ido-separator "    ")
+;; (setq ido-auto-merge-work-directories-length -1)
+;; (setq ido-rotate-file-list-default t)
+;; (load "ido-goto-symbol")
 
 ;; ********************************************************************************
 ;; I-Menu
@@ -271,12 +238,11 @@
 
 (set-face-attribute 'region nil
 		    :background "blue")
-;
+					;
 
 ;; ********************************************************************************
 ;; Autoloads
 ;;
-(autoload 'worklog "worklog" "work log" t)
 (autoload 'rdebug "rdebug" "ruby Debug" t)
 
 
@@ -362,8 +328,8 @@
 ;; Ruby Mode
 ;;
 
-;; (setq ruby-deep-indent-paren t)
-;;
+(setq enh-ruby-program "/Users/soundcloud/.rvm/rubies/ruby-1.9.2-p290/bin/ruby")
+
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.ru$" . ruby-mode))
@@ -652,71 +618,44 @@
 ;; Global Key Bindings
 ;;
 
-;; Function keys
+
+;; Movement
+(global-set-key (kbd "<up>") 'evil-previous-line)
+(global-set-key (kbd "<down>") 'evil-next-line)
+(global-set-key (kbd "<left>") 'evil-backward-char)
+(global-set-key (kbd "<right>") 'evil-forward-char)
+(global-set-key (kbd "<C-left>") 'evil-backward-word-begin)
+(global-set-key (kbd "<C-right>") 'evil-forward-word-begin)
+(global-set-key (kbd "<C-up>") 'evil-backward-paragraph)
+(global-set-key (kbd "<C-down>") 'evil-forward-paragraph)
+(define-key evil-motion-state-map " " 'evil-visual-char)
+
 (global-set-key (kbd "C-c c") 'smart-compile)
 (global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c s") 'shell)
-(global-set-key (kbd "C-c r") 'revert-buffer)
+(global-set-key (kbd "C-c /") 'tags-search)
+(global-set-key (kbd "C-c ?") 'etags-select-find-tag-at-point)
+(global-set-key (kbd "C-c .") 'etags-select-find-tag)
+(global-set-key (kbd "C-c [") 'start-kbd-macro)
+(global-set-key (kbd "C-c ]") 'end-kbd-macro)
+(global-set-key (kbd "C-c \\") 'call-last-kbd-macro)
+(global-set-key (kbd "C-c r") 'rgrep)
+(global-set-key (kbd "C-c n") 'next-error)
+(global-set-key (kbd "C-c b") 'ibuffer)
+(global-set-key (kbd "A-d") 'split-window-horizontally)
+
+(global-set-key (kbd "C-c C-c") 'recompile)
 (global-set-key (kbd "C-c C-v") 'spec-verify)
 (global-set-key (kbd "C-c C-s") 'spec-verify-single)
 
-(global-set-key (kbd "M-/") 'tags-search)
-(global-set-key (kbd "M-?") 'etags-select-find-tag-at-point)
-(global-set-key (kbd "M-.") 'etags-select-find-tag)
-(global-set-key (kbd "M-[") 'start-kbd-macro)
-(global-set-key (kbd "M-]") 'end-kbd-macro)
-(global-set-key (kbd "M-\\") 'call-last-kbd-macro)
-
-(global-set-key (kbd "M-a") 'mark-whole-buffer)
-(global-set-key (kbd "M-c") 'kill-ring-save)
-;; (global-set-key (kbd "M-x") 'ido-complete-command)
-(global-set-key (kbd "M-v") 'yank)
-(global-set-key (kbd "M-z") 'undo)
-(global-set-key (kbd "M-i") 'indent-buffer)
-(global-set-key (kbd "M-s") 'save-buffer)
-(global-set-key (kbd "M-r") 'rgrep)
-(global-set-key (kbd "M-l") 'lgrep)
-(global-set-key (kbd "M-n") 'next-error)
-(global-set-key (kbd "M-b") 'ibuffer)
-(global-set-key (kbd "M-t") 'tool-bar-mode)
-(global-set-key (kbd "M-o") 'other-window)
-(global-set-key (kbd "M-w") 'kill-current-buffer)
-(global-set-key (kbd "M-f") 'ido-find-file)
-(global-set-key (kbd "M-d") 'ido-dired)
-
-(global-set-key (kbd "<M-return>") 'ido-switch-buffer)
-(global-set-key (kbd "<A-return>") 'ido-switch-buffer)
-(global-set-key (kbd "<S-return>") 'ido-goto-symbol)
+;; (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
+;; (global-set-key (kbd "<A-return>") 'ido-switch-buffer)
+;; (global-set-key (kbd "<S-return>") 'ido-goto-symbol)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
+(global-set-key (kbd "<A-left>") 'tabbar-backward)
+(global-set-key (kbd "<A-right>") 'tabbar-forward)
 
-(global-set-key (kbd "M-1") 'tabbar-select-tab-1)
-(global-set-key (kbd "M-2") 'tabbar-select-tab-2)
-(global-set-key (kbd "M-3") 'tabbar-select-tab-3)
-(global-set-key (kbd "M-4") 'tabbar-select-tab-4)
-(global-set-key (kbd "M-5") 'tabbar-select-tab-5)
-(global-set-key (kbd "M-6") 'tabbar-select-tab-6)
-(global-set-key (kbd "M-7") 'tabbar-select-tab-7)
-(global-set-key (kbd "M-8") 'tabbar-select-tab-8)
-(global-set-key (kbd "M-9") 'tabbar-select-tab-9)
-
-(when (boundp 'aquamacs-version)
-  (global-set-key (kbd "M-F") 'aquamacs-toggle-full-frame))
-
-(global-set-key (kbd "<C-S-tab>") 'tabbar-backward)
-(global-set-key (kbd "<C-tab>") 'tabbar-forward)
-
-(global-set-key (kbd "<C-left>") 'backward-word)
-(global-set-key (kbd "<C-right>") 'forward-word)
-
-(global-set-key (kbd "<M-left>") 'backward-word)
-(global-set-key (kbd "<M-right>") 'forward-word)
-
-(global-set-key (kbd "<C-up>") 'backward-paragraph)
-(global-set-key (kbd "<C-down>") 'forward-paragraph)
-
-(global-set-key (kbd "<M-up>") 'backward-paragraph)
-(global-set-key (kbd "<M-down>") 'forward-paragraph)
 
 ;; (global-set-key (kbd "<C-delete>") 'kill-word)
 ;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
