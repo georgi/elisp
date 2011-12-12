@@ -20,6 +20,7 @@
 
 (require 'evil)
 (require 'cl)
+(require 'toggle)
 (require 'icicles)
 (require 'find-file-in-project)
 (require 'browse-kill-ring)
@@ -43,6 +44,7 @@
 (setq standard-indent 2)
 (setq tags-revert-without-query t)
 (setq tab-width 4)
+(setq toggle-mapping-style 'rspec)
 
 (when (boundp 'aquamacs-version)
   (aquamacs-autoface-mode -1))
@@ -50,6 +52,15 @@
 (evil-mode 1)
 (icy-mode)
 
+(setq toggle-mapping-styles
+      '((rspec   . (("app/models/\\1.rb"      . "spec/models.\\1_spec.rb")
+		    ("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
+		    ("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
+		    ("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
+		    ("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")
+		    ("lib/\\1.rb"             . "spec/lib/\\1_spec.rb")))
+	(ruby    . (("lib/\\1.rb"             . "test/test_\\1.rb")
+		    ("\\1.rb"                 . "test_\\1.rb")))))
 
 (defvar autocomplete-initialized nil)
 
@@ -238,7 +249,10 @@
 
 (set-face-attribute 'region nil
 		    :background "blue")
-					;
+
+(set-face-attribute 'icicle-search-context-level-1 nil
+		    :background "black")
+
 
 ;; ********************************************************************************
 ;; Autoloads
@@ -639,18 +653,18 @@
 (global-set-key (kbd "C-c [") 'start-kbd-macro)
 (global-set-key (kbd "C-c ]") 'end-kbd-macro)
 (global-set-key (kbd "C-c \\") 'call-last-kbd-macro)
-(global-set-key (kbd "C-c r") 'rgrep)
+(global-set-key (kbd "C-c g") 'rgrep)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c b") 'ibuffer)
 (global-set-key (kbd "A-d") 'split-window-horizontally)
 
-(global-set-key (kbd "C-c C-c") 'recompile)
-(global-set-key (kbd "C-c C-v") 'spec-verify)
+(global-set-key (kbd "C-c r") 'recompile)
+(global-set-key (kbd "C-c v") 'spec-verify)
+(global-set-key (kbd "C-c t") 'toggle-buffer)
 (global-set-key (kbd "C-c C-s") 'spec-verify-single)
 
-;; (global-set-key (kbd "<M-return>") 'ido-switch-buffer)
-;; (global-set-key (kbd "<A-return>") 'ido-switch-buffer)
-;; (global-set-key (kbd "<S-return>") 'ido-goto-symbol)
+(global-set-key (kbd "<M-return>") 'icicle-buffer)
+(global-set-key (kbd "<A-return>") 'icicle-buffer)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
 (global-set-key (kbd "<A-left>") 'tabbar-backward)

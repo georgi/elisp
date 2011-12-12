@@ -143,31 +143,33 @@ matches, it returns nil"
 Matches the current buffer against rules in toggle-mappings. If a
 match is found, switches to that buffer."
   (interactive)
-  (let* ((function (eval (list toggle-which-function-command)))
-	 (func-add (if function
-		       (concat "#" (and (string-match "#\\(.+\\)" function)
-					(match-string 1 function)))
-		     ""))
-	 (new-name (or (toggle-filename (concat (buffer-file-name) func-add)
-					toggle-mappings)
-		       (toggle-filename (buffer-file-name) toggle-mappings))))
-    (if new-name
-	(if (string-match "\\(.+\\)#\\(.+\\)" new-name)
-	    (let ((path (match-string 1 new-name))
-		  (method (match-string 2 new-name)))
-	      (flet ((try-rest (meth)
-			       (goto-char (point-min))
-			       (if meth
-				   (if (and (goto-char (point-max))
-					    (search-backward
-					     (format toggle-method-format meth) nil t)) t
-				     (try-rest (and (string-match "\\(.*\\)[-_]" meth)
-						    (match-string 1 meth))))
-				 (message "%s not defined in %s" method (file-name-nondirectory path)))))
-		(find-file path)
-		(try-rest method)))
-	  (find-file new-name))
-      (message (concat "Match not found for " (buffer-file-name))))))
+  (find-file (toggle-filename (buffer-file-name) toggle-mappings)))
+
+  ;; (let* ((function (eval (list toggle-which-function-command)))
+  ;; 	 (func-add (if function
+  ;; 		       (concat "#" (and (string-match "#\\(.+\\)" function)
+  ;; 					(match-string 1 function)))
+  ;; 		     ""))
+  ;; 	 (new-name (or (toggle-filename (concat (buffer-file-name) func-add)
+  ;; 					toggle-mappings)
+  ;; 		       (toggle-filename (buffer-file-name) toggle-mappings))))
+  ;;   (if new-name
+  ;; 	(if (string-match "\\(.+\\)#\\(.+\\)" new-name)
+  ;; 	    (let ((path (match-string 1 new-name))
+  ;; 		  (method (match-string 2 new-name)))
+  ;; 	      (flet ((try-rest (meth)
+  ;; 			       (goto-char (point-min))
+  ;; 			       (if meth
+  ;; 				   (if (and (goto-char (point-max))
+  ;; 					    (search-backward
+  ;; 					     (format toggle-method-format meth) nil t)) t
+  ;; 				     (try-rest (and (string-match "\\(.*\\)[-_]" meth)
+  ;; 						    (match-string 1 meth))))
+  ;; 				 (message "%s not defined in %s" method (file-name-nondirectory path)))))
+  ;; 		(find-file path)
+  ;; 		(try-rest method)))
+  ;; 	  (find-file new-name))
+  ;;     (message (concat "Match not found for " (buffer-file-name))))))
 
 (provide 'toggle)
 ;;; toggle.el ends here
