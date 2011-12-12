@@ -51,6 +51,7 @@
 
 (evil-mode 1)
 (icy-mode)
+(cua-mode 0)
 
 (setq toggle-mapping-styles
       '((rspec   . (("app/models/\\1.rb"      . "spec/models.\\1_spec.rb")
