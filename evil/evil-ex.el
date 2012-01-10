@@ -3,7 +3,7 @@
 ;; TODO: Emacs 22 completion-boundaries
 
 (require 'evil-common)
-(require 'evil-visual)
+(require 'evil-states)
 
 (define-key evil-ex-keymap "\d" #'evil-ex-delete-backward-char)
 (define-key evil-ex-keymap "\t" #'evil-ex-complete)
@@ -23,7 +23,12 @@
 
 (defun evil-ex-define-cmd (cmd function)
   "Binds the function FUNCTION to the command CMD."
-  (evil-add-to-alist 'evil-ex-commands cmd function))
+  (if (string-match "\\[\\(.*\\)\\]" cmd)
+      (let ((abbrev (match-string 1 cmd))
+            (full (replace-match "\\1" nil nil cmd)))
+        (evil-add-to-alist 'evil-ex-commands full function)
+        (evil-add-to-alist 'evil-ex-commands abbrev full))
+    (evil-add-to-alist 'evil-ex-commands cmd function)))
 
 (defmacro evil-ex-define-argument-type (arg-type args &rest body)
   "Defines a new handler for argument-type ARG-TYPE."
@@ -46,14 +51,14 @@
         (throw 'done t)))
     nil))
 
-(defun evil-ex-message (info)
-  "Shows an INFO message after the current minibuffer content."
-  (when info
-    (let ((txt (concat " [" info "]"))
-          after-change-functions
-          before-change-functions)
-      (put-text-property 0 (length txt) 'face 'evil-ex-info txt)
-      (minibuffer-message txt))))
+(defun evil-ex-message (string &optional args)
+  "Display a message after the current Ex command."
+  (unless evil-no-display
+    (unless (zerop (length string))
+      (let ((string (format " [%s]" (apply #'format string args)))
+            after-change-functions before-change-functions)
+        (put-text-property 0 (length string) 'face 'evil-ex-info string)
+        (minibuffer-message string)))))
 
 (defun evil-ex-split (text)
   "Splits an ex command line in range, command and argument.
@@ -186,7 +191,7 @@ Returns a list (POS CMD FORCE) where
 POS is the position of the first character after the separator,
 CMD is the parsed command,
 FORCE is non-nil if and only if an exclamation followed the command."
-  (if (and (string-match "\\([a-zA-Z_-]+\\)\\(!\\)?" text pos)
+  (if (and (string-match "\\([*@:a-zA-Z_-]+\\)\\(!\\)?" text pos)
            (= (match-beginning 0) pos))
       (list (match-end 0)
             (match-string 1 text)
@@ -388,6 +393,7 @@ arguments for programmable completion."
             (funcall evil-ex-current-arg-handler 'start evil-ex-current-arg)))
         (when evil-ex-current-arg-handler
           (funcall evil-ex-current-arg-handler 'update evil-ex-current-arg))))))
+(put 'evil-ex-update 'permanent-local-hook t)
 
 (defun evil-ex-binding (command)
   "Returns the final binding of COMMAND."
@@ -416,15 +422,15 @@ arguments for programmable completion."
     (let ((binding (evil-ex-completed-binding evil-ex-current-cmd)))
       (if binding
           (with-current-buffer evil-ex-current-buffer
-            (save-excursion
-              (let ((range (evil-ex-get-current-range))
-                    prefix-arg)
-                (when (and (not range)
-                           evil-ex-current-range
-                           (car evil-ex-current-range)
-                           (numberp (caar evil-ex-current-range)))
-                  (setq prefix-arg (caar evil-ex-current-range)))
-                (call-interactively binding))))
+            (let ((range (evil-ex-get-current-range))
+                  prefix-arg current-prefix-arg)
+              (when (and (not range)
+                         evil-ex-current-range
+                         (car evil-ex-current-range)
+                         (numberp (caar evil-ex-current-range)))
+                (setq prefix-arg (caar evil-ex-current-range)
+                      current-prefix-arg prefix-arg))
+              (call-interactively binding)))
         (error "Unknown command %s" evil-ex-current-cmd)))))
 
 (defun evil-ex-range ()
@@ -539,6 +545,7 @@ This function interprets special file-names like # and %."
   (when evil-ex-last-cmd
     (add-hook 'pre-command-hook #'evil-ex-remove-default))
   (remove-hook 'minibuffer-setup-hook #'evil-ex-setup))
+(put 'evil-ex-setup 'permanent-local-hook t)
 
 (defun evil-ex-teardown ()
   "Deinitializes ex minibuffer."
@@ -546,10 +553,29 @@ This function interprets special file-names like # and %."
   (remove-hook 'after-change-functions #'evil-ex-update t)
   (when evil-ex-current-arg-handler
     (funcall evil-ex-current-arg-handler 'stop)))
+(put 'evil-ex-teardown 'permanent-local-hook t)
 
 (defun evil-ex-remove-default ()
   (delete-minibuffer-contents)
   (remove-hook 'pre-command-hook #'evil-ex-remove-default))
+(put 'evil-ex-remove-default 'permanent-local-hook t)
+
+(defun evil-ex-repeat (count)
+  "Repeats the last ex command."
+  (interactive "P")
+  (when count
+    (goto-char (point-min))
+    (forward-line (1- count)))
+  (let ((evil-ex-current-buffer (current-buffer))
+        (hist evil-ex-history))
+    (while hist
+      (let ((evil-ex-last-cmd (pop hist)))
+        (when evil-ex-last-cmd
+          (evil-ex-update-current-command evil-ex-last-cmd)
+          (let ((binding (evil-ex-completed-binding evil-ex-current-cmd)))
+            (unless (eq binding #'evil-ex-repeat)
+              (evil-ex-call-current-command)
+              (setq hist nil))))))))
 
 (defun evil-ex-read-command (&optional initial-input)
   "Starts ex-mode."

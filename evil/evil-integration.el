@@ -1,23 +1,38 @@
 ;;;; Integrate Evil with other modules
 
-(require 'evil-core)
-(require 'evil-motions)
-(require 'evil-repeat)
+(require 'evil-maps)
 
 (mapc 'evil-declare-motion evil-motions)
 (mapc 'evil-declare-not-repeat
       '(digit-argument
         negative-argument
-        save-buffer
         universal-argument
         universal-argument-minus
-        universal-argument-other-key))
+        universal-argument-other-key
+        what-cursor-position))
 (mapc 'evil-declare-change-repeat
       '(dabbrev-expand
         hippie-expand))
 (mapc 'evil-declare-abort-repeat
-      '(eval-expression
-        execute-extended-command))
+      '(balance-windows
+        eval-expression
+        execute-extended-command
+        compile
+        delete-window
+        delete-other-windows
+        find-file-at-point
+        ffap-other-window
+        recompile
+        save-buffer
+        split-window
+        split-window-horizontally
+        split-window-vertically))
+
+(evil-set-type 'previous-line 'line)
+(evil-set-type 'next-line 'line)
+
+(dolist (cmd evil-visual-newline-commands)
+  (evil-add-command-properties cmd :exclude-newline t))
 
 (dolist (map evil-overriding-maps)
   (eval-after-load (cdr map)
@@ -102,7 +117,7 @@
           (evil-replace-state-p)
           (evil-emacs-state-p))
       ad-do-it
-    (let ((pos (point)) syntax)
+    (let ((pos (point)) syntax narrow)
       (setq pos
             (catch 'end
               (dotimes (var (1+ (* 2 evil-show-paren-range)))
@@ -112,13 +127,17 @@
                 (setq syntax (syntax-class (syntax-after pos)))
                 (cond
                  ((eq syntax 4)
+                  (setq narrow pos)
                   (throw 'end pos))
                  ((eq syntax 5)
                   (throw 'end (1+ pos)))))))
       (if pos
           (save-excursion
             (goto-char pos)
-            ad-do-it)
+            (save-restriction
+              (when narrow
+                (narrow-to-region narrow (point-max)))
+              ad-do-it))
         ;; prevent the preceding pair from being highlighted
         (when (overlayp show-paren-overlay)
           (delete-overlay show-paren-overlay))
@@ -158,10 +177,10 @@
 ;;; Auto-complete
 (eval-after-load 'auto-complete
   '(progn
-     (evil-set-command-properties 'ac-complete :repeat 'evil-ac-repeat)
-     (evil-set-command-properties 'ac-expand :repeat 'evil-ac-repeat)
-     (evil-set-command-properties 'ac-next :repeat 'ignore)
-     (evil-set-command-properties 'ac-previous :repeat 'ignore)
+     (evil-add-command-properties 'ac-complete :repeat 'evil-ac-repeat)
+     (evil-add-command-properties 'ac-expand :repeat 'evil-ac-repeat)
+     (evil-add-command-properties 'ac-next :repeat 'ignore)
+     (evil-add-command-properties 'ac-previous :repeat 'ignore)
 
      (defvar evil-ac-prefix-len nil
        "The length of the prefix of the current item to be completed.")

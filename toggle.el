@@ -143,7 +143,10 @@ matches, it returns nil"
 Matches the current buffer against rules in toggle-mappings. If a
 match is found, switches to that buffer."
   (interactive)
-  (find-file (toggle-filename (buffer-file-name) toggle-mappings)))
+  (let ((filename (toggle-filename (buffer-file-name) toggle-mappings)))
+    (if filename
+	(find-file filename)
+      (message (concat "Match not found for " (buffer-file-name))))))
 
   ;; (let* ((function (eval (list toggle-which-function-command)))
   ;; 	 (func-add (if function

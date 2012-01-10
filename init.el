@@ -3,6 +3,7 @@
 ;;
 (add-to-list 'load-path "~/.emacs.d/")
 (add-to-list 'load-path "~/.emacs.d/apel")
+(add-to-list 'load-path "~/.emacs.d/solarized")
 (add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
 (add-to-list 'load-path "~/.emacs.d/icicles")
@@ -28,6 +29,8 @@
 (require 'etags-select)
 (require 'session)
 (require 'smart-compile)
+(require 'sr-speedbar)
+(require 'color-theme-solarized)
 (unless (boundp 'aquamacs-version)
   (require 'tabbar))
 
@@ -38,30 +41,34 @@
 (setq case-fold-search t)
 (setq enable-recursive-minibuffers nil)
 (setq inhibit-startup-screen t)
-(setq list-directory-verbose-switches "")
 (setq nxml-slash-auto-complete-flag t)
 (setq session-initialize t)
 (setq standard-indent 2)
 (setq tags-revert-without-query t)
 (setq tab-width 4)
 (setq toggle-mapping-style 'rspec)
-
-(when (boundp 'aquamacs-version)
-  (aquamacs-autoface-mode -1))
+(setq icicle-Completions-text-scale-decrease 0)
 
 (evil-mode 1)
 (icy-mode)
 (cua-mode 0)
 
 (setq toggle-mapping-styles
-      '((rspec   . (("app/models/\\1.rb"      . "spec/models.\\1_spec.rb")
-		    ("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
-		    ("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
-		    ("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
-		    ("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")
-		    ("lib/\\1.rb"             . "spec/lib/\\1_spec.rb")))
-	(ruby    . (("lib/\\1.rb"             . "test/test_\\1.rb")
-		    ("\\1.rb"                 . "test_\\1.rb")))))
+      '((rspec
+	 . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
+	    ("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
+	    ("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
+	    ("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
+	    ("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
+	    ("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
+	(ruby
+	 . (("lib/\\1.rb"             . "test/test_\\1.rb")
+	    ("\\1.rb"                 . "test_\\1.rb")))))
+
+(toggle-style "rspec")
+
+(if (boundp 'aquamacs-version)
+    (add-hook 'after-init-hook 'tool-bar-mode))
 
 (defvar autocomplete-initialized nil)
 
@@ -116,20 +123,6 @@
                                        (+ (cdr x-y) 20))
                                  (selected-window)))))
 
-(defun save-and-exit()
-  (interactive)
-  ;; (save-buffer)
-  (save-buffers-kill-terminal))
-
-(defun close-tab()
-  (interactive)
-  (let ((tabs (length (tabbar-tabs tabbar-current-tabset))))
-    (kill-buffer (buffer-name))
-    (if (= tabs 1)
-	(if (boundp 'aquamacs-version)
-	    (aquamacs-delete-window)
- 	  (delete-frame)))))
-
 (defun indent-buffer ()
   (interactive)
   (save-excursion
@@ -168,21 +161,6 @@
 (setq ibuffer-expert t)
 
 ;; ********************************************************************************
-;; Ido
-;;
-;; (ido-mode t)
-;; (setq ido-case-fold t)
-;; (setq ido-enable-flex-matching nil)
-;; (setq ido-everywhere nil)
-;; (setq ido-create-new-buffer 'always)
-;; (setq ido-max-prospects 3)
-;; (setq ido-enable-tramp-:completion nil)
-;; (setq ido-separator "    ")
-;; (setq ido-auto-merge-work-directories-length -1)
-;; (setq ido-rotate-file-list-default t)
-;; (load "ido-goto-symbol")
-
-;; ********************************************************************************
 ;; I-Menu
 ;;
 (setq imenu-auto-rescan t)
@@ -210,50 +188,6 @@
 (setq scroll-step 1)
 
 (load "find-tags-file")
-
-(set-face-attribute 'default nil
-		    :background "black"
-		    :foreground "grey90")
-
-(set-face-attribute 'modeline nil
-		    :background "grey10"
-		    :foreground "grey90")
-
-(if window-system
-    (set-face-attribute 'hl-line nil
-			:background "grey10"
-			:foreground nil))
-
-(set-face-attribute 'cursor nil
-		    :background "white")
-
-(set-face-attribute 'font-lock-builtin-face nil
-		    :foreground "cyan")
-
-(set-face-attribute 'font-lock-comment-face nil
-		    :foreground "grey50")
-
-(set-face-attribute 'font-lock-constant-face nil
-		    :foreground "SkyBlue")
-
-(set-face-attribute 'font-lock-keyword-face nil
-		    :foreground "lightgreen")
-
-(set-face-attribute 'font-lock-string-face nil
-		    :foreground "chocolate1")
-
-(set-face-attribute 'font-lock-variable-name-face nil
-		    :foreground "lightblue")
-
-(set-face-attribute 'font-lock-function-name-face nil
-		    :foreground "green")
-
-(set-face-attribute 'region nil
-		    :background "blue")
-
-(set-face-attribute 'icicle-search-context-level-1 nil
-		    :background "black")
-
 
 ;; ********************************************************************************
 ;; Autoloads
@@ -569,29 +503,29 @@
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
 
 
-;; ********************************************************************************
-;; dired
-;;
-(defun joc-dired-up-directory()
-  (interactive)
-  (joc-dired-single-buffer ".."))
+;; ;; ********************************************************************************
+;; ;; dired
+;; ;;
+;; (defun joc-dired-up-directory()
+;;   (interactive)
+;;   (joc-dired-single-buffer ".."))
 
-(defun dired-mode-on-init ()
-  (require 'dired-single)
-  (require 'wdired)
+;; (defun dired-mode-on-init ()
+;;   (require 'dired-single)
+;;   (require 'wdired)
 
-  (define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
-  (define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
-  (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
+;;   (define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
+;;   (define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
+;;   (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
 
-  (define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
+;;   (define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
 
-  (setq dired-backup-overwrite t)
-  (setq dired-listing-switches "-al")
-  ;; (setq dired-omit-files "^\\.")
-  )
+;;   (setq dired-backup-overwrite t)
+;;   (setq dired-listing-switches "-al")
+;;   ;; (setq dired-omit-files "^\\.")
+;;   )
 
-(add-hook 'dired-mode-hook 'dired-mode-on-init)
+;; (add-hook 'dired-mode-hook 'dired-mode-on-init)
 
 (defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
   (if (equal major-mode 'dired-mode)
@@ -627,6 +561,14 @@
 	"*.sh" "*.erl" "*.hs" "*.ml" "*.yml" "*.css"))
 
 
+(setq speedbar-show-unknown-files t)
+(setq sr-speedbar-width 40)
+
+
+(defun speedbar-toggle()
+  (interactive)
+  (sr-speedbar-toggle)
+  (sr-speedbar-select-window))
 
 
 ;; ********************************************************************************
@@ -657,6 +599,7 @@
 (global-set-key (kbd "C-c g") 'rgrep)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c b") 'ibuffer)
+(global-set-key (kbd "C-c k") 'browse-kill-ring)
 (global-set-key (kbd "A-d") 'split-window-horizontally)
 
 (global-set-key (kbd "C-c r") 'recompile)
@@ -666,11 +609,17 @@
 
 (global-set-key (kbd "<M-return>") 'icicle-buffer)
 (global-set-key (kbd "<A-return>") 'icicle-buffer)
+(global-set-key (kbd "<C-return>") 'speedbar-toggle)
+
+(global-set-key (kbd "<A-c>") 'evil-yank)
 
 (global-set-key (kbd "C-x C-c") 'save-and-exit)
+(global-set-key (kbd "A-j") 'tabbar-backward)
+(global-set-key (kbd "A-k") 'tabbar-forward)
 (global-set-key (kbd "<A-left>") 'tabbar-backward)
 (global-set-key (kbd "<A-right>") 'tabbar-forward)
 
+(color-theme-solarized-dark)
 
 ;; (global-set-key (kbd "<C-delete>") 'kill-word)
 ;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)

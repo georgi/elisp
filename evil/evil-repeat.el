@@ -91,8 +91,13 @@
 ;; prepending the count as a string to the vector of the remaining
 ;; key-sequence.
 
-(require 'evil-undo)
-(require 'evil-core)
+(require 'evil-states)
+
+(declare-function evil-visual-state-p "evil-visual")
+(declare-function evil-visual-range "evil-visual")
+(declare-function evil-visual-char "evil-visual")
+(declare-function evil-visual-line "evil-visual")
+(declare-function evil-visual-block "evil-visual")
 
 (defsubst evil-repeat-recording-p ()
   "Returns non-nil iff a recording is in progress."
@@ -101,7 +106,30 @@
 (defun evil-repeat-start ()
   "Start recording a new repeat into `evil-repeat-info'."
   (evil-repeat-reset t)
-  (evil-repeat-record-buffer))
+  (evil-repeat-record-buffer)
+  (when (evil-visual-state-p)
+    (let* ((range (evil-visual-range))
+           (beg (evil-range-beginning range))
+           (end (1- (evil-range-end range)))
+           (nfwdlines (- (line-number-at-pos end)
+                         (line-number-at-pos beg))))
+      (evil-repeat-record
+       (cond
+        ((eq evil-visual-selection 'char)
+         (list #'evil-repeat-visual-char
+               nfwdlines
+               (- end
+                  (if (zerop nfwdlines)
+                      beg
+                    (save-excursion
+                      (goto-char end)
+                      (line-beginning-position))))))
+        ((eq evil-visual-selection 'line)
+         (list #'evil-repeat-visual-line nfwdlines))
+        ((eq evil-visual-selection 'block)
+         (list #'evil-repeat-visual-block
+               nfwdlines
+               (abs (- (evil-column beg) (evil-column end))))))))))
 
 (defun evil-repeat-stop ()
   "Stop recording a repeat.
@@ -164,9 +192,7 @@ buffer is known and different from the current buffer."
   "Return the :repeat property of COMMAND.
 If COMMAND doesn't have this property, return DEFAULT."
   (when (functionp command) ; ignore keyboard macros
-    (let ((type (if (evil-has-property command :repeat)
-                    (evil-get-command-property command :repeat)
-                  default)))
+    (let ((type (evil-get-command-property command :repeat default)))
       (or (cdr-safe (assq type evil-repeat-types)) type))))
 
 (defun evil-repeat-force-abort-p (repeat-type)
@@ -208,12 +234,14 @@ has :repeat nil."
        ((null repeat-type))
        ;; record command
        (t
-        ;; In normal-state, each command is a single repeation,
-        ;; therefore start a new repeation.
-        (when (evil-normal-state-p)
+        ;; In normal-state or visual state, each command is a single
+        ;; repeation, therefore start a new repeation.
+        (when (or (evil-normal-state-p)
+                  (evil-visual-state-p))
           (evil-repeat-start))
         (setq evil-recording-current-command t)
         (funcall repeat-type 'pre))))))
+(put 'evil-repeat-pre-hook 'permanent-local-hook t)
 
 ;; called from `post-command-hook'
 (defun evil-repeat-post-hook ()
@@ -238,6 +266,7 @@ has :repeat nil."
           (evil-repeat-stop))))))
   ;; done with recording the current command
   (setq evil-recording-current-command nil))
+(put 'evil-repeat-post-hook 'permanent-local-hook t)
 
 (defun evil-repeat-keystrokes (flag)
   "Repeation recording function for commands that are repeated by keystrokes."
@@ -280,6 +309,7 @@ has :repeat nil."
       (evil-repeat-record-change (- beg evil-repeat-pos)
                                  (buffer-substring beg end)
                                  length))))
+(put 'evil-repeat-change-hook 'permanent-local-hook t)
 
 (defun evil-repeat-record-change (relpos ins ndel)
   "Record the current buffer changes during a repeat.
@@ -329,6 +359,40 @@ Returns a single array."
     (when cur
       (setcdr result-last (cons (apply #'vconcat cur) nil)))
     (cdr result)))
+
+(defun evil-repeat-visual-char (nfwdlines nfwdchars)
+  "Restores a character visual selection.
+If the selection is in a single line, the restored visual
+selection covers the same number of characters. If the selection
+covers several lines, the restored selection covers the same
+number of lines and the same number of characters in the last
+line as the original selection."
+  (evil-visual-char)
+  (when (> nfwdlines 0)
+    (forward-line nfwdlines))
+  (forward-char nfwdchars))
+
+(defun evil-repeat-visual-line (nfwdlines)
+  "Restores a character visual selection.
+If the selection is in a single line, the restored visual
+selection covers the same number of characters. If the selection
+covers several lines, the restored selection covers the same
+number of lines and the same number of characters in the last
+line as the original selection."
+  (evil-visual-line)
+  (forward-line nfwdlines))
+
+(defun evil-repeat-visual-block (nfwdlines nfwdchars)
+  "Restores a character visual selection.
+If the selection is in a single line, the restored visual
+selection covers the same number of characters. If the selection
+covers several lines, the restored selection covers the same
+number of lines and the same number of characters in the last
+line as the original selection."
+  (evil-visual-block)
+  (let ((col (current-column)))
+    (forward-line nfwdlines)
+    (move-to-column (+ col nfwdchars) t)))
 
 (defun evil-execute-change (changes rel-point)
   "Executes as list of changes.
