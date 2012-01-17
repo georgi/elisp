@@ -31,6 +31,9 @@
 (require 'smart-compile)
 (require 'sr-speedbar)
 (require 'color-theme-solarized)
+
+(setq solarized-contrast 'high)
+
 (unless (boundp 'aquamacs-version)
   (require 'tabbar))
 
@@ -52,6 +55,7 @@
 (evil-mode 1)
 (icy-mode)
 (cua-mode 0)
+(global-hl-line-mode 0)
 
 (setq toggle-mapping-styles
       '((rspec
@@ -174,15 +178,6 @@
 (show-paren-mode t)
 (transient-mark-mode t)
 (recentf-mode)
-
-(if window-system
-    (global-hl-line-mode t))
-
-(unless window-system
-  (menu-bar-mode 0))
-
-(if (fboundp 'set-scroll-bar-mode)
-    (set-scroll-bar-mode nil))
 
 (setq scroll-conservatively 5)
 (setq scroll-step 1)
@@ -575,6 +570,11 @@
 ;; Global Key Bindings
 ;;
 
+(defun insert-newline()
+  (interactive)
+  (save-excursion
+    (end-of-line)
+    (newline)))
 
 ;; Movement
 (global-set-key (kbd "<up>") 'evil-previous-line)
@@ -585,11 +585,19 @@
 (global-set-key (kbd "<C-right>") 'evil-forward-word-begin)
 (global-set-key (kbd "<C-up>") 'evil-backward-paragraph)
 (global-set-key (kbd "<C-down>") 'evil-forward-paragraph)
-(define-key evil-motion-state-map " " 'evil-visual-char)
+
+(define-key evil-motion-state-map "e" 'evil-backward-word-begin)
+(define-key evil-motion-state-map " " 'evil-visual-line)
+
+(define-key evil-motion-state-map (kbd "<C-return>") 'insert-newline)
+(define-key evil-motion-state-map (kbd "M-k") 'evil-forward-WORD-begin)
+(define-key evil-motion-state-map (kbd "M-j") 'evil-backward-WORD-begin)
+(define-key evil-motion-state-map (kbd "C-j") 'evil-forward-paragraph)
+(define-key evil-motion-state-map (kbd "C-k") 'evil-backward-paragraph)
+(define-key evil-insert-state-map (kbd "C-g") 'evil-force-normal-state)
 
 (global-set-key (kbd "C-c c") 'smart-compile)
 (global-set-key (kbd "C-c f") 'find-file-in-project)
-(global-set-key (kbd "C-c s") 'shell)
 (global-set-key (kbd "C-c /") 'tags-search)
 (global-set-key (kbd "C-c ?") 'etags-select-find-tag-at-point)
 (global-set-key (kbd "C-c .") 'etags-select-find-tag)
@@ -598,28 +606,27 @@
 (global-set-key (kbd "C-c \\") 'call-last-kbd-macro)
 (global-set-key (kbd "C-c g") 'rgrep)
 (global-set-key (kbd "C-c n") 'next-error)
-(global-set-key (kbd "C-c b") 'ibuffer)
 (global-set-key (kbd "C-c k") 'browse-kill-ring)
-(global-set-key (kbd "A-d") 'split-window-horizontally)
-
+(global-set-key (kbd "C-c b") 'ibuffer)
+(global-set-key (kbd "C-c i") 'imenu)
+(global-set-key (kbd "C-c d") 'color-theme-solarized-dark)
+(global-set-key (kbd "C-c l") 'color-theme-solarized-light)
+(global-set-key (kbd "C-c s") 'speedbar-toggle)
 (global-set-key (kbd "C-c r") 'recompile)
 (global-set-key (kbd "C-c v") 'spec-verify)
 (global-set-key (kbd "C-c t") 'toggle-buffer)
 (global-set-key (kbd "C-c C-s") 'spec-verify-single)
 
-(global-set-key (kbd "<M-return>") 'icicle-buffer)
-(global-set-key (kbd "<A-return>") 'icicle-buffer)
-(global-set-key (kbd "<C-return>") 'speedbar-toggle)
+(global-set-key (kbd "A-d") 'split-window-horizontally)
 
-(global-set-key (kbd "<A-c>") 'evil-yank)
+(global-set-key (kbd "<M-SPC>") 'icicle-buffer)
 
-(global-set-key (kbd "C-x C-c") 'save-and-exit)
 (global-set-key (kbd "A-j") 'tabbar-backward)
 (global-set-key (kbd "A-k") 'tabbar-forward)
 (global-set-key (kbd "<A-left>") 'tabbar-backward)
 (global-set-key (kbd "<A-right>") 'tabbar-forward)
 
-(color-theme-solarized-dark)
+;; (color-theme-solarized-light)
 
 ;; (global-set-key (kbd "<C-delete>") 'kill-word)
 ;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
