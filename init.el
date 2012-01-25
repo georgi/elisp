@@ -23,6 +23,7 @@
 (require 'cl)
 (require 'toggle)
 (require 'icicles)
+(require 'elscreen)
 (require 'find-file-in-project)
 (require 'browse-kill-ring)
 (require 'etags-table)
@@ -55,6 +56,7 @@
 (evil-mode 1)
 (icy-mode)
 (cua-mode 0)
+(tool-bar-mode 0)
 (global-hl-line-mode 0)
 
 (setq toggle-mapping-styles
@@ -70,9 +72,6 @@
 	    ("\\1.rb"                 . "test_\\1.rb")))))
 
 (toggle-style "rspec")
-
-(if (boundp 'aquamacs-version)
-    (add-hook 'after-init-hook 'tool-bar-mode))
 
 (defvar autocomplete-initialized nil)
 
@@ -174,7 +173,8 @@
 (setq initial-major-mode 'text-mode)
 (column-number-mode t)
 (mouse-wheel-mode t)
-(partial-completion-mode nil)
+(scroll-bar-mode 0)
+;;(partial-completion-mode nil)
 (show-paren-mode t)
 (transient-mark-mode t)
 (recentf-mode)
@@ -566,6 +566,26 @@
   (sr-speedbar-select-window))
 
 
+(color-theme-solarized-dark)
+
+(setq elscreen-tab-display-control nil)
+(setq elscreen-tab-display-kill-screen nil)
+(elscreen-toggle-display-tab)
+(set-face-attribute 'elscreen-tab-control-face nil
+		    :underline nil
+		    :foreground "#CCCCCC"
+		    :background "#000000")
+
+(set-face-attribute 'elscreen-tab-other-screen-face nil
+		    :underline nil
+		    :foreground "#CCCCCC"
+		    :background "#000000")
+
+(set-face-attribute 'elscreen-tab-current-screen-face nil
+		    :foreground "#CCCCCC"
+		    :background "#042028")
+
+
 ;; ********************************************************************************
 ;; Global Key Bindings
 ;;
@@ -575,6 +595,8 @@
   (save-excursion
     (end-of-line)
     (newline)))
+
+(elscreen-set-prefix-key (kbd "C-a"))
 
 ;; Movement
 (global-set-key (kbd "<up>") 'evil-previous-line)
@@ -590,10 +612,10 @@
 (define-key evil-motion-state-map " " 'evil-visual-line)
 
 (define-key evil-motion-state-map (kbd "<C-return>") 'insert-newline)
-(define-key evil-motion-state-map (kbd "M-k") 'evil-forward-WORD-begin)
-(define-key evil-motion-state-map (kbd "M-j") 'evil-backward-WORD-begin)
-(define-key evil-motion-state-map (kbd "C-j") 'evil-forward-paragraph)
-(define-key evil-motion-state-map (kbd "C-k") 'evil-backward-paragraph)
+(define-key evil-motion-state-map (kbd "C-k") 'evil-forward-word-begin)
+(define-key evil-motion-state-map (kbd "C-j") 'evil-backward-word-begin)
+(define-key evil-motion-state-map (kbd "M-j") 'evil-forward-paragraph)
+(define-key evil-motion-state-map (kbd "M-k") 'evil-backward-paragraph)
 (define-key evil-insert-state-map (kbd "C-g") 'evil-force-normal-state)
 
 (global-set-key (kbd "C-c c") 'smart-compile)
@@ -617,16 +639,18 @@
 (global-set-key (kbd "C-c t") 'toggle-buffer)
 (global-set-key (kbd "C-c C-s") 'spec-verify-single)
 
-(global-set-key (kbd "A-d") 'split-window-horizontally)
+(global-set-key (kbd "s-d") 'split-window-horizontally)
+(global-set-key (kbd "s-D") 'split-window-vertically)
 
-(global-set-key (kbd "<M-SPC>") 'icicle-buffer)
+(global-set-key (kbd "<C-SPC>") 'icicle-buffer)
 
-(global-set-key (kbd "A-j") 'tabbar-backward)
-(global-set-key (kbd "A-k") 'tabbar-forward)
-(global-set-key (kbd "<A-left>") 'tabbar-backward)
-(global-set-key (kbd "<A-right>") 'tabbar-forward)
+(global-set-key (kbd "s-j") 'elscreen-previous)
+(global-set-key (kbd "s-k") 'elscreen-next)
+(global-set-key (kbd "<s-left>") 'elscreen-previous)
+(global-set-key (kbd "<s-right>") 'elscreen-next)
+(global-set-key (kbd "s-w") 'kill-buffer-and-window)
 
-;; (color-theme-solarized-light)
+
 
 ;; (global-set-key (kbd "<C-delete>") 'kill-word)
 ;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
