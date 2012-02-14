@@ -11,7 +11,6 @@
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
-;; (add-to-list 'load-path "~/.emacs.d/Enhanced-Ruby-Mode")
 (add-to-list 'load-path "~/.emacs.d/python")
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 
@@ -34,9 +33,8 @@
 (require 'color-theme-solarized)
 
 (setq solarized-contrast 'high)
-
-(unless (boundp 'aquamacs-version)
-  (require 'tabbar))
+(setq visible-bell 1)
+(setq ring-bell-function (lambda() ()))
 
 ;; ********************************************************************************
 ;; Variables
@@ -173,7 +171,8 @@
 (setq initial-major-mode 'text-mode)
 (column-number-mode t)
 (mouse-wheel-mode t)
-(scroll-bar-mode 0)
+(if (boundp 'scroll-bar-mode)
+  (scroll-bar-mode 0))
 ;;(partial-completion-mode nil)
 (show-paren-mode t)
 (transient-mark-mode t)
@@ -297,6 +296,8 @@
 (defun ruby-mode-on-init ()
   (init-mode)
 
+  ;; (define-key ruby-mode-map (kbd "<return>") 'ruby-reindent-then-newline-and-indent)
+
   (setq ruby-deep-indent-paren nil)
   (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
@@ -317,14 +318,6 @@
 
 (defun rhtml-mode-on-init ()
   (init-mode)
-
-  (set-face-attribute 'erb-exec-face nil
-                      :background "grey10"
-                      :foreground "grey90")
-
-  (set-face-attribute 'erb-out-face nil
-                      :background "grey10"
-                      :foreground "grey90")
   (abbrev-mode nil))
 
 (add-hook 'rhtml-mode-hook 'rhtml-mode-on-init)
@@ -498,29 +491,29 @@
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
 
 
-;; ;; ********************************************************************************
-;; ;; dired
-;; ;;
-;; (defun joc-dired-up-directory()
-;;   (interactive)
-;;   (joc-dired-single-buffer ".."))
+;; ********************************************************************************
+;; dired
+;;
+(defun joc-dired-up-directory()
+  (interactive)
+  (joc-dired-single-buffer ".."))
 
-;; (defun dired-mode-on-init ()
-;;   (require 'dired-single)
-;;   (require 'wdired)
+(defun dired-mode-on-init ()
+  (require 'dired-single)
+  (require 'wdired)
 
-;;   (define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
-;;   (define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
-;;   (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
+  (define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
+  (define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
+  (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
 
-;;   (define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
+  (define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
 
-;;   (setq dired-backup-overwrite t)
-;;   (setq dired-listing-switches "-al")
-;;   ;; (setq dired-omit-files "^\\.")
-;;   )
+  (setq dired-backup-overwrite t)
+  (setq dired-listing-switches "-al")
+  ;; (setq dired-omit-files "^\\.")
+  )
 
-;; (add-hook 'dired-mode-hook 'dired-mode-on-init)
+(add-hook 'dired-mode-hook 'dired-mode-on-init)
 
 (defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
   (if (equal major-mode 'dired-mode)
@@ -570,7 +563,7 @@
 
 (setq elscreen-tab-display-control nil)
 (setq elscreen-tab-display-kill-screen nil)
-(elscreen-toggle-display-tab)
+
 (set-face-attribute 'elscreen-tab-control-face nil
 		    :underline nil
 		    :foreground "#CCCCCC"
@@ -578,12 +571,13 @@
 
 (set-face-attribute 'elscreen-tab-other-screen-face nil
 		    :underline nil
-		    :foreground "#CCCCCC"
-		    :background "#000000")
+		    :foreground "#52676f"
+		    :background "#999999")
 
 (set-face-attribute 'elscreen-tab-current-screen-face nil
-		    :foreground "#CCCCCC"
-		    :background "#042028")
+		    :foreground "#52676f"
+		    :background "#fcf4dc")
+
 
 
 ;; ********************************************************************************
@@ -596,7 +590,15 @@
     (end-of-line)
     (newline)))
 
+;; paste with indentation
+(dolist (command '(yank yank-pop))
+  (eval `(defadvice ,command (after indent-region activate)
+	   (let ((mark-even-if-inactive transient-mark-mode))
+	     (indent-region (region-beginning) (region-end) nil)))))
+
 (elscreen-set-prefix-key (kbd "C-a"))
+
+(define-key global-map (kbd "RET") 'newline-and-indent)
 
 ;; Movement
 (global-set-key (kbd "<up>") 'evil-previous-line)
@@ -611,7 +613,7 @@
 (define-key evil-motion-state-map "e" 'evil-backward-word-begin)
 (define-key evil-motion-state-map " " 'evil-visual-line)
 
-(define-key evil-motion-state-map (kbd "<C-return>") 'insert-newline)
+(define-key evil-motion-state-map (kbd "<M-return>") 'insert-newline)
 (define-key evil-motion-state-map (kbd "C-k") 'evil-forward-word-begin)
 (define-key evil-motion-state-map (kbd "C-j") 'evil-backward-word-begin)
 (define-key evil-motion-state-map (kbd "M-j") 'evil-forward-paragraph)
@@ -642,15 +644,28 @@
 (global-set-key (kbd "s-d") 'split-window-horizontally)
 (global-set-key (kbd "s-D") 'split-window-vertically)
 
-(global-set-key (kbd "<C-SPC>") 'icicle-buffer)
+(global-set-key (kbd "<C-return>") 'icicle-buffer)
 
 (global-set-key (kbd "s-j") 'elscreen-previous)
+(global-set-key (kbd "s-t") 'elscreen-create)
 (global-set-key (kbd "s-k") 'elscreen-next)
+(global-set-key (kbd "s-w") 'elscreen-kill)
+(global-set-key (kbd "s-d") 'elscreen-dired)
+(global-set-key (kbd "s-f") 'elscreen-find-file)
+
 (global-set-key (kbd "<s-left>") 'elscreen-previous)
 (global-set-key (kbd "<s-right>") 'elscreen-next)
-(global-set-key (kbd "s-w") 'kill-buffer-and-window)
 
 
+(defun elscreen-goto-1() (interactive) (elscreen-goto 1))
+(defun elscreen-goto-2() (interactive) (elscreen-goto 2))
+(defun elscreen-goto-3() (interactive) (elscreen-goto 3))
+(defun elscreen-goto-4() (interactive) (elscreen-goto 4))
+
+(global-set-key (kbd "s-1") 'elscreen-goto-1)
+(global-set-key (kbd "s-2") 'elscreen-goto-2)
+(global-set-key (kbd "s-3") 'elscreen-goto-3)
+(global-set-key (kbd "s-4") 'elscreen-goto-4)
 
 ;; (global-set-key (kbd "<C-delete>") 'kill-word)
 ;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
