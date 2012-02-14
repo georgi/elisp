@@ -659,6 +659,7 @@
 (global-set-key (kbd "s-w") 'elscreen-kill)
 (global-set-key (kbd "s-d") 'elscreen-dired)
 (global-set-key (kbd "s-f") 'elscreen-find-file-in-project)
+(global-set-key (kbd "s-b") 'elscreen-find-and-goto-by-buffer)
 
 (global-set-key (kbd "<s-left>") 'elscreen-previous)
 (global-set-key (kbd "<s-right>") 'elscreen-next)
