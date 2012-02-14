@@ -596,6 +596,13 @@
 	   (let ((mark-even-if-inactive transient-mark-mode))
 	     (indent-region (region-beginning) (region-end) nil)))))
 
+(defun elscreen-find-file-in-project ()
+  (interactive)
+  (let* ((project-files (ffip-project-files))
+         (files (mapcar 'car project-files))
+         (file (completing-read "Find file in project: " files)))
+    (elscreen-find-and-goto-by-buffer (find-file-noselect (cdr (assoc file project-files))) 'create)))
+
 (elscreen-set-prefix-key (kbd "C-a"))
 
 (define-key global-map (kbd "RET") 'newline-and-indent)
@@ -651,7 +658,7 @@
 (global-set-key (kbd "s-k") 'elscreen-next)
 (global-set-key (kbd "s-w") 'elscreen-kill)
 (global-set-key (kbd "s-d") 'elscreen-dired)
-(global-set-key (kbd "s-f") 'elscreen-find-file)
+(global-set-key (kbd "s-f") 'elscreen-find-file-in-project)
 
 (global-set-key (kbd "<s-left>") 'elscreen-previous)
 (global-set-key (kbd "<s-right>") 'elscreen-next)
