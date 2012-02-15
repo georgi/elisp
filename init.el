@@ -615,6 +615,25 @@
          (file (completing-read "Find file in project: " files)))
     (elscreen-find-and-goto-by-buffer (find-file-noselect (cdr (assoc file project-files))) 'create)))
 
+(defun elscreen-find-tag ()
+  (interactive)
+  (setq etags-select-source-buffer (buffer-name))
+  (let* ((default (find-tag-default))
+         (tagname (completing-read
+                   (format "Find tag (default %s): " default)
+                   'etags-select-complete-tag nil nil nil 'find-tag-history default)))
+    (elscreen-create)
+    (etags-select-find tagname)))
+
+(defun elscreen-find-tag-at-point ()
+  (interactive)
+  (let* ((tagname (find-tag-default)))
+    (if tagname
+	(progn
+	  (elscreen-create)
+	  (etags-select-find tagname))
+      (message "tag not found"))))
+
 (elscreen-set-prefix-key (kbd "C-a"))
 
 (define-key global-map (kbd "RET") 'newline-and-indent)
@@ -667,6 +686,8 @@
 
 (global-set-key (kbd "s-j") 'elscreen-previous)
 (global-set-key (kbd "s-t") 'elscreen-create)
+(global-set-key (kbd "s-/") 'elscreen-find-tag-at-point)
+(global-set-key (kbd "s-.") 'elscreen-find-tag)
 (global-set-key (kbd "s-k") 'elscreen-next)
 (global-set-key (kbd "s-w") 'elscreen-kill)
 (global-set-key (kbd "s-d") 'elscreen-dired)
