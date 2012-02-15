@@ -544,10 +544,6 @@
 (add-to-list 'smart-compile-alist '("\\.scm$"     . "scheme %f"))
 (add-to-list 'smart-compile-alist '(haskell-mode  . "ghc -o %n %f")) ;
 
-(setq ffip-patterns
-      '("*.haml" "*.sass" "*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
-	"*.sh" "*.erl" "*.hs" "*.ml" "*.yml" "*.css"))
-
 
 (setq speedbar-show-unknown-files t)
 (setq sr-speedbar-width 40)
@@ -596,9 +592,25 @@
 	   (let ((mark-even-if-inactive transient-mark-mode))
 	     (indent-region (region-beginning) (region-end) nil)))))
 
+
+
+(setq ffip-patterns
+      '("*.haml" "*.sass" "*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
+	"*.sh" "*.erl" "*.hs" "*.ml" "*.yml" "*.css"))
+
+(setq ffip-limit 10000)
+
+(defvar ffip-file-cache nil
+  "Cached list of project files.")
+
+(defun ffip-project-files-with-cache()
+  (unless ffip-file-cache
+      (setq ffip-file-cache (ffip-project-files)))
+  ffip-file-cache)
+
 (defun elscreen-find-file-in-project ()
   (interactive)
-  (let* ((project-files (ffip-project-files))
+  (let* ((project-files (ffip-project-files-with-cache))
          (files (mapcar 'car project-files))
          (file (completing-read "Find file in project: " files)))
     (elscreen-find-and-goto-by-buffer (find-file-noselect (cdr (assoc file project-files))) 'create)))
