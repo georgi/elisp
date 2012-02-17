@@ -636,6 +636,39 @@
 
 (elscreen-set-prefix-key (kbd "C-a"))
 
+
+(setq ibuffer-saved-filter-groups
+      (quote (("default"
+	       ("dired" (mode . dired-mode))
+	       ("spec" (name . ".*_spec.rb$"))
+	       ("controller" (name . ".*_controller.rb$"))
+	       ("ruby" (mode . ruby-mode))
+	       ("javascript" (mode . js2-mode))
+	       ("haml" (mode . haml-mode))
+	       ("css" (mode . css-mode))
+	       ("elisp" (mode . elisp-mode))
+	       ("emacs" (name . "^\\*.*\\*$"))))))
+
+(add-hook 'ibuffer-mode-hook
+	  (lambda ()
+	    (ibuffer-switch-to-saved-filter-groups "default")))
+
+(setq ibuffer-use-header-line nil)
+
+(setq ibuffer-formats '((mark modified read-only " " (name 32 32 :left)
+			      ;; " " (size 9 -1 :right)
+    			      ;; " " (mode 16 16 :left :elide)
+			      " " filename-and-process)
+			;; (mark " " (name 16 -1) " " filename)
+			      ))
+
+(defadvice ibuffer-update (around ibuffer-preserve-prev-header activate)
+  "Preserve line-header used before Ibuffer if it doesn't set one"
+  (let ((prev-line-header header-line-format))
+    ad-do-it
+    (unless header-line-format
+      (setq header-line-format prev-line-header))))
+
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
 ;; Movement
