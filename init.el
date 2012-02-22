@@ -1,13 +1,15 @@
 ;; ********************************************************************************
 ;; Load Path
 ;;
-(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/apel")
 (add-to-list 'load-path "~/.emacs.d/solarized")
 (add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
+(add-to-list 'load-path "~/.emacs.d/expand-region")
 (add-to-list 'load-path "~/.emacs.d/icicles")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
+(add-to-list 'load-path "~/.emacs.d/mark-multiple")
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
@@ -31,6 +33,10 @@
 (require 'smart-compile)
 (require 'sr-speedbar)
 (require 'color-theme-solarized)
+(require 'expand-region)
+(require 'rvm)
+
+(rvm-use-default)
 
 (setq solarized-contrast 'high)
 (setq visible-bell 1)
@@ -48,13 +54,13 @@
 (setq standard-indent 2)
 (setq tags-revert-without-query t)
 (setq tab-width 4)
-(setq toggle-mapping-style 'rspec)
 (setq icicle-Completions-text-scale-decrease 0)
 
 (evil-mode 1)
 (icy-mode)
 (cua-mode 0)
 (tool-bar-mode 0)
+(menu-bar-mode 0)
 (global-hl-line-mode 0)
 
 (setq toggle-mapping-styles
@@ -280,7 +286,7 @@
 
 (defun spec-run-single-file (spec-file &rest opts)
   "Runs spec with the specified options"
-  (compile (concat "~/.emacs.d/spin " spec-file " " (mapconcat (lambda (x) x) opts " ")))
+  (compile (concat (first rvm--current-ruby-binary-path) "ruby ~/.emacs.d/spin " spec-file " " (mapconcat (lambda (x) x) opts " ")))
   (end-of-buffer-other-window 0))
 
 (defun spec-verify ()
@@ -544,7 +550,7 @@
 (add-to-list 'smart-compile-alist '("\\.scm$"     . "scheme %f"))
 (add-to-list 'smart-compile-alist '(haskell-mode  . "ghc -o %n %f")) ;
 
-
+(setq speedbar-vc-do-check nil)
 (setq speedbar-show-unknown-files t)
 (setq sr-speedbar-width 40)
 
@@ -554,25 +560,24 @@
   (sr-speedbar-toggle)
   (sr-speedbar-select-window))
 
-
-(color-theme-solarized-dark)
-
+(setq elscreen-display-tab 24)
+(setq elscreen-display-screen-number nil)
 (setq elscreen-tab-display-control nil)
 (setq elscreen-tab-display-kill-screen nil)
 
-(set-face-attribute 'elscreen-tab-control-face nil
+(set-face-attribute 'elscreen-tab-background-face nil
 		    :underline nil
-		    :foreground "#CCCCCC"
+		    :foreground "#000000"
 		    :background "#000000")
 
 (set-face-attribute 'elscreen-tab-other-screen-face nil
 		    :underline nil
-		    :foreground "#52676f"
-		    :background "#999999")
+		    :foreground "#00ffff"
+		    :background "#000000")
 
 (set-face-attribute 'elscreen-tab-current-screen-face nil
-		    :foreground "#52676f"
-		    :background "#fcf4dc")
+		    :foreground "#00ffff"
+		    :background "#7f7f7f")
 
 
 
@@ -646,7 +651,7 @@
 	       ("javascript" (mode . js2-mode))
 	       ("haml" (mode . haml-mode))
 	       ("css" (mode . css-mode))
-	       ("elisp" (mode . elisp-mode))
+	       ("elisp" (mode . emacs-lock-mode))
 	       ("emacs" (name . "^\\*.*\\*$"))))))
 
 (add-hook 'ibuffer-mode-hook
@@ -681,10 +686,9 @@
 (global-set-key (kbd "<C-up>") 'evil-backward-paragraph)
 (global-set-key (kbd "<C-down>") 'evil-forward-paragraph)
 
-(define-key evil-motion-state-map "e" 'evil-backward-word-begin)
-(define-key evil-motion-state-map " " 'evil-visual-line)
+(define-key evil-motion-state-map " " 'er/expand-region)
 
-(define-key evil-motion-state-map (kbd "<M-return>") 'insert-newline)
+(define-key evil-motion-state-map (kbd "RET") 'insert-newline)
 (define-key evil-motion-state-map (kbd "C-k") 'evil-forward-word-begin)
 (define-key evil-motion-state-map (kbd "C-j") 'evil-backward-word-begin)
 (define-key evil-motion-state-map (kbd "M-j") 'evil-forward-paragraph)
@@ -692,14 +696,11 @@
 (define-key evil-insert-state-map (kbd "C-g") 'evil-force-normal-state)
 
 (global-set-key (kbd "C-c c") 'smart-compile)
-(global-set-key (kbd "C-c f") 'find-file-in-project)
-(global-set-key (kbd "C-c /") 'tags-search)
-(global-set-key (kbd "C-c ?") 'etags-select-find-tag-at-point)
-(global-set-key (kbd "C-c .") 'etags-select-find-tag)
-(global-set-key (kbd "C-c [") 'start-kbd-macro)
-(global-set-key (kbd "C-c ]") 'end-kbd-macro)
-(global-set-key (kbd "C-c \\") 'call-last-kbd-macro)
-(global-set-key (kbd "C-c g") 'rgrep)
+(global-set-key (kbd "C-a f") 'elscreen-find-file)
+(global-set-key (kbd "C-c f") 'elscreen-find-file-in-project)
+(global-set-key (kbd "C-c /") 'elscreen-find-tag-at-point)
+(global-set-key (kbd "C-c .") 'elscreen-find-tag)
+(global-set-key (kbd "C-c g") 'vc-git-grep)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c k") 'browse-kill-ring)
 (global-set-key (kbd "C-c b") 'ibuffer)
@@ -711,6 +712,21 @@
 (global-set-key (kbd "C-c v") 'spec-verify)
 (global-set-key (kbd "C-c t") 'toggle-buffer)
 (global-set-key (kbd "C-c C-s") 'spec-verify-single)
+
+(require 'inline-string-rectangle)
+(require 'mark-more-like-this)
+;; (require 'rename-sgml-tag)
+;; (require 'js2-rename-var)
+
+(global-set-key (kbd "C-x r t") 'inline-string-rectangle)
+
+(global-set-key (kbd "C-<") 'mark-previous-like-this)
+(global-set-key (kbd "C->") 'mark-next-like-this)
+(global-set-key (kbd "C-M-m") 'mark-more-like-this) ; like the other two, but takes an argument (negative is previous)
+
+;; (define-key sgml-mode-map (kbd "C-c C-r") 'rename-sgml-tag)
+;; (define-key js2-mode-map (kbd "C-c C-r") 'js2-rename-var)
+
 
 (global-set-key (kbd "s-d") 'split-window-horizontally)
 (global-set-key (kbd "s-D") 'split-window-vertically)
@@ -743,3 +759,4 @@
 
 ;; (global-set-key (kbd "<C-delete>") 'kill-word)
 ;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
+(server-start)
