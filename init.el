@@ -9,6 +9,7 @@
 (add-to-list 'load-path "~/.emacs.d/expand-region")
 (add-to-list 'load-path "~/.emacs.d/icicles")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
+(add-to-list 'load-path "~/.emacs.d/magit")
 (add-to-list 'load-path "~/.emacs.d/mark-multiple")
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
@@ -35,6 +36,7 @@
 (require 'color-theme-solarized)
 (require 'expand-region)
 (require 'rvm)
+(require 'magit)
 
 (rvm-use-default)
 
@@ -110,9 +112,9 @@
   (interactive)
   (let ((shk-search-string isearch-string))
     (grep-compute-defaults)
-    (lgrep (if isearch-regexp shk-search-string (regexp-quote shk-search-string))
-           (format "*.%s" (file-name-extension (buffer-file-name)))
-           default-directory)
+    (vc-git-grep (if isearch-regexp shk-search-string (regexp-quote shk-search-string))
+		 (format "*.%s" (file-name-extension (buffer-file-name)))
+		 default-directory)
     (isearch-abort)))
 
 (defun occur-from-isearch ()
@@ -120,7 +122,7 @@
   (let ((case-fold-search isearch-case-fold-search))
     (occur (if isearch-regexp isearch-string (regexp-quote isearch-string)))))
 
-(define-key isearch-mode-map (kbd "C-O") 'lgrep-from-isearch)
+(define-key isearch-mode-map (kbd "C-l") 'lgrep-from-isearch)
 (define-key isearch-mode-map (kbd "C-o") 'occur-from-isearch)
 
 (defun popup-yank-menu()
@@ -498,6 +500,14 @@
 
 
 ;; ********************************************************************************
+;; Eshell Mode
+;;
+(defun eshell-mode-on-init ()
+  (define-key eshell-mode-map (kbd "C-a") nil))
+
+(add-hook 'eshell-mode-hook 'eshell-mode-on-init)
+
+;; ********************************************************************************
 ;; dired
 ;;
 (defun joc-dired-up-directory()
@@ -733,11 +743,9 @@
 
 (global-set-key (kbd "<C-return>") 'icicle-buffer)
 
-(global-set-key (kbd "s-j") 'elscreen-previous)
 (global-set-key (kbd "s-t") 'elscreen-create)
 (global-set-key (kbd "s-/") 'elscreen-find-tag-at-point)
 (global-set-key (kbd "s-.") 'elscreen-find-tag)
-(global-set-key (kbd "s-k") 'elscreen-next)
 (global-set-key (kbd "s-w") 'elscreen-kill)
 (global-set-key (kbd "s-d") 'elscreen-dired)
 (global-set-key (kbd "s-f") 'elscreen-find-file-in-project)
@@ -745,7 +753,8 @@
 
 (global-set-key (kbd "<s-left>") 'elscreen-previous)
 (global-set-key (kbd "<s-right>") 'elscreen-next)
-
+(global-set-key (kbd "s-j") 'elscreen-previous)
+(global-set-key (kbd "s-k") 'elscreen-next)
 
 (defun elscreen-goto-1() (interactive) (elscreen-goto 1))
 (defun elscreen-goto-2() (interactive) (elscreen-goto 2))
