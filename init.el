@@ -711,6 +711,7 @@
 (global-set-key (kbd "C-c /") 'elscreen-find-tag-at-point)
 (global-set-key (kbd "C-c .") 'elscreen-find-tag)
 (global-set-key (kbd "C-c g") 'vc-git-grep)
+(global-set-key (kbd "C-c m") 'magit-status)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c k") 'browse-kill-ring)
 (global-set-key (kbd "C-c b") 'ibuffer)
