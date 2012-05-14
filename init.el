@@ -17,6 +17,8 @@
 (add-to-list 'load-path "~/.emacs.d/python")
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 
+(setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
+			 ("gnu" . "http://elpa.gnu.org/packages/")))
 
 ;; ********************************************************************************
 ;; Requires
@@ -25,22 +27,23 @@
 (require 'cl)
 (require 'toggle)
 (require 'icicles)
-(require 'elscreen)
 (require 'find-file-in-project)
 (require 'browse-kill-ring)
-(require 'etags-table)
-(require 'etags-select)
 (require 'session)
 (require 'smart-compile)
+(require 'flymake)
+(require 'flymake-cursor)
 (require 'sr-speedbar)
 (require 'color-theme-solarized)
 (require 'expand-region)
 (require 'rvm)
 (require 'magit)
+(require 'wgrep)
 
 (rvm-use-default)
 
 (setq solarized-contrast 'high)
+(color-theme-solarized-light)
 (setq visible-bell 1)
 (setq ring-bell-function (lambda() ()))
 
@@ -60,24 +63,24 @@
 
 (evil-mode 1)
 (icy-mode)
-(cua-mode 0)
 (tool-bar-mode 0)
 (menu-bar-mode 0)
-(global-hl-line-mode 0)
+
+(setq-default mode-line-format nil)
 
 (setq toggle-mapping-styles
       '((rspec
-	 . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
-	    ("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
-	    ("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
-	    ("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
-	    ("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
-	    ("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
-	(ruby
-	 . (("lib/\\1.rb"             . "test/test_\\1.rb")
-	    ("\\1.rb"                 . "test_\\1.rb")))))
-
-(toggle-style "rspec")
+		 . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
+			("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
+			("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
+			("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
+			("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
+			("app/resources/\\1.rb"   . "spec/resources/\\1_spec.rb")
+			("app/services/\\1.rb"   . "spec/services/\\1_spec.rb")
+			("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
+		(ruby
+		 . (("lib/\\1.rb"             . "test/test_\\1.rb")
+			("\\1.rb"                 . "test_\\1.rb")))))
 
 (defvar autocomplete-initialized nil)
 
@@ -112,9 +115,9 @@
   (interactive)
   (let ((shk-search-string isearch-string))
     (grep-compute-defaults)
-    (vc-git-grep (if isearch-regexp shk-search-string (regexp-quote shk-search-string))
-		 (format "*.%s" (file-name-extension (buffer-file-name)))
-		 default-directory)
+    (lgrep (if isearch-regexp shk-search-string (regexp-quote shk-search-string))
+		   (format "*.%s" (file-name-extension (buffer-file-name)))
+		   default-directory)
     (isearch-abort)))
 
 (defun occur-from-isearch ()
@@ -124,13 +127,6 @@
 
 (define-key isearch-mode-map (kbd "C-l") 'lgrep-from-isearch)
 (define-key isearch-mode-map (kbd "C-o") 'occur-from-isearch)
-
-(defun popup-yank-menu()
-  (interactive)
-  (let ((x-y (posn-x-y (posn-at-point (point)))))
-    (popup-menu 'yank-menu (list (list (+ (car x-y) 10)
-                                       (+ (cdr x-y) 20))
-                                 (selected-window)))))
 
 (defun indent-buffer ()
   (interactive)
@@ -142,13 +138,11 @@
   (save-excursion
     (untabify (point-min) (point-max))))
 
-
 (defun sudo-edit (&optional arg)
   (interactive "p")
   (if (or arg (not buffer-file-name))
       (find-file (concat "/sudo:root@localhost:" (read-file-name "File: ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
-
 
 
 (browse-kill-ring-default-keybindings)
@@ -180,7 +174,7 @@
 (column-number-mode t)
 (mouse-wheel-mode t)
 (if (boundp 'scroll-bar-mode)
-  (scroll-bar-mode 0))
+	(scroll-bar-mode 0))
 ;;(partial-completion-mode nil)
 (show-paren-mode t)
 (transient-mark-mode t)
@@ -230,6 +224,7 @@
 ;;
 (autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 
 
 ;; ********************************************************************************
@@ -279,12 +274,25 @@
 ;; Ruby Mode
 ;;
 
-(setq enh-ruby-program "/Users/soundcloud/.rvm/rubies/ruby-1.9.2-p290/bin/ruby")
-
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.ru$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))
+
+;; Invoke ruby with '-c' to get syntax checking
+(defun flymake-ruby-init ()
+  (let* ((temp-file   (flymake-init-create-temp-buffer-copy
+					   'flymake-create-temp-inplace))
+		 (local-file  (file-relative-name
+					   temp-file
+					   (file-name-directory buffer-file-name))))
+    (list "ruby" (list "-c" local-file))))
+
+(push '(".+\\.rb$" flymake-ruby-init) flymake-allowed-file-name-masks)
+(push '("Rakefile$" flymake-ruby-init) flymake-allowed-file-name-masks)
+
+(push '("^\\(.*\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3) flymake-err-line-patterns)
+
 
 (defun spec-run-single-file (spec-file &rest opts)
   "Runs spec with the specified options"
@@ -301,8 +309,11 @@
   (interactive)
   (spec-run-single-file (buffer-file-name) "--format" "nested" "--line " (number-to-string (line-number-at-pos))))
 
+;; (add-hook 'after-change-functions 'spec-verify-single)
+
 (defun ruby-mode-on-init ()
   (init-mode)
+  (flymake-mode)
 
   ;; (define-key ruby-mode-map (kbd "<return>") 'ruby-reindent-then-newline-and-indent)
 
@@ -364,6 +375,7 @@
 
 (setq js2-mode-dev-mode-p t)
 (setq js2-mode-must-byte-compile nil)
+(setq js2-rebind-eol-bol-keys nil)
 
 (defun js2-mode-on-init ()
   (init-mode)
@@ -420,11 +432,11 @@
   (init-mode)
 
   (setq ac-sources '(ac-source-yasnippet
-		     ac-source-features
-		     ac-source-functions
-		     ac-source-symbols
-		     ac-source-variables
-		     ac-source-words-in-buffer))
+					 ac-source-features
+					 ac-source-functions
+					 ac-source-symbols
+					 ac-source-variables
+					 ac-source-words-in-buffer))
 
   (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init))
 
@@ -477,8 +489,8 @@
   (init-mode)
 
   (setq ac-sources '(ac-source-yasnippet
-		     ac-source-semantic
-		     ac-source-words-in-buffer)))
+					 ac-source-semantic
+					 ac-source-words-in-buffer)))
 
 (add-hook 'c-mode-hook 'c-mode-on-init)
 
@@ -493,8 +505,8 @@
 (defun nxml-mode-on-init ()
   (init-mode)
   (setq ac-sources '(ac-source-yasnippet
-		     ac-source-semantic
-		     ac-source-words-in-buffer)))
+					 ac-source-semantic
+					 ac-source-words-in-buffer)))
 
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
 
@@ -516,36 +528,32 @@
 
 (defun dired-mode-on-init ()
   (require 'dired-single)
-  (require 'wdired)
 
   (define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
   (define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
   (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
 
-  (define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
-
   (setq dired-backup-overwrite t)
-  (setq dired-listing-switches "-al")
-  ;; (setq dired-omit-files "^\\.")
-  )
+  (setq dired-listing-switches "-al"))
+;; (setq dired-omit-files "^\\."))
 
 (add-hook 'dired-mode-hook 'dired-mode-on-init)
 
 (defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
   (if (equal major-mode 'dired-mode)
-      (revert-buffer)))
+	  (revert-buffer)))
 
 (defadvice switch-to-buffer (after auto-refresh-dired (buffer &optional norecord) activate)
   (if (equal major-mode 'dired-mode)
-      (revert-buffer)))
+	  (revert-buffer)))
 
 (defadvice display-buffer (after auto-refresh-dired (buffer &optional not-this-window frame)  activate)
   (if (equal major-mode 'dired-mode)
-      (revert-buffer)))
+	  (revert-buffer)))
 
 (defadvice other-window (after auto-refresh-dired (arg &optional all-frame) activate)
   (if (equal major-mode 'dired-mode)
-      (revert-buffer)))
+	  (revert-buffer)))
 
 
 
@@ -570,24 +578,24 @@
   (sr-speedbar-toggle)
   (sr-speedbar-select-window))
 
-(setq elscreen-display-tab 24)
-(setq elscreen-display-screen-number nil)
-(setq elscreen-tab-display-control nil)
-(setq elscreen-tab-display-kill-screen nil)
+;; (setq elscreen-display-tab 24)
+;; (setq elscreen-display-screen-number nil)
+;; (setq elscreen-tab-display-control nil)
+;; (setq elscreen-tab-display-kill-screen nil)
 
-(set-face-attribute 'elscreen-tab-background-face nil
-		    :underline nil
-		    :foreground "#000000"
-		    :background "#000000")
+;; (set-face-attribute 'elscreen-tab-background-face nil
+;; 					:underline nil
+;; 					:foreground "#000000"
+;; 					:background "#000000")
 
-(set-face-attribute 'elscreen-tab-other-screen-face nil
-		    :underline nil
-		    :foreground "#00ffff"
-		    :background "#000000")
+;; (set-face-attribute 'elscreen-tab-other-screen-face nil
+;; 					:underline nil
+;; 					:foreground "#00ffff"
+;; 					:background "#000000")
 
-(set-face-attribute 'elscreen-tab-current-screen-face nil
-		    :foreground "#00ffff"
-		    :background "#7f7f7f")
+;; (set-face-attribute 'elscreen-tab-current-screen-face nil
+;; 					:foreground "#00ffff"
+;; 					:background "#7f7f7f")
 
 
 
@@ -598,91 +606,83 @@
 (defun insert-newline()
   (interactive)
   (save-excursion
-    (end-of-line)
-    (newline)))
+	(end-of-line)
+	(newline)))
 
 ;; paste with indentation
 (dolist (command '(yank yank-pop))
   (eval `(defadvice ,command (after indent-region activate)
-	   (let ((mark-even-if-inactive transient-mark-mode))
-	     (indent-region (region-beginning) (region-end) nil)))))
+		   (let ((mark-even-if-inactive transient-mark-mode))
+			 (indent-region (region-beginning) (region-end) nil)))))
 
-
-
-(setq ffip-patterns
-      '("*.haml" "*.sass" "*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
-	"*.sh" "*.erl" "*.hs" "*.ml" "*.yml" "*.css"))
-
-(setq ffip-limit 10000)
 
 (defvar ffip-file-cache nil
   "Cached list of project files.")
 
+(setq ffip-patterns
+	  '("*.haml" "*.sass" "*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
+		"*.sh" "*.erl" "*.hs" "*.ml" "*.yml" "*.css"))
+
+(setq ffip-patterns '("*.rb"))
+
+(setq ffip-limit 10000)
+(setq ffip-file-cache nil)
+
 (defun ffip-project-files-with-cache()
   (unless ffip-file-cache
-      (setq ffip-file-cache (ffip-project-files)))
+	(setq ffip-file-cache (ffip-project-files)))
   ffip-file-cache)
 
-(defun elscreen-find-file-in-project ()
+(defun find-file-in-project-clear-cache()
+  (interactive)
+  (setq ffip-file-cache nil))
+
+(defun find-file-in-project-cached()
   (interactive)
   (let* ((project-files (ffip-project-files-with-cache))
-         (files (mapcar 'car project-files))
-         (file (completing-read "Find file in project: " files)))
-    (elscreen-find-and-goto-by-buffer (find-file-noselect (cdr (assoc file project-files))) 'create)))
+		 (files (mapcar 'car project-files))
+		 (file (completing-read "Find file in project: " files)))
+	(find-file (cdr (assoc file project-files)))))
 
-(defun elscreen-find-tag ()
-  (interactive)
-  (setq etags-select-source-buffer (buffer-name))
-  (let* ((default (find-tag-default))
-         (tagname (completing-read
-                   (format "Find tag (default %s): " default)
-                   'etags-select-complete-tag nil nil nil 'find-tag-history default)))
-    (elscreen-create)
-    (etags-select-find tagname)))
+;; (defun elscreen-find-tag ()
+;;   (interactive)
+;;   (let* ((tagname (car (find-tag-interactive "Find tag: "))))
+;;     (elscreen-find-and-goto-by-buffer (find-tag-noselect tagname next-p) 'create)))
 
-(defun elscreen-find-tag-at-point ()
-  (interactive)
-  (let* ((tagname (find-tag-default)))
-    (if tagname
-	(progn
-	  (elscreen-create)
-	  (etags-select-find tagname))
-      (message "tag not found"))))
+;; (defun elscreen-find-tag-at-point ()
+;;   (interactive)
+;;   (elscreen-find-and-goto-by-buffer (find-tag-noselect) 'create))
 
-(elscreen-set-prefix-key (kbd "C-a"))
+;; (elscreen-set-prefix-key (kbd "C-a"))
 
 
 (setq ibuffer-saved-filter-groups
-      (quote (("default"
-	       ("dired" (mode . dired-mode))
-	       ("spec" (name . ".*_spec.rb$"))
-	       ("controller" (name . ".*_controller.rb$"))
-	       ("ruby" (mode . ruby-mode))
-	       ("javascript" (mode . js2-mode))
-	       ("haml" (mode . haml-mode))
-	       ("css" (mode . css-mode))
-	       ("elisp" (mode . emacs-lock-mode))
-	       ("emacs" (name . "^\\*.*\\*$"))))))
+	  (quote (("default"
+			   ("dired" (mode . dired-mode))
+			   ("ruby" (mode . ruby-mode))
+			   ("javascript" (mode . js2-mode))
+			   ("*special*" (name . "^\\*.*\\*$"))))))
 
 (add-hook 'ibuffer-mode-hook
-	  (lambda ()
-	    (ibuffer-switch-to-saved-filter-groups "default")))
+		  (lambda ()
+			(ibuffer-switch-to-saved-filter-groups "default")))
 
 (setq ibuffer-use-header-line nil)
 
 (setq ibuffer-formats '((mark modified read-only " " (name 32 32 :left)
-			      ;; " " (size 9 -1 :right)
-    			      ;; " " (mode 16 16 :left :elide)
-			      " " filename-and-process)
-			;; (mark " " (name 16 -1) " " filename)
-			      ))
+							  ;; " " (size 9 -1 :right)
+							  ;; " " (mode 16 16 :left :elide)
+							  " " filename-and-process)
+						;; (mark " " (name 16 -1) " " filename)
+						))
 
-(defadvice ibuffer-update (around ibuffer-preserve-prev-header activate)
-  "Preserve line-header used before Ibuffer if it doesn't set one"
-  (let ((prev-line-header header-line-format))
-    ad-do-it
-    (unless header-line-format
-      (setq header-line-format prev-line-header))))
+(defun git-grep()
+  (interactive)
+  (require 'grep)
+  (let ((dir (read-directory-name "In directory: "
+				  nil ffip-project-root t)))
+    (vc-git-grep (grep-read-regexp) "." dir)))
+
 
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
@@ -696,28 +696,27 @@
 (global-set-key (kbd "<C-up>") 'evil-backward-paragraph)
 (global-set-key (kbd "<C-down>") 'evil-forward-paragraph)
 
-(define-key evil-motion-state-map " " 'er/expand-region)
+(define-key evil-motion-state-map "e" 'er/expand-region)
 
-(define-key evil-motion-state-map (kbd "RET") 'insert-newline)
+(define-key evil-motion-state-map (kbd "SPC") 'insert-newline)
 (define-key evil-motion-state-map (kbd "C-k") 'evil-forward-word-begin)
 (define-key evil-motion-state-map (kbd "C-j") 'evil-backward-word-begin)
 (define-key evil-motion-state-map (kbd "M-j") 'evil-forward-paragraph)
 (define-key evil-motion-state-map (kbd "M-k") 'evil-backward-paragraph)
 (define-key evil-insert-state-map (kbd "C-g") 'evil-force-normal-state)
-
 (global-set-key (kbd "C-c c") 'smart-compile)
-(global-set-key (kbd "C-a f") 'elscreen-find-file)
-(global-set-key (kbd "C-c f") 'elscreen-find-file-in-project)
-(global-set-key (kbd "C-c /") 'elscreen-find-tag-at-point)
-(global-set-key (kbd "C-c .") 'elscreen-find-tag)
-(global-set-key (kbd "C-c g") 'vc-git-grep)
+(global-set-key (kbd "C-c f") 'find-file-in-project-cached)
+(global-set-key (kbd "C-c C-f") 'find-file-in-project-clear-cache)
+(global-set-key (kbd "C-c .") 'find-tag)
+(global-set-key (kbd "C-c q") 'auto-fill-mode)
+(global-set-key (kbd "C-c g") 'git-grep)
+(global-set-key (kbd "C-c l") 'lgrep)
 (global-set-key (kbd "C-c m") 'magit-status)
+(global-set-key (kbd "C-c o") 'occur)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c k") 'browse-kill-ring)
 (global-set-key (kbd "C-c b") 'ibuffer)
 (global-set-key (kbd "C-c i") 'imenu)
-(global-set-key (kbd "C-c d") 'color-theme-solarized-dark)
-(global-set-key (kbd "C-c l") 'color-theme-solarized-light)
 (global-set-key (kbd "C-c s") 'speedbar-toggle)
 (global-set-key (kbd "C-c r") 'recompile)
 (global-set-key (kbd "C-c v") 'spec-verify)
@@ -738,35 +737,7 @@
 ;; (define-key sgml-mode-map (kbd "C-c C-r") 'rename-sgml-tag)
 ;; (define-key js2-mode-map (kbd "C-c C-r") 'js2-rename-var)
 
-
-(global-set-key (kbd "s-d") 'split-window-horizontally)
-(global-set-key (kbd "s-D") 'split-window-vertically)
-
 (global-set-key (kbd "<C-return>") 'icicle-buffer)
-
-(global-set-key (kbd "s-t") 'elscreen-create)
-(global-set-key (kbd "s-/") 'elscreen-find-tag-at-point)
-(global-set-key (kbd "s-.") 'elscreen-find-tag)
-(global-set-key (kbd "s-w") 'elscreen-kill)
-(global-set-key (kbd "s-d") 'elscreen-dired)
-(global-set-key (kbd "s-f") 'elscreen-find-file-in-project)
-(global-set-key (kbd "s-b") 'elscreen-find-and-goto-by-buffer)
-
-(global-set-key (kbd "<s-left>") 'elscreen-previous)
-(global-set-key (kbd "<s-right>") 'elscreen-next)
-(global-set-key (kbd "s-j") 'elscreen-previous)
-(global-set-key (kbd "s-k") 'elscreen-next)
-
-(defun elscreen-goto-1() (interactive) (elscreen-goto 1))
-(defun elscreen-goto-2() (interactive) (elscreen-goto 2))
-(defun elscreen-goto-3() (interactive) (elscreen-goto 3))
-(defun elscreen-goto-4() (interactive) (elscreen-goto 4))
-
-(global-set-key (kbd "s-1") 'elscreen-goto-1)
-(global-set-key (kbd "s-2") 'elscreen-goto-2)
-(global-set-key (kbd "s-3") 'elscreen-goto-3)
-(global-set-key (kbd "s-4") 'elscreen-goto-4)
 
 ;; (global-set-key (kbd "<C-delete>") 'kill-word)
 ;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
-(server-start)

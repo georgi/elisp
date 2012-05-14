@@ -2,14 +2,15 @@
 
 ;; Copyright (C) 1999, 2000  Jonadab the Unsightly One <jonadab@bright.net>
 ;; Copyright (C) 2000, 2001, 2002, 2003  Alex Schroeder <alex@gnu.org>
+;; Copyright (C) 2003, 2004, 2005, 2006  Xavier Maillard <zedek@gnu.org>
 
-;; Version: 6.5.2
+;; Version: 6.6.0
 ;; Keywords: faces
 ;; Author: Jonadab the Unsightly One <jonadab@bright.net>
-;; Maintainer: Alex Schroeder <alex@gnu.org>
+;; Maintainer: Xavier Maillard <zedek@gnu.org>
 ;; URL: http://www.emacswiki.org/cgi-bin/wiki.pl?ColorTheme
 
-;; This file is not part of GNU Emacs.
+;; This file is not (YET) part of GNU Emacs.
 
 ;; This is free software; you can redistribute it and/or modify it under
 ;; the terms of the GNU General Public License as published by the Free
@@ -28,92 +29,8 @@
 
 ;;; Commentary:
 
-;; Sharing your current color setup:
-;;
-;; Use `color-theme-submit'.  If you have already invested time in
-;; customizing Emacs faces, please consider sharing your current setup.
-;; Make sure that color-theme.el is in your `load-path'.  Type M-x
-;; load-library RET color-theme RET to load all the functions.  Type M-x
-;; color-theme-submit RET and mail the result to the maintainer of this
-;; package (see above for mail addres).
-;;
-;; If you want to make sure that all your customization was exported,
-;; type M-x list-faces-display RET to get a list of all faces currently
-;; defined.  This is the list of faces that `color-theme-print' uses.
-
-;; Installing a color theme:
-;;
-;; Make sure that color-theme.el is in your `load-path'.  Type M-x
-;; load-library RET color-theme RET to load all the functions.
-;;
-;; The main function to call is color-theme-select.  Type M-x
-;; color-theme-select RET.  That creates a Color Theme Selection
-;; buffer.  Press RET or `i' on a color theme to install it for the
-;; rest of your session.
-;;
-;; If you want to install the color theme as soon as Emacs is started
-;; up, read the description of the theme you like and remember the
-;; name of the color theme function.  Press `d' on a color theme in
-;; the Color Theme Selection buffer to read the description.  Assuming
-;; you like the Gnome2 theme, you'll find that the function to use is
-;; called `color-theme-gnome2'.  Add the following to the end of your
-;; .emacs (removing the leading `;;').
-;;
-;; (require 'color-theme)
-;; (color-theme-gnome2)
-
-;; Changing menu colors:
-;;
-;; In Emacs 21 on X, you can set the menu colors and font using the
-;; menu face.  Example for your .emacs file:
-;;
-;;   (set-face-font 'menu "7x14")
-;;   (set-face-foreground 'menu "white").
-;;
-;; If are using X, you can set the menu foreground and background using
-;; a resource file, usually .Xdefaults or .Xresources.  Usually
-;; .Xdefaults is used when you start your session using a display
-;; manager such as xdm or gdm.  .Xresources is usually used when you
-;; start X directly via a shell script such as startx.  If you set
-;; Emacs*Background and Emacs*Foreground in such a resource file, the
-;; foreground and background of Emacs including the menu will be set.
-;; If your .emacs then loads a color theme, the foreground and
-;; background are changed -- with the exception of the menu.  There is
-;; no way to manipulate the menu foreground and background color from
-;; elisp.  You can also set more specific menu resources for Emacs in
-;; the resource file.  Here is a sample entry for your resource file:
-;;
-;;   Emacs*Background:		DarkSlateGray
-;;   Emacs*Foreground:		wheat
-
-;; Creating your own color theme:
-;;
-;; Use M-x customize-face and customize the faces.  Make sure to "Set
-;; for Current Session" -- you don't want to save these using custom!
-;; When you are done, call M-x color-theme-print to produce the elisp
-;; code required to recreate your theme.  Better yet, use M-x
-;; color-theme-submit to mail it to the maintainer.  That way it will be
-;; added to future versions of color-theme.el.
-;;
-;; For more information on the elisp format of a color theme, start with
-;; the documentation of `color-theme-install' using C-h f
-;; color-theme-install.
-;;
-;; When your color theme is just a variation of an existing color theme,
-;; take a look at `color-theme-robin-hood' in order to see an example of
-;; how to do it.  Essentially you want to call all the parent color
-;; themes before installing your changes.  For all but the first parent
-;; color theme, you need to make sure that `color-theme-is-cumulative'
-;; is bound to t.  If you don't do that, users that set
-;; `color-theme-is-cumulative' to nil will only install your changes
-;; without the parent color themes.
-
-;; Making a color theme work for both Emacs and XEmacs:
-;;
-;; Once you have printed the color-theme, you can make sure it looks
-;; similar in both Emacs and XEmacs by running
-;; `color-theme-analyze-defun' on the printed theme.  This function
-;; will check for missing faces for the other editor...
+;; Please read README and BUGS files for any relevant help.
+;; Contributors (not themers) should also read HACKING file.
 
 ;;; Thanks
 
@@ -122,79 +39,16 @@
 ;; Gordon Messmer <gordon@dragonsdawn.net> for ideas and discussion.
 ;; Sriram Karra <karra@cs.utah.edu> for the color-theme-submit stuff.
 ;; Olgierd `Kingsajz' Ziolko <kingsajz@rpg.pl> for the spec-filter idea.
+;; Brian Palmer for color-theme-library ideas and code
 ;; All the users that contributed their color themes.
 
-;;; Bugs:
-
-;; Emacs 20.7: Some faces are created using copy-face; these faces are
-;; not printed correctly using M-x color-theme-print.  They will have
-;; (nil) in their spec.  M-x customize-face has the same problem.
-;; Example:
-;; (copy-face 'bold 'new-bold)
-;; (color-theme-spec 'bold)
-;;   => (bold ((t (:bold t))))
-;; (color-theme-spec 'new-bold)
-;;   => (new-bold ((t (nil))))
-;;
-;; XEmacs 21.1: Some faces are defined using a certain font instead of
-;; of the correct attribute.  They will have (nil) in their spec.
-;; M-x customize-face has the same problem.
-;; Example:
-;; (color-theme-spec 'bold)
-;;   => (bold ((t (nil))))
-;;
-;; XEmacs 21.2 and up, Emacs 21: Not compatible with the custom-theme
-;; mode.  It should be easy to transform the color-theme source into
-;; custom-theme source, however.
-;;
-;; If you are running XEmacs, then only foreground and background color
-;; of the default face and only the background color of the text-cursor
-;; face will used.  This is due to the fact that these three pieces of
-;; information are stored as frame parameters in Emacs.
-;;
-;; If you are running XEmacs, variables cannot have a frame-local
-;; binding.  Therefore, if color-theme-is-global is set to nil, the
-;; variable settings in a color theme are ignored.
-;;
-;; Using Emacs and a non-nil value for color-theme-is-global will
-;; install a new color theme for all frames.  Using XEmacs and a non-nil
-;; value for color-theme-is-global will install a new color theme only
-;; on those frames that are not using a local color theme.
-;;
-;; If your system does not define the color names used, you will get the
-;; error "undefined color".  See the output of `list-colors-display' for
-;; a list of colors defined on your display.
-;;
-;; The :box, :height, and other new attributes will be honored in Emacs
-;; 21, but when you print such a color-theme on Emacs 20 or XEmacs 21,
-;; the information will get lost.  So don't do that.  Furthermore,
-;; customizing these faces may end up showing you a lisp expression
-;; instead of the real widgets on Emacs 20 or XEmacs 21 because these
-;; attributes are not understood.
-;;
-;; :inverse-video handling differs in Emacs and XEmacs.  We therefore do
-;; away with it.  When printing a color-theme, the inverse-video
-;; attribute should be handled correctly without ever appearing in color
-;; themes.  For maintenance, the following might be usefull for
-;; query-replace-regexp.
-;; :background "\([^"]*\)"\(.*\):foreground "\([^"]*\)"\(.*\) :inverse-video t
-;; :background "\3"\2:foreground "\1"\4
-;;
-;; In XEmacs 21.1, some of the face tests don't work.  Example:
-;; (custom-face-bold 'bold) returns nil on my system.  A bug report was
-;; submitted.
-;;
-;; Emacs 20 users will loose with new color themes, because these will
-;; set the colors of the default face only, leaving frame background
-;; untouched.  In Emacs 20, the colors of the default face and of the
-;; frame could be changed independently.  In Emacs 21, this is no longer
-;; true.  New color themes will not be made backwards compatible.
-;;
-;; This release was superficially tested with Emacs 21.2 and XEmacs 21.4.
-
-
+
 
 ;;; Code:
+(eval-when-compile
+  (require 'easymenu)
+  (require 'reporter)
+  (require 'sendmail))
 
 (require 'cl); set-difference is a function...
 
@@ -202,7 +56,7 @@
 (require 'cus-face)
 (require 'wid-edit); for widget-apply stuff in cus-face.el
 
-(defconst color-theme-maintainer-address "alex@gnu.org"
+(defconst color-theme-maintainer-address "zedek@gnu.org"
   "Address used by `submit-color-theme'.")
 
 ;; Emacs / XEmacs compatibility and workaround layer
@@ -214,8 +68,14 @@
 	    (not (facep 'tool-bar)))
        (put 'tool-bar 'face-alias 'toolbar)))
 
-(defvar color-theme-xemacs-p (string-match "XEmacs" emacs-version)
+(defvar color-theme-xemacs-p (and (featurep 'xemacs) 
+                                  (string-match "XEmacs" emacs-version))
   "Non-nil if running XEmacs.")
+
+;; Add this since it appears to miss in emacs-2x
+(or (fboundp 'replace-in-string)
+    (defun replace-in-string (target old new)
+      (replace-regexp-in-string old new  target)))
 
 ;; face-attr-construct has a problem in Emacs 20.7 and older when
 ;; dealing with inverse-video faces.  Here is a short test to check
@@ -234,8 +94,12 @@
 ;; That's why we depend on cus-face.el functionality.
 
 (cond ((fboundp 'custom-face-attributes-get)
-       (defalias 'color-theme-face-attr-construct
-	 'custom-face-attributes-get))
+       (defun color-theme-face-attr-construct (face frame)
+         (if (atom face)
+             (custom-face-attributes-get face frame)
+             (if (and (consp face) (eq (car face) 'quote))
+                 (custom-face-attributes-get (cadr face) frame)
+                 (custom-face-attributes-get (car face) frame)))))
       ((fboundp 'face-custom-attributes-get)
        (defalias 'color-theme-face-attr-construct
 	 'face-custom-attributes-get))
@@ -257,7 +121,7 @@ a plist.  In XEmacs, the alist is deprecated; a plist is used instead."
 	 plist)
 	((not (symbolp (car plist)))
 	 (error "Wrong type argument: plist, %S" plist))
-	(t
+	((featurep 'xemacs)
 	 (plist-to-alist plist)))); XEmacs only
 
 ;; Customization
@@ -343,6 +207,34 @@ previous color themes."
   :type 'boolean
   :group 'color-theme)
 
+(defcustom color-theme-directory nil
+  "Directory where we can find additionnal themes (personnal).
+Note that there is at least one directory shipped with the official
+color-theme distribution where all contributed themes are located.
+This official selection can't be changed with that variable. 
+However, you still can decide to turn it on or off and thus,
+not be shown with all themes but yours."
+  :type '(repeat string)
+  :group 'color-theme)
+
+(defcustom color-theme-libraries (directory-files 
+                                  (concat 
+                                   (file-name-directory (locate-library "color-theme"))
+                                   "/themes") t "^color-theme")
+  "A list of files, which will be loaded in color-theme-initialize depending
+on `color-theme-load-all-themes' value. 
+This allows a user to prune the default color-themes (which can take a while
+to load)."
+  :type '(repeat string)
+  :group 'color-theme)
+
+(defcustom color-theme-load-all-themes t
+  "When t, load all color-theme theme files
+as presented by `color-theme-libraries'. Else
+do not load any of this themes."
+  :type 'boolean
+  :group 'color-theme)
+
 (defcustom color-theme-mode-hook nil
   "Hook for color-theme-mode."
   :type 'hook
@@ -364,6 +256,9 @@ previous color themes."
       (define-key map (kbd "<mouse-2>") 'color-theme-install-at-mouse))
     map)
   "Mode map used for the buffer created by `color-theme-select'.")
+
+(defvar color-theme-initialized nil
+  "Internal variable determining whether color-theme-initialize has been invoked yet")
 
 (defvar color-theme-buffer-name "*Color Theme Selection*"
   "Name of the color theme selection buffer.")
@@ -388,6 +283,18 @@ nil means that no history is maintained."
 This counts how many themes were installed, regardless
 of `color-theme-history-max-length'.")
 
+(defvar color-theme-entry-path (cond
+                                ;; Emacs 22.x and later
+                                ((lookup-key global-map [menu-bar tools])
+                                 '("tools"))
+                                ;; XEmacs
+                                ((featurep 'xemacs)
+                                 (setq tool-entry '("Tools")))
+                                ;; Emacs < 22
+                                (t
+                                 '("Tools")))
+  "Menu tool entry path.")
+
 (defun color-theme-add-to-history (name)
   "Add color-theme NAME to `color-theme-history'."
   (setq color-theme-history
@@ -406,12 +313,111 @@ of `color-theme-history-max-length'.")
 ;;   (setcdr (nthcdr 2 l) nil)
 ;;   l)
 
-
+
 
 ;; List of color themes used to create the *Color Theme Selection*
 ;; buffer.
 
-(defvar color-themes nil
+(defvar color-themes
+  '((color-theme-aalto-dark "Aalto Dark" "Jari Aalto <jari.aalto@poboxes.com>")
+    (color-theme-aalto-light "Aalto Light" "Jari Aalto <jari.aalto@poboxes.com>")
+    (color-theme-aliceblue "Alice Blue" "Girish Bharadwaj <girishb@gbvsoft.com>")
+    (color-theme-andreas "Andreas" "Andreas Busch <Andreas.Busch@politics.ox.ac.uk>")
+    (color-theme-arjen "Arjen" "Arjen Wiersma <arjen@wiersma.org>")
+    (color-theme-beige-diff "Beige Diff" "Alex Schroeder <alex@gnu.org>" t)
+    (color-theme-bharadwaj "Bharadwaj" "Girish Bharadwaj <girishb@gbvsoft.com>")
+    (color-theme-bharadwaj-slate "Bharadwaj Slate" "Girish Bharadwaj <girishb@gbvsoft.com>")
+    (color-theme-billw "Billw" "Bill White <billw@wolfram.com>")
+    (color-theme-black-on-gray "BlackOnGray" "Sudhir Bhojwani <sbhojwani@altoweb.com>")
+    (color-theme-blippblopp "Blipp Blopp" "Thomas Sicheritz-Ponten<thomas@biopython.org>")
+    (color-theme-simple-1 "Black" "Jonadab <jonadab@bright.net>")
+    (color-theme-blue-erc "Blue ERC" "Alex Schroeder <alex@gnu.org>" t)
+    (color-theme-blue-gnus "Blue Gnus" "Alex Schroeder <alex@gnu.org>" t)
+    (color-theme-blue-mood "Blue Mood" "Nelson Loyola <nloyola@yahoo.com>")
+    (color-theme-blue-sea "Blue Sea" "Alex Schroeder <alex@gnu.org>")
+    (color-theme-calm-forest "Calm Forest" "Artur Hefczyc <kobit@plusnet.pl>")
+    (color-theme-charcoal-black "Charcoal Black" "Lars Chr. Hausmann <jazz@zqz.dk>")
+    (color-theme-goldenrod "Cheap Goldenrod" "Alex Schroeder <alex@gnu.org>")
+    (color-theme-clarity "Clarity and Beauty" "Richard Wellum <rwellum@cisco.com>")
+    (color-theme-classic "Classic" "Frederic Giroud <postcard@worldonline.fr>")
+    (color-theme-comidia "Comidia" "Marcelo Dias de Toledo <mtole@ig.com.br>")
+    (color-theme-jsc-dark "Cooper Dark" "John S Cooper <John.Cooper@eu.citrix.com>")
+    (color-theme-jsc-light "Cooper Light" "John S Cooper <John.Cooper@eu.citrix.com>")
+    (color-theme-jsc-light2 "Cooper Light 2" "John S Cooper <John.Cooper@eu.citrix.com>")
+    (color-theme-dark-blue "Dark Blue" "Chris McMahan <cmcmahan@one.net>")
+    (color-theme-dark-blue2 "Dark Blue 2" "Chris McMahan <cmcmahan@one.net>")
+    (color-theme-dark-green "Dark Green" "eddy_woody@hotmail.com")
+    (color-theme-dark-laptop "Dark Laptop" "Laurent Michel <ldm@cs.brown.edu>")
+    (color-theme-deep-blue "Deep Blue" "Tomas Cerha <cerha@brailcom.org>")
+    (color-theme-digital-ofs1 "Digital OFS1" "Gareth Owen <gowen@gwowen.freeserve.co.uk>")
+    (color-theme-euphoria "Euphoria" "oGLOWo@oGLOWo.cjb.net")
+    (color-theme-feng-shui "Feng Shui" "Walter Higgins <walterh@rocketmail.com>")
+    (color-theme-fischmeister "Fischmeister"
+			      "Sebastian Fischmeister <sfischme@nexus.lzk.tuwien.ac.at>")
+    (color-theme-gnome "Gnome" "Jonadab <jonadab@bright.net>")
+    (color-theme-gnome2 "Gnome 2" "Alex Schroeder <alex@gnu.org>")
+    (color-theme-gray1 "Gray1" "Paul Pulli <P.Pulli@motorola.com>")
+    (color-theme-gray30 "Gray30" "Girish Bharadwaj <girishb@gbvsoft.com>")
+    (color-theme-kingsajz "Green Kingsajz" "Olgierd `Kingsajz' Ziolko <kingsajz@rpg.pl>")
+    (color-theme-greiner "Greiner" "Kevin Greiner <kgreiner@mapquest.com>")
+    (color-theme-gtk-ide "GTK IDE" "Gordon Messmer <gordon@dragonsdawn.net>")
+    (color-theme-high-contrast "High Contrast" "Alex Schroeder <alex@gnu.org>")
+    (color-theme-hober "Hober" "Edward O'Connor <ted@oconnor.cx>")
+    (color-theme-infodoc "Infodoc" "Frederic Giroud <postcard@worldonline.fr>")
+    (color-theme-jb-simple "JB Simple" "jeff@dvns.com")
+    (color-theme-jedit-grey "Jedit Grey" "Gordon Messmer <gordon@dragonsdawn.net>")
+    (color-theme-jonadabian "Jonadab" "Jonadab <jonadab@bright.net>")
+    (color-theme-jonadabian-slate "Jonadabian Slate" "Jonadab <jonadab@bright.net>")
+    (color-theme-katester "Katester" "Higgins_Walter@emc.com")
+    (color-theme-late-night "Late Night" "Alex Schroeder <alex@gnu.org>")
+    (color-theme-lawrence "Lawrence" "lawrence mitchell <wence@gmx.li>")
+    (color-theme-lethe "Lethe" "Ivica Loncar <ivica.loncar@srk.fer.hr>")
+    (color-theme-ld-dark "Linh Dang Dark" "Linh Dang <linhd@nortelnetworks.com>")
+    (color-theme-marine "Marine" "Girish Bharadwaj <girishb@gbvsoft.com>")
+    (color-theme-matrix "Matrix" "Walter Higgins <walterh@rocketmail.com>")
+    (color-theme-marquardt "Marquardt" "Colin Marquardt <colin@marquardt-home.de>")
+    (color-theme-midnight "Midnight" "Gordon Messmer <gordon@dragonsdawn.net>")
+    (color-theme-mistyday "Misty Day" "Hari Kumar <Hari.Kumar@mtm.kuleuven.ac.be>")
+    (color-theme-montz "Montz" "Brady Montz <bradym@becomm.com>")
+    (color-theme-oswald "Oswald" "Tom Oswald <toswald@sharplabs.com>")
+    (color-theme-parus "Parus" "Jon K Hellan <hellan@acm.org>")
+    (color-theme-pierson "Pierson" "Dan L. Pierson <dan@sol.control.com>")
+    (color-theme-ramangalahy "Ramangalahy" "Solofo Ramangalahy <solofo@irisa.fr>")
+    (color-theme-raspopovic "Raspopovic" "Pedja Raspopovic <pedja@lsil.com>")
+    (color-theme-renegade "Renegade" "Dave Benjamin <ramen@ramenfest.com>")
+    (color-theme-resolve "Resolve" "Damien Elmes <resolve@repose.cx>")
+    (color-theme-retro-green "Retro Green" "Alex Schroeder <alex@gnu.org>")
+    (color-theme-retro-orange "Retro Orange" "Alex Schroeder <alex@gnu.org>")
+    (color-theme-robin-hood "Robin Hood" "Alex Schroeder <alex@gnu.org>")
+    (color-theme-rotor "Rotor" "Jinwei Shen <shenjw@wam.umd.edu>")
+    (color-theme-ryerson "Ryerson" "Luis Fernandes <elf@ee.ryerson.ca>")
+    (color-theme-salmon-diff "Salmon Diff" "Alex Schroeder <alex@gnu.org>" t)
+    (color-theme-salmon-font-lock "Salmon Font-Lock" "Alex Schroeder <alex@gnu.org>" t)
+    (color-theme-scintilla "Scintilla" "Gordon Messmer <gordon@dragonsdawn.net>")
+    (color-theme-shaman "Shaman" "shaman@interdon.net")
+    (color-theme-sitaramv-nt "Sitaram NT"
+			     "Sitaram Venkatraman <sitaramv@loc251.tandem.com>")
+    (color-theme-sitaramv-solaris "Sitaram Solaris"
+				  "Sitaram Venkatraman <sitaramv@loc251.tandem.com>")
+    (color-theme-snow "Snow" "Nicolas Rist <Nicolas.Rist@alcatel.de>")
+    (color-theme-snowish "Snowish" "Girish Bharadwaj <girishb@gbvsoft.com>")
+    (color-theme-standard-ediff "Standard Ediff" "Emacs Team, added by Alex Schroeder <alex@gnu.org>" t)
+    (color-theme-standard "Standard Emacs 20" "Emacs Team, added by Alex Schroeder <alex@gnu.org>")
+    (color-theme-emacs-21 "Standard Emacs 21" "Emacs Team, added by Alex Schroeder <alex@gnu.org>")
+    (color-theme-emacs-nw "Standard Emacs 21 No Window" "Emacs Team, added by D. Goel <deego@gnufans.org>")
+    (color-theme-xemacs "Standard XEmacs" "XEmacs Team, added by Alex Schroeder <alex@gnu.org>")
+    (color-theme-subtle-blue "Subtle Blue" "Chris McMahan <cmcmahan@one.net>")
+    (color-theme-subtle-hacker "Subtle Hacker" "Colin Walters <levanti@verbum.org>")
+    (color-theme-taming-mr-arneson "Taming Mr Arneson" "Erik Arneson <erik@aarg.net>")
+    (color-theme-taylor "Taylor" "Art Taylor <reeses@hemisphere.org>")
+    (color-theme-tty-dark "TTY Dark" "O Polite <m2@plusseven.com>")
+    (color-theme-vim-colors "Vim Colors" "Michael Soulier <msoulier@biryani.nssg.mitel.com>")
+    (color-theme-whateveryouwant "Whateveryouwant" "Fabien Penso <penso@linuxfr.org>, color by Scott Jaderholm <scott@jaderholm.com>")
+    (color-theme-wheat "Wheat" "Alex Schroeder <alex@gnu.org>")
+    (color-theme-pok-wob "White On Black" "S. Pokrovsky <pok@nbsp.nsk.su>")
+    (color-theme-pok-wog "White On Grey" "S. Pokrovsky <pok@nbsp.nsk.su>")
+    (color-theme-word-perfect "WordPerfect" "Thomas Gehrlein <Thomas.Gehrlein@t-online.de>")
+    (color-theme-xp "XP" "Girish Bharadwaj <girishb@gbvsoft.com>"))
   "List of color themes.
 
 Each THEME is itself a three element list (FUNC NAME MAINTAINER &optional LIBRARY).
@@ -443,6 +449,7 @@ startup."
 				color-theme-legal-frame-parameters))))
 (add-hook 'after-init-hook 'color-theme-backup-original-values)
 
+;;;###autoload
 (defun color-theme-select (&optional arg)
   "Displays a special buffer for selecting and installing a color theme.
 With optional prefix ARG, this buffer will include color theme libraries
@@ -450,6 +457,7 @@ as well.  A color theme library is in itself not complete, it must be
 used as part of another color theme to be useful.  Thus, color theme
 libraries are mainly useful for color theme authors."
   (interactive "P")
+  (unless color-theme-initialized (color-theme-initialize))
   (switch-to-buffer (get-buffer-create color-theme-buffer-name))
   (setq buffer-read-only nil)
   (erase-buffer)
@@ -473,7 +481,7 @@ libraries are mainly useful for color theme authors."
 	  (library (nth 3 theme))
 	  (desc))
       (when (or (not library) arg)
-	(setq desc (format "%-23s %s"
+	(setq desc (format "%-23s %s" 
 			   (if library (concat name " [lib]") name)
 			   author))
 	(put-text-property 0 (length desc) 'color-theme func desc)
@@ -481,15 +489,15 @@ libraries are mainly useful for color theme authors."
 	(put-text-property 0 (length name) 'mouse-face 'highlight desc)
 	(insert desc)
 	(newline))))
-  (beginning-of-buffer)
+  (goto-char (point-min))
   (setq buffer-read-only t)
   (set-buffer-modified-p nil)
   (color-theme-mode))
 
-(require 'easymenu)
-(easy-menu-add-item nil '("tools") "--")
-(easy-menu-add-item  nil '("tools")
-  ["Color Themes" color-theme-select t])
+(when (require 'easymenu)
+  (easy-menu-add-item nil color-theme-entry-path "--")
+  (easy-menu-add-item  nil color-theme-entry-path
+                       ["Color Themes" color-theme-select t]))
 
 (defun color-theme-mode ()
   "Major mode to select and install color themes.
@@ -542,6 +550,7 @@ The color themes are listed in `color-themes', which see."
 
 ;;; Commands in Color Theme Selection mode
 
+;;;###autoload
 (defun color-theme-describe ()
   "Describe color theme listed at point.
 This shows the documentation of the value of text-property color-theme
@@ -550,6 +559,7 @@ function.  See `color-themes'."
   (interactive)
   (describe-function (get-text-property (point) 'color-theme)))
 
+;;;###autoload
 (defun color-theme-install-at-mouse (event)
   "Install color theme clicked upon using the mouse.
 First argument EVENT is used to set point.  Then
@@ -559,6 +569,7 @@ First argument EVENT is used to set point.  Then
     (mouse-set-point event)
     (color-theme-install-at-point)))
 
+;;;autoload
 (defun color-theme-install-at-point ()
   "Install color theme at point.
 This calls the value of the text-property `color-theme' at point.
@@ -579,6 +590,7 @@ See `color-themes'."
 	(delete-overlay o))
       (goto-address))))
 
+;;;###autoload
 (defun color-theme-install-at-point-for-current-frame ()
   "Install color theme at point for current frame only.
 Binds `color-theme-is-global' to nil and calls
@@ -587,7 +599,7 @@ Binds `color-theme-is-global' to nil and calls
   (let ((color-theme-is-global nil))
     (color-theme-install-at-point)))
 
-
+
 
 ;; Taking a snapshot of the current color theme and pretty printing it.
 
@@ -765,15 +777,15 @@ OLD is the current setting, NEW is the setting inherited from."
 		more-atts (cddr more-atts))
 	  ;; Color-theme assumes that no value is ever 'unspecified.
 	  (cond ((eq att ':height); cumulative effect!
-		 (setq atts (plist-put atts
-				       ':height
+		 (setq atts (plist-put atts 
+				       ':height 
 				       (color-theme-spec-resolve-height
-					(plist-get atts att)
+					(plist-get atts att) 
 					val))))
 		;; Default: Only put if it has not been specified before.
 		((not (plist-get atts att))
 		 (setq atts (cons att (cons val atts))))
-
+		  
 ))))
     atts))
 ;; (color-theme-spec-resolve-inheritance '(:bold t))
@@ -930,9 +942,12 @@ the list of faces and their specs."
   (color-theme-print-alist vars)
   ;; remaining elements of snapshot: face specs
   (color-theme-print-faces faces)
-  (insert ")))")
+  (insert ")))\n")
+  (insert "(add-to-list 'color-themes '(" (symbol-name func) " "
+          " \"THEME NAME\" \"YOUR NAME\"))")
   (goto-char (point-min)))
 
+;;;###autoload
 (defun color-theme-print (&optional buf)
   "Print the current color theme function.
 
@@ -968,6 +983,8 @@ Example:
     (setq buffer-read-only nil)
     (erase-buffer))
   ;; insert defun
+  (insert "(eval-when-compile"
+          "    (require 'color-theme))\n")
   (color-theme-print-theme 'my-color-theme
 			   (concat "Color theme by "
 				   (if (string= "" user-full-name)
@@ -1145,6 +1162,7 @@ If REGEXP is given, this is only done if faces contains a match for regexps."
 ;;        '((blue ((t (:foreground "blue"))))
 ;; 	 (bold ((t (:bold t :height 1.0))))))
 
+;;;###autoload
 (defun color-theme-analyze-defun ()
   "Once you have a color-theme printed, check for missing faces.
 This is used by maintainers who receive a color-theme submission
@@ -1200,6 +1218,7 @@ author."
 
 (defun color-theme-snapshot nil)
 
+;;;###autoload
 (defun color-theme-make-snapshot ()
   "Return the definition of the current color-theme.
 The function returned will recreate the color-theme in use at the moment."
@@ -1218,7 +1237,7 @@ The snapshot is created via `color-theme-snapshot'."
 	      ;; remaining elements of snapshot: face specs
 	      ,@(color-theme-get-face-definitions))))))
 
-
+
 
 ;;; Handling the various parts of a color theme install
 
@@ -1229,6 +1248,7 @@ The snapshot is created via `color-theme-snapshot'."
 This is only necessary for XEmacs, because in Emacs 21 changing the
 frame paramters automatically affects the relevant faces.")
 
+;; fixme: silent the bytecompiler with set-face-property
 (defun color-theme-frob-faces (params)
   "Change certain faces according to PARAMS.
 This uses `color-theme-frame-param-frobbing-rules'."
@@ -1389,7 +1409,7 @@ Called from `color-theme-install'."
 ;; of a color-theme in .emacs.  That's why we use the
 ;; `face-defface-spec' property.
 
-
+
 
 ;;; Theme accessor functions, canonicalization, merging, comparing
 
@@ -1443,6 +1463,7 @@ alist.  Membership will be tested using `assq'."
 ;; (color-theme-merge-alists '((a . 1) (b . 2)) '((c . 3) (d . 4)))
 ;; (color-theme-merge-alists '((a . 1) (b . 2)) '((c . 3) (d . 4) (b . 5)))
 
+;;;###autoload
 (defun color-theme-compare (theme-a theme-b)
   "Compare two color themes.
 This will print the differences between installing THEME-A and
@@ -1494,10 +1515,10 @@ a difference."
 	  vars
 	  faces)))
 
-
+
 
 ;;; Installing a color theme
-
+;;;###autoload
 (defun color-theme-install (theme)
   "Install a color theme defined by frame parameters, variables and faces.
 
@@ -1539,253 +1560,109 @@ frame-parameter settings of previous color themes."
     (color-theme-add-to-history
      (car theme))))
 
+
 
+;; Sharing your stuff
+;;;###autoload
+(defun color-theme-submit ()
+  "Submit your color-theme to the maintainer."
+  (interactive)
+  (require 'reporter)
+  (let ((reporter-eval-buffer (current-buffer))
+	final-resting-place
+	after-sep-pos
+	(reporter-status-message "Formatting buffer...")
+	(reporter-status-count 0)
+	(problem "Yet another color-theme")
+	(agent (reporter-compose-outgoing))
+	(mailbuf (current-buffer))
+	hookvar)
+    ;; do the work
+    (require 'sendmail)
+    ;; If mailbuf did not get made visible before, make it visible now.
+    (let (same-window-buffer-names same-window-regexps)
+      (pop-to-buffer mailbuf)
+      ;; Just in case the original buffer is not visible now, bring it
+      ;; back somewhere
+      (and pop-up-windows (display-buffer reporter-eval-buffer)))
+    (goto-char (point-min))
+    (mail-position-on-field "to")
+    (insert color-theme-maintainer-address)
+    (mail-position-on-field "subject")
+    (insert problem)
+    ;; move point to the body of the message
+    (mail-text)
+    (setq after-sep-pos (point))
+    (unwind-protect
+	(progn
+	  (setq final-resting-place (point-marker))
+	  (goto-char final-resting-place))
+      (color-theme-print (current-buffer))
+      (goto-char final-resting-place)
+      (insert "\n\n")
+      (goto-char final-resting-place)
+      (insert "Hello there!\n\nHere's my color theme named: ")
+      (set-marker final-resting-place nil))
+    ;; compose the minibuf message and display this.
+    (let* ((sendkey-whereis (where-is-internal
+			     (get agent 'sendfunc) nil t))
+	   (abortkey-whereis (where-is-internal
+			      (get agent 'abortfunc) nil t))
+	   (sendkey (if sendkey-whereis
+			(key-description sendkey-whereis)
+		      "C-c C-c")); TBD: BOGUS hardcode
+	   (abortkey (if abortkey-whereis
+			 (key-description abortkey-whereis)
+		       "M-x kill-buffer"))); TBD: BOGUS hardcode
+      (message "Enter a message and type %s to send or %s to abort."
+	       sendkey abortkey))))
+
+
+
+;; Use this to define themes
+(defmacro define-color-theme (name author description &rest forms)
+  (let ((n name))
+    `(progn 
+       (add-to-list 'color-themes
+                    (list ',n
+                          (upcase-initials
+                           (replace-in-string
+                            (replace-in-string 
+                             (symbol-name ',n) "^color-theme-" "") "-" " "))
+                          ,author))
+       (defun ,n ()
+	 ,description
+	 (interactive)
+         ,@forms))))
+
+
+;;; FIXME: is this useful ??
+;;;###autoload
+(defun color-theme-initialize ()
+  "Initialize the color theme package by loading color-theme-libraries."
+  (interactive)
+
+  (cond ((and (not color-theme-load-all-themes)
+              color-theme-directory)
+         (setq color-theme-libraries 
+               (directory-files color-theme-directory t "^color-theme")))
+        (color-theme-directory
+         (push (cdr (directory-files color-theme-directory t "^color-theme")) 
+               color-theme-libraries)))
+  (dolist (library color-theme-libraries)
+    (load library)))
+
+(when nil
+  (setq color-theme-directory "themes/"
+        color-theme-load-all-themes nil)
+  (color-theme-initialize)
+)
+;; TODO: I don't like all those function names cluttering up my namespace.
+;; Instead, a hashtable for the color-themes should be created. Now that 
+;; define-color-theme is around, it should be easy to change in just the
+;; one place. 
 
 
 (provide 'color-theme)
 
 ;;; color-theme.el ends here
-
-(defun color-theme-standard ()
-  "Emacs default colors.
-If you are missing standard faces in this theme, please notify the maintainer."
-  (interactive)
-  ;; Note that some of the things that make up a color theme are
-  ;; actually variable settings!
-  (color-theme-install
-   '(color-theme-standard
-     ((foreground-color . "black")
-      (background-color . "white")
-      (mouse-color . "black")
-      (cursor-color . "black")
-      (border-color . "black")
-      (background-mode . light))
-     ((Man-overstrike-face . bold)
-      (Man-underline-face . underline)
-      (apropos-keybinding-face . underline)
-      (apropos-label-face . italic)
-      (apropos-match-face . secondary-selection)
-      (apropos-property-face . bold-italic)
-      (apropos-symbol-face . bold)
-      (goto-address-mail-face . italic)
-      (goto-address-mail-mouse-face . secondary-selection)
-      (goto-address-url-face . bold)
-      (goto-address-url-mouse-face . highlight)
-      (help-highlight-face . underline)
-      (list-matching-lines-face . bold)
-      (view-highlight-face . highlight))
-     (default ((t (nil))))
-     (bold ((t (:bold t))))
-     (bold-italic ((t (:bold t :italic t))))
-     (calendar-today-face ((t (:underline t))))
-     (cperl-array-face ((t (:foreground "Blue" :background "lightyellow2" :bold t))))
-     (cperl-hash-face ((t (:foreground "Red" :background "lightyellow2" :bold t :italic t))))
-     (cperl-nonoverridable-face ((t (:foreground "chartreuse3"))))
-     (custom-button-face ((t (nil))))
-     (custom-changed-face ((t (:foreground "white" :background "blue"))))
-     (custom-documentation-face ((t (nil))))
-     (custom-face-tag-face ((t (:underline t))))
-     (custom-group-tag-face ((t (:foreground "blue" :underline t))))
-     (custom-group-tag-face-1 ((t (:foreground "red" :underline t))))
-     (custom-invalid-face ((t (:foreground "yellow" :background "red"))))
-     (custom-modified-face ((t (:foreground "white" :background "blue"))))
-     (custom-rogue-face ((t (:foreground "pink" :background "black"))))
-     (custom-saved-face ((t (:underline t))))
-     (custom-set-face ((t (:foreground "blue" :background "white"))))
-     (custom-state-face ((t (:foreground "dark green"))))
-     (custom-variable-button-face ((t (:bold t :underline t))))
-     (custom-variable-tag-face ((t (:foreground "blue" :underline t))))
-     (diary-face ((t (:foreground "red"))))
-     (ediff-current-diff-face-A ((t (:foreground "firebrick" :background "pale green"))))
-     (ediff-current-diff-face-Ancestor ((t (:foreground "Black" :background "VioletRed"))))
-     (ediff-current-diff-face-B ((t (:foreground "DarkOrchid" :background "Yellow"))))
-     (ediff-current-diff-face-C ((t (:foreground "Navy" :background "Pink"))))
-     (ediff-even-diff-face-A ((t (:foreground "Black" :background "light grey"))))
-     (ediff-even-diff-face-Ancestor ((t (:foreground "White" :background "Grey"))))
-     (ediff-even-diff-face-B ((t (:foreground "White" :background "Grey"))))
-     (ediff-even-diff-face-C ((t (:foreground "Black" :background "light grey"))))
-     (ediff-fine-diff-face-A ((t (:foreground "Navy" :background "sky blue"))))
-     (ediff-fine-diff-face-Ancestor ((t (:foreground "Black" :background "Green"))))
-     (ediff-fine-diff-face-B ((t (:foreground "Black" :background "cyan"))))
-     (ediff-fine-diff-face-C ((t (:foreground "Black" :background "Turquoise"))))
-     (ediff-odd-diff-face-A ((t (:foreground "White" :background "Grey"))))
-     (ediff-odd-diff-face-Ancestor ((t (:foreground "Black" :background "light grey"))))
-     (ediff-odd-diff-face-B ((t (:foreground "Black" :background "light grey"))))
-     (ediff-odd-diff-face-C ((t (:foreground "White" :background "Grey"))))
-     (eshell-ls-archive-face ((t (:foreground "Orchid" :bold t))))
-     (eshell-ls-backup-face ((t (:foreground "OrangeRed"))))
-     (eshell-ls-clutter-face ((t (:foreground "OrangeRed" :bold t))))
-     (eshell-ls-directory-face ((t (:foreground "Blue" :bold t))))
-     (eshell-ls-executable-face ((t (:foreground "ForestGreen" :bold t))))
-     (eshell-ls-missing-face ((t (:foreground "Red" :bold t))))
-     (eshell-ls-product-face ((t (:foreground "OrangeRed"))))
-     (eshell-ls-readonly-face ((t (:foreground "Brown"))))
-     (eshell-ls-special-face ((t (:foreground "Magenta" :bold t))))
-     (eshell-ls-symlink-face ((t (:foreground "DarkCyan" :bold t))))
-     (eshell-ls-unreadable-face ((t (:foreground "Grey30"))))
-     (eshell-prompt-face ((t (:foreground "Red" :bold t))))
-     (eshell-test-failed-face ((t (:foreground "OrangeRed" :bold t))))
-     (eshell-test-ok-face ((t (:foreground "Green" :bold t))))
-     (minibuffer-prompt ((t (:foreground "Blue"))))
-     (ido-first-match ((t (:foreground "Black" :bold t))))
-     (ido-only-match ((t (:foreground "Black"))))
-     (excerpt ((t (:italic t))))
-     (fixed ((t (:bold t))))
-     (flyspell-duplicate-face ((t (:foreground "Gold3" :bold t :underline t))))
-     (flyspell-incorrect-face ((t (:foreground "OrangeRed" :bold t :underline t))))
-     (font-lock-builtin-face ((t (:foreground "Orchid"))))
-     (font-lock-comment-face ((t (:foreground "Firebrick"))))
-     (font-lock-constant-face ((t (:foreground "CadetBlue"))))
-     (font-lock-function-name-face ((t (:foreground "Blue"))))
-     (font-lock-keyword-face ((t (:foreground "Purple"))))
-     (font-lock-string-face ((t (:foreground "RosyBrown"))))
-     (font-lock-type-face ((t (:foreground "ForestGreen"))))
-     (font-lock-variable-name-face ((t (:foreground "DarkGoldenrod"))))
-     (font-lock-warning-face ((t (:foreground "Red" :bold t))))
-     (fringe ((t (:background "grey95"))))
-     (gnus-cite-attribution-face ((t (:italic t))))
-     (gnus-cite-face-1 ((t (:foreground "MidnightBlue"))))
-     (gnus-cite-face-10 ((t (:foreground "medium purple"))))
-     (gnus-cite-face-11 ((t (:foreground "turquoise"))))
-     (gnus-cite-face-2 ((t (:foreground "firebrick"))))
-     (gnus-cite-face-3 ((t (:foreground "dark green"))))
-     (gnus-cite-face-4 ((t (:foreground "OrangeRed"))))
-     (gnus-cite-face-5 ((t (:foreground "dark khaki"))))
-     (gnus-cite-face-6 ((t (:foreground "dark violet"))))
-     (gnus-cite-face-7 ((t (:foreground "SteelBlue4"))))
-     (gnus-cite-face-8 ((t (:foreground "magenta"))))
-     (gnus-cite-face-9 ((t (:foreground "violet"))))
-     (gnus-emphasis-bold ((t (:bold t))))
-     (gnus-emphasis-bold-italic ((t (:bold t :italic t))))
-     (gnus-emphasis-italic ((t (:italic t))))
-     (gnus-emphasis-underline ((t (:underline t))))
-     (gnus-emphasis-underline-bold ((t (:bold t :underline t))))
-     (gnus-emphasis-underline-bold-italic ((t (:bold t :italic t :underline t))))
-     (gnus-emphasis-underline-italic ((t (:italic t :underline t))))
-     (gnus-group-mail-1-empty-face ((t (:foreground "DeepPink3"))))
-     (gnus-group-mail-1-face ((t (:foreground "DeepPink3" :bold t))))
-     (gnus-group-mail-2-empty-face ((t (:foreground "HotPink3"))))
-     (gnus-group-mail-2-face ((t (:foreground "HotPink3" :bold t))))
-     (gnus-group-mail-3-empty-face ((t (:foreground "magenta4"))))
-     (gnus-group-mail-3-face ((t (:foreground "magenta4" :bold t))))
-     (gnus-group-mail-low-empty-face ((t (:foreground "DeepPink4"))))
-     (gnus-group-mail-low-face ((t (:foreground "DeepPink4" :bold t))))
-     (gnus-group-news-1-empty-face ((t (:foreground "ForestGreen"))))
-     (gnus-group-news-1-face ((t (:foreground "ForestGreen" :bold t))))
-     (gnus-group-news-2-empty-face ((t (:foreground "CadetBlue4"))))
-     (gnus-group-news-2-face ((t (:foreground "CadetBlue4" :bold t))))
-     (gnus-group-news-3-empty-face ((t (nil))))
-     (gnus-group-news-3-face ((t (:bold t))))
-     (gnus-group-news-low-empty-face ((t (:foreground "DarkGreen"))))
-     (gnus-group-news-low-face ((t (:foreground "DarkGreen" :bold t))))
-     (gnus-header-content-face ((t (:foreground "indianred4" :italic t))))
-     (gnus-header-from-face ((t (:foreground "red3"))))
-     (gnus-header-name-face ((t (:foreground "maroon"))))
-     (gnus-header-newsgroups-face ((t (:foreground "MidnightBlue" :italic t))))
-     (gnus-header-subject-face ((t (:foreground "red4"))))
-     (gnus-signature-face ((t (:italic t))))
-     (gnus-splash-face ((t (:foreground "ForestGreen"))))
-     (gnus-summary-cancelled-face ((t (:foreground "yellow" :background "black"))))
-     (gnus-summary-high-ancient-face ((t (:foreground "RoyalBlue" :bold t))))
-     (gnus-summary-high-read-face ((t (:foreground "DarkGreen" :bold t))))
-     (gnus-summary-high-ticked-face ((t (:foreground "firebrick" :bold t))))
-     (gnus-summary-high-unread-face ((t (:bold t))))
-     (gnus-summary-low-ancient-face ((t (:foreground "RoyalBlue" :italic t))))
-     (gnus-summary-low-read-face ((t (:foreground "DarkGreen" :italic t))))
-     (gnus-summary-low-ticked-face ((t (:foreground "firebrick" :italic t))))
-     (gnus-summary-low-unread-face ((t (:italic t))))
-     (gnus-summary-normal-ancient-face ((t (:foreground "RoyalBlue"))))
-     (gnus-summary-normal-read-face ((t (:foreground "DarkGreen"))))
-     (gnus-summary-normal-ticked-face ((t (:foreground "firebrick"))))
-     (gnus-summary-normal-unread-face ((t (nil))))
-     (gnus-summary-selected-face ((t (:underline t))))
-     (highlight ((t (:background "darkseagreen2"))))
-     (highlight-changes-delete-face ((t (:foreground "red" :underline t))))
-     (highlight-changes-face ((t (:foreground "red"))))
-     (highline-face ((t (:background "paleturquoise"))))
-     (holiday-face ((t (:background "pink"))))
-     (info-menu-5 ((t (:underline t))))
-     (info-node ((t (:bold t :italic t))))
-     (info-xref ((t (:bold t))))
-     (italic ((t (:italic t))))
-     (makefile-space-face ((t (:background "hotpink"))))
-     (message-cited-text-face ((t (:foreground "red"))))
-     (message-header-cc-face ((t (:foreground "MidnightBlue"))))
-     (message-header-name-face ((t (:foreground "cornflower blue"))))
-     (message-header-newsgroups-face ((t (:foreground "blue4" :bold t :italic t))))
-     (message-header-other-face ((t (:foreground "steel blue"))))
-     (message-header-subject-face ((t (:foreground "navy blue" :bold t))))
-     (message-header-to-face ((t (:foreground "MidnightBlue" :bold t))))
-     (message-header-xheader-face ((t (:foreground "blue"))))
-     (message-separator-face ((t (:foreground "brown"))))
-     (mode-line ((t (:foreground "Black" :background "#dddddd"
-                                 :box (:color "#888888" :line-width 1)))))
-     (mode-line-inactive ((t (:background "#aaaaaa" :foreground "Black"
-                                          :box (:color "#888888" :line-width 1)))))
-     (mode-line-buffer-id ((t (:foreground "Black"))))
-     (mode-line-mousable ((t (:foreground "white" :background "black"))))
-     (mode-line-mousable-minor-mode ((t (:foreground "white" :background "black"))))
-     (region ((t (:background "gray"))))
-     (secondary-selection ((t (:background "paleturquoise"))))
-     (show-paren-match-face ((t (:background "turquoise"))))
-     (show-paren-mismatch-face ((t (:foreground "white" :background "purple"))))
-     (speedbar-button-face ((t (:foreground "green4"))))
-     (speedbar-directory-face ((t (:foreground "blue4"))))
-     (speedbar-file-face ((t (:foreground "cyan4"))))
-     (speedbar-highlight-face ((t (:background "green"))))
-     (speedbar-selected-face ((t (:foreground "red" :underline t))))
-     (speedbar-tag-face ((t (:foreground "brown"))))
-     (term-black ((t (:foreground "black"))))
-     (term-blackbg ((t (:background "black"))))
-     (term-blue ((t (:foreground "blue"))))
-     (term-bluebg ((t (:background "blue"))))
-     (term-bold ((t (:bold t))))
-     (term-cyan ((t (:foreground "cyan"))))
-     (term-cyanbg ((t (:background "cyan"))))
-     (term-default-bg ((t (nil))))
-     (term-default-bg-inv ((t (nil))))
-     (term-default-fg ((t (nil))))
-     (term-default-fg-inv ((t (nil))))
-     (term-green ((t (:foreground "green"))))
-     (term-greenbg ((t (:background "green"))))
-     (term-invisible ((t (nil))))
-     (term-invisible-inv ((t (nil))))
-     (term-magenta ((t (:foreground "magenta"))))
-     (term-magentabg ((t (:background "magenta"))))
-     (term-red ((t (:foreground "red"))))
-     (term-redbg ((t (:background "red"))))
-     (term-underline ((t (:underline t))))
-     (term-white ((t (:foreground "white"))))
-     (term-whitebg ((t (:background "white"))))
-     (term-yellow ((t (:foreground "yellow"))))
-     (term-yellowbg ((t (:background "yellow"))))
-     (underline ((t (:underline t))))
-     (vcursor ((t (:foreground "blue" :background "cyan" :underline t))))
-     (vhdl-font-lock-attribute-face ((t (:foreground "Orchid"))))
-     (vhdl-font-lock-directive-face ((t (:foreground "CadetBlue"))))
-     (vhdl-font-lock-enumvalue-face ((t (:foreground "Gold4"))))
-     (vhdl-font-lock-function-face ((t (:foreground "Orchid4"))))
-     (vhdl-font-lock-prompt-face ((t (:foreground "Red" :bold t))))
-     (vhdl-font-lock-reserved-words-face ((t (:foreground "Orange" :bold t))))
-     (vhdl-font-lock-translate-off-face ((t (:background "LightGray"))))
-     (vhdl-speedbar-architecture-face ((t (:foreground "Blue"))))
-     (vhdl-speedbar-architecture-selected-face ((t (:foreground "Blue" :underline t))))
-     (vhdl-speedbar-configuration-face ((t (:foreground "DarkGoldenrod"))))
-     (vhdl-speedbar-configuration-selected-face ((t (:foreground "DarkGoldenrod" :underline t))))
-     (vhdl-speedbar-entity-face ((t (:foreground "ForestGreen"))))
-     (vhdl-speedbar-entity-selected-face ((t (:foreground "ForestGreen" :underline t))))
-     (vhdl-speedbar-instantiation-face ((t (:foreground "Brown"))))
-     (vhdl-speedbar-instantiation-selected-face ((t (:foreground "Brown" :underline t))))
-     (vhdl-speedbar-package-face ((t (:foreground "Grey50"))))
-     (vhdl-speedbar-package-selected-face ((t (:foreground "Grey50" :underline t))))
-     (viper-minibuffer-emacs-face ((t (:foreground "Black" :background "darkseagreen2"))))
-     (viper-minibuffer-insert-face ((t (:foreground "Black" :background "pink"))))
-     (viper-minibuffer-vi-face ((t (:foreground "DarkGreen" :background "grey"))))
-     (viper-replace-overlay-face ((t (:foreground "Black" :background "darkseagreen2"))))
-     (viper-search-face ((t (:foreground "Black" :background "khaki"))))
-     (widget-button-face ((t (:bold t))))
-     (widget-button-pressed-face ((t (:foreground "red"))))
-     (widget-documentation-face ((t (:foreground "dark green"))))
-     (widget-field-face ((t (:background "gray85"))))
-     (widget-inactive-face ((t (:foreground "dim gray"))))
-     (widget-single-line-field-face ((t (:background "gray85")))))))
