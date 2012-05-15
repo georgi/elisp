@@ -54,7 +54,6 @@
 (setq case-fold-search t)
 (setq enable-recursive-minibuffers nil)
 (setq inhibit-startup-screen t)
-(setq nxml-slash-auto-complete-flag t)
 (setq session-initialize t)
 (setq standard-indent 2)
 (setq tags-revert-without-query t)
@@ -180,9 +179,6 @@
 (transient-mark-mode t)
 (recentf-mode)
 
-(setq scroll-conservatively 5)
-(setq scroll-step 1)
-
 (load "find-tags-file")
 
 ;; ********************************************************************************
@@ -234,25 +230,6 @@
 (autoload 'python-mode "python-mode" "Python Mode." t)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
-
-
-;; ********************************************************************************
-;; PHP Mode
-;;
-
-(autoload 'php-mode "php-mode" "PHP Mode." t)
-(add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
-(add-to-list 'interpreter-mode-alist '("php" . php-mode))
-
-(defun php-mode-on-init ()
-  (init-mode)
-  (setq tab-width 4)
-  (setq c-basic-offset 4)
-  (c-set-style "k&r")
-  )
-
-(add-hook 'php-mode-hook 'php-mode-on-init)
-
 
 
 ;; ********************************************************************************
@@ -343,14 +320,6 @@
 
 
 ;; ********************************************************************************
-;; IRB Mode
-;;
-(defun inferior-ruby-mode-on-init ())
-
-(add-hook 'inferior-ruby-mode-hook 'inferior-ruby-mode-on-init)
-
-
-;; ********************************************************************************
 ;; YAML Mode
 ;;
 (autoload 'yaml-mode "yaml-mode" "YAML Mode." t)
@@ -432,11 +401,11 @@
   (init-mode)
 
   (setq ac-sources '(ac-source-yasnippet
-					 ac-source-features
-					 ac-source-functions
-					 ac-source-symbols
-					 ac-source-variables
-					 ac-source-words-in-buffer))
+		     ac-source-features
+		     ac-source-functions
+		     ac-source-symbols
+		     ac-source-variables
+		     ac-source-words-in-buffer))
 
   (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init))
 
@@ -489,8 +458,8 @@
   (init-mode)
 
   (setq ac-sources '(ac-source-yasnippet
-					 ac-source-semantic
-					 ac-source-words-in-buffer)))
+		     ac-source-semantic
+		     ac-source-words-in-buffer)))
 
 (add-hook 'c-mode-hook 'c-mode-on-init)
 
@@ -505,8 +474,8 @@
 (defun nxml-mode-on-init ()
   (init-mode)
   (setq ac-sources '(ac-source-yasnippet
-					 ac-source-semantic
-					 ac-source-words-in-buffer)))
+		     ac-source-semantic
+		     ac-source-words-in-buffer)))
 
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
 
@@ -578,25 +547,6 @@
   (sr-speedbar-toggle)
   (sr-speedbar-select-window))
 
-;; (setq elscreen-display-tab 24)
-;; (setq elscreen-display-screen-number nil)
-;; (setq elscreen-tab-display-control nil)
-;; (setq elscreen-tab-display-kill-screen nil)
-
-;; (set-face-attribute 'elscreen-tab-background-face nil
-;; 					:underline nil
-;; 					:foreground "#000000"
-;; 					:background "#000000")
-
-;; (set-face-attribute 'elscreen-tab-other-screen-face nil
-;; 					:underline nil
-;; 					:foreground "#00ffff"
-;; 					:background "#000000")
-
-;; (set-face-attribute 'elscreen-tab-current-screen-face nil
-;; 					:foreground "#00ffff"
-;; 					:background "#7f7f7f")
-
 
 
 ;; ********************************************************************************
@@ -616,52 +566,11 @@
 			 (indent-region (region-beginning) (region-end) nil)))))
 
 
-(defvar ffip-file-cache nil
-  "Cached list of project files.")
-
-(setq ffip-patterns
-	  '("*.haml" "*.sass" "*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
-		"*.sh" "*.erl" "*.hs" "*.ml" "*.yml" "*.css"))
-
-(setq ffip-patterns '("*.rb"))
-
-(setq ffip-limit 10000)
-(setq ffip-file-cache nil)
-
-(defun ffip-project-files-with-cache()
-  (unless ffip-file-cache
-	(setq ffip-file-cache (ffip-project-files)))
-  ffip-file-cache)
-
-(defun find-file-in-project-clear-cache()
-  (interactive)
-  (setq ffip-file-cache nil))
-
-(defun find-file-in-project-cached()
-  (interactive)
-  (let* ((project-files (ffip-project-files-with-cache))
-		 (files (mapcar 'car project-files))
-		 (file (completing-read "Find file in project: " files)))
-	(find-file (cdr (assoc file project-files)))))
-
-;; (defun elscreen-find-tag ()
-;;   (interactive)
-;;   (let* ((tagname (car (find-tag-interactive "Find tag: "))))
-;;     (elscreen-find-and-goto-by-buffer (find-tag-noselect tagname next-p) 'create)))
-
-;; (defun elscreen-find-tag-at-point ()
-;;   (interactive)
-;;   (elscreen-find-and-goto-by-buffer (find-tag-noselect) 'create))
-
-;; (elscreen-set-prefix-key (kbd "C-a"))
-
-
 (setq ibuffer-saved-filter-groups
 	  (quote (("default"
-			   ("dired" (mode . dired-mode))
-			   ("ruby" (mode . ruby-mode))
-			   ("javascript" (mode . js2-mode))
-			   ("*special*" (name . "^\\*.*\\*$"))))))
+		   ("ruby" (mode . ruby-mode))
+		   ("javascript" (mode . js2-mode))
+		   ("*special*" (name . "^\\*.*\\*$"))))))
 
 (add-hook 'ibuffer-mode-hook
 		  (lambda ()
@@ -699,14 +608,13 @@
 (define-key evil-motion-state-map "e" 'er/expand-region)
 
 (define-key evil-motion-state-map (kbd "SPC") 'insert-newline)
-(define-key evil-motion-state-map (kbd "C-k") 'evil-forward-word-begin)
-(define-key evil-motion-state-map (kbd "C-j") 'evil-backward-word-begin)
-(define-key evil-motion-state-map (kbd "M-j") 'evil-forward-paragraph)
-(define-key evil-motion-state-map (kbd "M-k") 'evil-backward-paragraph)
+(define-key evil-motion-state-map (kbd "C-k") 'evil-backward-paragraph)
+(define-key evil-motion-state-map (kbd "C-j") 'evil-forward-paragraph)
 (define-key evil-insert-state-map (kbd "C-g") 'evil-force-normal-state)
+
 (global-set-key (kbd "C-c c") 'smart-compile)
-(global-set-key (kbd "C-c f") 'find-file-in-project-cached)
-(global-set-key (kbd "C-c C-f") 'find-file-in-project-clear-cache)
+(global-set-key (kbd "C-c d") 'joc-dired-magic-buffer)
+(global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c .") 'find-tag)
 (global-set-key (kbd "C-c q") 'auto-fill-mode)
 (global-set-key (kbd "C-c g") 'git-grep)
