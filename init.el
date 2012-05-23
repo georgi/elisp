@@ -47,9 +47,10 @@
 (setq visible-bell 1)
 (setq ring-bell-function (lambda() ()))
 
-;; ********************************************************************************
-;; Variables
-;;
+(setq icicle-candidate-width-factor 100)
+(setq icicle-prefix-complete-keys '([S-tab]))
+(setq icicle-apropos-complete-keys '([tab]))
+
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq case-fold-search t)
 (setq enable-recursive-minibuffers nil)
@@ -480,34 +481,6 @@
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
 
 
-;; ********************************************************************************
-;; Eshell Mode
-;;
-(defun eshell-mode-on-init ()
-  (define-key eshell-mode-map (kbd "C-a") nil))
-
-(add-hook 'eshell-mode-hook 'eshell-mode-on-init)
-
-;; ********************************************************************************
-;; dired
-;;
-(defun joc-dired-up-directory()
-  (interactive)
-  (joc-dired-single-buffer ".."))
-
-(defun dired-mode-on-init ()
-  (require 'dired-single)
-
-  (define-key dired-mode-map (kbd "<return>") 'joc-dired-single-buffer)
-  (define-key dired-mode-map (kbd "<down-mouse-1>") 'joc-dired-single-buffer-mouse)
-  (define-key dired-mode-map (kbd "<C-up>") 'joc-dired-up-directory)
-
-  (setq dired-backup-overwrite t)
-  (setq dired-listing-switches "-al"))
-;; (setq dired-omit-files "^\\."))
-
-(add-hook 'dired-mode-hook 'dired-mode-on-init)
-
 (defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
   (if (equal major-mode 'dired-mode)
 	  (revert-buffer)))
@@ -588,8 +561,7 @@
 (defun git-grep()
   (interactive)
   (require 'grep)
-  (let ((dir (read-directory-name "In directory: "
-				  nil ffip-project-root t)))
+  (let ((dir (read-directory-name "In directory: ")))
     (vc-git-grep (grep-read-regexp) "." dir)))
 
 
