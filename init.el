@@ -39,6 +39,7 @@
 (require 'rvm)
 (require 'magit)
 (require 'wgrep)
+(require 'go-mode-load)
 
 (rvm-use-default)
 
@@ -47,9 +48,13 @@
 (setq visible-bell 1)
 (setq ring-bell-function (lambda() ()))
 
+(set-face-background 'header-line nil)
+(set-face-background 'flymake-errline "#fcc")
+
 (setq icicle-candidate-width-factor 100)
-(setq icicle-prefix-complete-keys '([S-tab]))
-(setq icicle-apropos-complete-keys '([tab]))
+(setq icicle-require-match-flag nil)
+(setq icicle-sort-comparer 'icicle-most-recent-first-p)
+(add-to-list 'icicle-apropos-complete-keys [backtab])
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq case-fold-search t)
@@ -58,29 +63,31 @@
 (setq session-initialize t)
 (setq standard-indent 2)
 (setq tags-revert-without-query t)
-(setq tab-width 4)
+(setq-default tab-width 4)
 (setq icicle-Completions-text-scale-decrease 0)
 
 (evil-mode 1)
 (icy-mode)
 (tool-bar-mode 0)
-(menu-bar-mode 0)
+
+(unless (window-system)
+  (menu-bar-mode 0))
 
 (setq-default mode-line-format nil)
 
 (setq toggle-mapping-styles
       '((rspec
-		 . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
-			("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
-			("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
-			("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
-			("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
-			("app/resources/\\1.rb"   . "spec/resources/\\1_spec.rb")
-			("app/services/\\1.rb"   . "spec/services/\\1_spec.rb")
-			("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
-		(ruby
-		 . (("lib/\\1.rb"             . "test/test_\\1.rb")
-			("\\1.rb"                 . "test_\\1.rb")))))
+	 . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
+	    ("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
+	    ("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
+	    ("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
+	    ("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
+	    ("app/resources/\\1.rb"   . "spec/resources/\\1_spec.rb")
+	    ("app/services/\\1.rb"   . "spec/services/\\1_spec.rb")
+	    ("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
+	(ruby
+	 . (("lib/\\1.rb"             . "test/test_\\1.rb")
+	    ("\\1.rb"                 . "test_\\1.rb")))))
 
 (defvar autocomplete-initialized nil)
 
@@ -425,6 +432,17 @@
 (add-hook 'html-mode-hook 'html-mode-on-init)
 
 
+(defun go-mode-on-init ()
+  (init-mode)
+
+  (setq ac-sources '(ac-source-yasnippet
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
+  )
+
+(add-hook 'go-mode-hook 'go-mode-on-init)
+
+
 ;; ********************************************************************************
 ;; CSS Mode
 ;;
@@ -505,6 +523,7 @@
 
 (add-to-list 'smart-compile-alist '("^Rakefile$"  . "rake -f %f")) ;
 (add-to-list 'smart-compile-alist '("\\.js$"      . "node %f"))
+(add-to-list 'smart-compile-alist '("\\.go$"      . "go run %f"))
 (add-to-list 'smart-compile-alist '("\\.rb$"      . "ruby %f"))
 (add-to-list 'smart-compile-alist '("_spec\\.rb$" . "spec %f"))
 (add-to-list 'smart-compile-alist '("\\.scm$"     . "scheme %f"))
@@ -551,16 +570,17 @@
 
 (setq ibuffer-use-header-line nil)
 
-(setq ibuffer-formats '((mark modified read-only " " (name 32 32 :left)
+(setq ibuffer-formats '((mark modified
+							  " " (name 64 64 :left)
 							  ;; " " (size 9 -1 :right)
 							  ;; " " (mode 16 16 :left :elide)
 							  " " filename-and-process)
-						;; (mark " " (name 16 -1) " " filename)
 						))
 
 (defun git-grep()
   (interactive)
   (require 'grep)
+  (require 'vc-git)
   (let ((dir (read-directory-name "In directory: ")))
     (vc-git-grep (grep-read-regexp) "." dir)))
 
@@ -577,15 +597,16 @@
 (global-set-key (kbd "<C-up>") 'evil-backward-paragraph)
 (global-set-key (kbd "<C-down>") 'evil-forward-paragraph)
 
-(define-key evil-motion-state-map "e" 'er/expand-region)
 
 (define-key evil-motion-state-map (kbd "SPC") 'insert-newline)
 (define-key evil-motion-state-map (kbd "C-k") 'evil-backward-paragraph)
 (define-key evil-motion-state-map (kbd "C-j") 'evil-forward-paragraph)
 (define-key evil-insert-state-map (kbd "C-g") 'evil-force-normal-state)
 
+(global-set-key (kbd "<s-return>") 'icicle-buffer)
 (global-set-key (kbd "C-c c") 'smart-compile)
 (global-set-key (kbd "C-c d") 'joc-dired-magic-buffer)
+(global-set-key (kbd "C-c e") 'er/expand-region)
 (global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c .") 'find-tag)
 (global-set-key (kbd "C-c q") 'auto-fill-mode)
