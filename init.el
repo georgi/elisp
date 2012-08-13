@@ -7,7 +7,7 @@
 (add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
 (add-to-list 'load-path "~/.emacs.d/expand-region")
-(add-to-list 'load-path "~/.emacs.d/icicles")
+(add-to-list 'load-path "~/.emacs.d/helm")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/magit")
 (add-to-list 'load-path "~/.emacs.d/mark-multiple")
@@ -26,7 +26,7 @@
 (require 'evil)
 (require 'cl)
 (require 'toggle)
-(require 'icicles)
+(require 'helm-config)
 (require 'find-file-in-project)
 (require 'browse-kill-ring)
 (require 'session)
@@ -45,16 +45,12 @@
 
 (setq solarized-contrast 'high)
 (color-theme-solarized-light)
+
 (setq visible-bell 1)
 (setq ring-bell-function (lambda() ()))
 
 (set-face-background 'header-line nil)
-(set-face-background 'flymake-errline "#fcc")
-
-(setq icicle-candidate-width-factor 100)
-(setq icicle-require-match-flag nil)
-(setq icicle-sort-comparer 'icicle-most-recent-first-p)
-(add-to-list 'icicle-apropos-complete-keys [backtab])
+(set-face-background 'flymake-errline "#ffcccc")
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq case-fold-search t)
@@ -67,8 +63,8 @@
 (setq icicle-Completions-text-scale-decrease 0)
 
 (evil-mode 1)
-(icy-mode)
 (tool-bar-mode 0)
+(helm-mode)
 
 (unless (window-system)
   (menu-bar-mode 0))
@@ -158,10 +154,10 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; Desktop
-;; (desktop-save-mode t)
-;; (setq desktop-globals-to-save nil)
-;; (setq desktop-load-locked-desktop t)
-;; (setq desktop-save t)
+(desktop-save-mode t)
+(setq desktop-globals-to-save nil)
+(setq desktop-load-locked-desktop t)
+(setq desktop-save t)
 
 ;; ********************************************************************************
 ;; ibuffer
@@ -294,8 +290,6 @@
   (interactive)
   (spec-run-single-file (buffer-file-name) "--format" "nested" "--line " (number-to-string (line-number-at-pos))))
 
-;; (add-hook 'after-change-functions 'spec-verify-single)
-
 (defun ruby-mode-on-init ()
   (init-mode)
   (flymake-mode)
@@ -312,6 +306,31 @@
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init) ;
 
+(defun ruby-imenu-create-index-in-block (prefix beg end)
+  (let ((index-alist '()) (case-fold-search nil)
+        name next pos decl sing)
+    (goto-char beg)
+    (while (re-search-forward "^\\s *\\(\\(class\\s +\\|\\(class\\s *<<\\s *\\)\\|module\\s +\\)\\([^\(<\n ]+\\)\\|\\(def\\|alias\\)\\s +\\([^\(\n ]+\\)\\)" end t)
+      (setq sing (match-beginning 3))
+      (setq decl (match-string 5))
+      (setq next (match-end 0))
+      (setq name (or (match-string 4) (match-string 6)))
+      (setq pos (match-beginning 0))
+      (cond
+       ((string= "alias" decl)
+        (push (cons name pos) index-alist))
+       ((string= "def" decl)
+        (push (cons name pos) index-alist)
+        (ruby-accurate-end-of-block end))
+       (t
+        (ruby-accurate-end-of-block end)
+        (setq beg (point))
+        (setq index-alist
+              (nconc (ruby-imenu-create-index-in-block
+                      (concat name (if sing "." "#"))
+                      next beg) index-alist))
+        (goto-char beg))))
+    index-alist))
 
 ;; ********************************************************************************
 ;; RHTML Mode
@@ -383,8 +402,7 @@
   (setq js2-strict-var-hides-function-arg-warning t)
   (setq js2-strict-var-redeclaration-warning t)
 
-  ;; (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent)
-  )
+  (define-key js2-mode-map (kbd "<return>") 'reindent-then-newline-and-indent))
 
 (add-hook 'js2-mode-hook 'js2-mode-on-init)
 
@@ -437,8 +455,7 @@
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
-  )
+                     ac-source-words-in-same-mode-buffers)))
 
 (add-hook 'go-mode-hook 'go-mode-on-init)
 
@@ -476,6 +493,8 @@
 (defun c-mode-on-init ()
   (init-mode)
 
+  (make-local-variable 'standard-indent)
+  (setq standard-indent 4)
   (setq ac-sources '(ac-source-yasnippet
 		     ac-source-semantic
 		     ac-source-words-in-buffer)))
@@ -558,11 +577,14 @@
 			 (indent-region (region-beginning) (region-end) nil)))))
 
 
-(setq ibuffer-saved-filter-groups
-	  (quote (("default"
-		   ("ruby" (mode . ruby-mode))
-		   ("javascript" (mode . js2-mode))
-		   ("*special*" (name . "^\\*.*\\*$"))))))
+;; (setq ibuffer-saved-filter-groups
+;; 	  (quote (("default"
+;; 			   ("Ruby" (mode . ruby-mode))
+;; 			   ("C" (mode . c-mode))
+;; 			   ("Lisp" (mode . emacs-lisp-mode))
+;; 			   ("Javascript" (mode . js2-mode))
+;; 			   ("Dired" (mode . dired-mode))
+;; 			   ("Special" (name . "^\\*.*\\*$"))))))
 
 (add-hook 'ibuffer-mode-hook
 		  (lambda ()
@@ -597,27 +619,28 @@
 (global-set-key (kbd "<C-up>") 'evil-backward-paragraph)
 (global-set-key (kbd "<C-down>") 'evil-forward-paragraph)
 
-
 (define-key evil-motion-state-map (kbd "SPC") 'insert-newline)
 (define-key evil-motion-state-map (kbd "C-k") 'evil-backward-paragraph)
 (define-key evil-motion-state-map (kbd "C-j") 'evil-forward-paragraph)
 (define-key evil-insert-state-map (kbd "C-g") 'evil-force-normal-state)
 
-(global-set-key (kbd "<s-return>") 'icicle-buffer)
+(global-set-key (kbd "C-c RET") 'icicle-buffer)
+(global-set-key (kbd "C-c SPC") 'er/expand-region)
 (global-set-key (kbd "C-c c") 'smart-compile)
-(global-set-key (kbd "C-c d") 'joc-dired-magic-buffer)
-(global-set-key (kbd "C-c e") 'er/expand-region)
+(global-set-key (kbd "C-c e") 'next-error)
 (global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c .") 'find-tag)
+(global-set-key (kbd "C-c /") 'helm-c-etags-select)
 (global-set-key (kbd "C-c q") 'auto-fill-mode)
 (global-set-key (kbd "C-c g") 'git-grep)
 (global-set-key (kbd "C-c l") 'lgrep)
 (global-set-key (kbd "C-c m") 'magit-status)
-(global-set-key (kbd "C-c o") 'occur)
-(global-set-key (kbd "C-c n") 'next-error)
-(global-set-key (kbd "C-c k") 'browse-kill-ring)
+(global-set-key (kbd "C-c p") 'mark-previous-like-this)
+(global-set-key (kbd "C-c n") 'mark-next-like-this)
+(global-set-key (kbd "C-c o") 'helm-occur)
+(global-set-key (kbd "C-c k") 'helm-show-kill-ring)
 (global-set-key (kbd "C-c b") 'ibuffer)
-(global-set-key (kbd "C-c i") 'imenu)
+(global-set-key (kbd "C-c i") 'helm-imenu)
 (global-set-key (kbd "C-c s") 'speedbar-toggle)
 (global-set-key (kbd "C-c r") 'recompile)
 (global-set-key (kbd "C-c v") 'spec-verify)
@@ -631,14 +654,8 @@
 
 (global-set-key (kbd "C-x r t") 'inline-string-rectangle)
 
-(global-set-key (kbd "C-<") 'mark-previous-like-this)
-(global-set-key (kbd "C->") 'mark-next-like-this)
-(global-set-key (kbd "C-M-m") 'mark-more-like-this) ; like the other two, but takes an argument (negative is previous)
-
 ;; (define-key sgml-mode-map (kbd "C-c C-r") 'rename-sgml-tag)
 ;; (define-key js2-mode-map (kbd "C-c C-r") 'js2-rename-var)
-
-(global-set-key (kbd "<C-return>") 'icicle-buffer)
 
 ;; (global-set-key (kbd "<C-delete>") 'kill-word)
 ;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
