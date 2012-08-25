@@ -15,7 +15,7 @@
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
-(add-to-list 'load-path "~/.emacs.d/python")
+(add-to-list 'load-path "~/.emacs.d/python-mode")
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 (setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
