@@ -3,7 +3,6 @@
 ;;
 (add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
-(add-to-list 'load-path "~/.emacs.d/emacs-color-theme-solarized")
 (add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
 (add-to-list 'load-path "~/.emacs.d/expand-region")
@@ -16,6 +15,8 @@
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
 (add-to-list 'load-path "~/.emacs.d/python-mode")
+
+(add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
 
 (setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
                          ("gnu" . "http://elpa.gnu.org/packages/")))
@@ -32,13 +33,11 @@
 ;; ********************************************************************************
 ;; Color theme
 ;;
-(require 'color-theme-solarized)
-
 (set-face-background 'header-line nil)
 (set-face-background 'flymake-errline "#ffcccc")
-
 (setq solarized-contrast 'high)
-(color-theme-solarized-light)
+
+(load-theme 'solarized-light t)
 
 (setq visible-bell 1)
 (setq ring-bell-function (lambda() ()))
