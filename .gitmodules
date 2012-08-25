@@ -1,3 +1,6 @@
 [submodule "haskell-mode"]
 	path = haskell-mode
 	url = git://github.com/haskell/haskell-mode.git
+[submodule "helm"]
+	path = helm
+	url = git://github.com/emacs-helm/helm.git
