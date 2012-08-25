@@ -13,3 +13,6 @@
 [submodule "emacs-color-theme-solarized"]
 	path = emacs-color-theme-solarized
 	url = git://github.com/sellout/emacs-color-theme-solarized.git
+[submodule "evil"]
+	path = evil
+	url = git://github.com/emacsmirror/evil.git
