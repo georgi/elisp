@@ -34,7 +34,6 @@
 (require 'smart-compile)
 (require 'flymake)
 (require 'flymake-cursor)
-(require 'sr-speedbar)
 (require 'color-theme-solarized)
 (require 'expand-region)
 (require 'rvm)
@@ -548,17 +547,6 @@
 (add-to-list 'smart-compile-alist '("\\.scm$"     . "scheme %f"))
 (add-to-list 'smart-compile-alist '(haskell-mode  . "ghc -o %n %f")) ;
 
-(setq speedbar-vc-do-check nil)
-(setq speedbar-show-unknown-files t)
-(setq sr-speedbar-width 40)
-
-
-(defun speedbar-toggle()
-  (interactive)
-  (sr-speedbar-toggle)
-  (sr-speedbar-select-window))
-
-
 
 ;; ********************************************************************************
 ;; Global Key Bindings
@@ -642,7 +630,6 @@
 (global-set-key (kbd "C-c k") 'helm-show-kill-ring)
 (global-set-key (kbd "C-c b") 'ibuffer)
 (global-set-key (kbd "C-c i") 'helm-imenu)
-(global-set-key (kbd "C-c s") 'speedbar-toggle)
 (global-set-key (kbd "C-c r") 'recompile)
 (global-set-key (kbd "C-c v") 'spec-verify)
 (global-set-key (kbd "C-c t") 'toggle-buffer)
