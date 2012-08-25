@@ -16,7 +16,6 @@
 (add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
-(add-to-list 'load-path "~/.emacs.d/python-mode")
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
 
@@ -35,9 +34,6 @@
 ;; ********************************************************************************
 ;; Color theme
 ;;
-(set-face-background 'header-line nil)
-(set-face-background 'flymake-errline "#ffcccc")
-
 (setq solarized-contrast 'high)
 
 (if (fboundp 'load-theme)
@@ -84,8 +80,6 @@
 
 (unless (window-system)
   (menu-bar-mode 0))
-
-(setq-default mode-line-format nil)
 
 ;; ********************************************************************************
 ;; Autocomplete
@@ -233,7 +227,7 @@
 
 (defun ruby-mode-on-init ()
   (init-mode)
-  (flymake-ruby-init)
+  (flymake-ruby-load)
 
   (setq ruby-deep-indent-paren nil)
   (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
