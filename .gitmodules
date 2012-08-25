@@ -7,3 +7,6 @@
 [submodule "magit"]
 	path = magit
 	url = git://github.com/magit/magit.git
+[submodule "erlang"]
+	path = erlang
+	url = git://github.com/emacsmirror/erlang.git
