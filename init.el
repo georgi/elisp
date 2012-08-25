@@ -25,7 +25,6 @@
 ;; Requires
 
 (require 'cl)
-(require 'find-file-in-project)
 (require 'flymake)
 (require 'flymake-cursor)
 (require 'wgrep)
@@ -35,9 +34,11 @@
 ;;
 (set-face-background 'header-line nil)
 (set-face-background 'flymake-errline "#ffcccc")
+
 (setq solarized-contrast 'high)
 
-(load-theme 'solarized-light t)
+(if (fboundp 'load-theme)
+  (load-theme 'solarized-light t))
 
 (setq visible-bell 1)
 (setq ring-bell-function (lambda() ()))
@@ -138,7 +139,6 @@
 ;; ********************************************************************************
 ;; Tags
 ;;
-(load "find-tags-file")
 (setq tags-add-tables nil)
 (setq etags-table-search-up-depth 5)
 
@@ -501,6 +501,22 @@
   (require 'vc-git)
   (let ((dir (read-directory-name "In directory: ")))
     (vc-git-grep (grep-read-regexp) "." dir)))
+
+(defun find-git-dir (dir)
+ (let ((f (expand-file-name ".git" dir))
+       (parent (file-truename (expand-file-name ".." dir))))
+   (cond ((string= dir parent) nil)
+         ((file-exists-p f) (expand-file-name dir))
+         (t (find-git-dir parent)))))
+
+(defun find-file-in-project ()
+  "Prompt with a completing list of all files in the project to find one."
+  (interactive)
+  (let* ((default-directory (concat (find-git-dir default-directory) "/"))
+     (files (split-string (shell-command-to-string "git ls-files")))
+     (file (completing-read "Find file in project: " files)))
+    (find-file (concat default-directory file))))
+
 
 
 (define-key global-map (kbd "RET") 'newline-and-indent)
