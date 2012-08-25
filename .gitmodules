@@ -1,0 +1,3 @@
+[submodule "haskell-mode"]
+	path = haskell-mode
+	url = git://github.com/haskell/haskell-mode.git

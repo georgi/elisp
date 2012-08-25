@@ -1,4 +1,4 @@
-;; ********************************************************************************
+; ********************************************************************************
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/.emacs.d")
@@ -9,6 +9,7 @@
 (add-to-list 'load-path "~/.emacs.d/expand-region")
 (add-to-list 'load-path "~/.emacs.d/helm")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
+(add-to-list 'load-path "~/.emacs.d/haskell-mode")
 (add-to-list 'load-path "~/.emacs.d/magit")
 (add-to-list 'load-path "~/.emacs.d/mark-multiple")
 (add-to-list 'load-path "~/.emacs.d/nxml-mode")
@@ -18,7 +19,7 @@
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 (setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
-			 ("gnu" . "http://elpa.gnu.org/packages/")))
+             ("gnu" . "http://elpa.gnu.org/packages/")))
 
 ;; ********************************************************************************
 ;; Requires
@@ -73,17 +74,17 @@
 
 (setq toggle-mapping-styles
       '((rspec
-	 . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
-	    ("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
-	    ("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
-	    ("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
-	    ("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
-	    ("app/resources/\\1.rb"   . "spec/resources/\\1_spec.rb")
-	    ("app/services/\\1.rb"   . "spec/services/\\1_spec.rb")
-	    ("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
-	(ruby
-	 . (("lib/\\1.rb"             . "test/test_\\1.rb")
-	    ("\\1.rb"                 . "test_\\1.rb")))))
+     . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
+        ("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
+        ("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
+        ("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
+        ("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
+        ("app/resources/\\1.rb"   . "spec/resources/\\1_spec.rb")
+        ("app/services/\\1.rb"   . "spec/services/\\1_spec.rb")
+        ("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
+    (ruby
+     . (("lib/\\1.rb"             . "test/test_\\1.rb")
+        ("\\1.rb"                 . "test_\\1.rb")))))
 
 (defvar autocomplete-initialized nil)
 
@@ -119,8 +120,8 @@
   (let ((shk-search-string isearch-string))
     (grep-compute-defaults)
     (lgrep (if isearch-regexp shk-search-string (regexp-quote shk-search-string))
-		   (format "*.%s" (file-name-extension (buffer-file-name)))
-		   default-directory)
+           (format "*.%s" (file-name-extension (buffer-file-name)))
+           default-directory)
     (isearch-abort)))
 
 (defun occur-from-isearch ()
@@ -175,10 +176,13 @@
 ;; Modes
 (setq initial-major-mode 'text-mode)
 (column-number-mode t)
-(mouse-wheel-mode t)
+
+(if (boundp 'mouse-wheel-mode)
+  (mouse-wheel-mode t))
+
 (if (boundp 'scroll-bar-mode)
-	(scroll-bar-mode 0))
-;;(partial-completion-mode nil)
+    (scroll-bar-mode 0))
+
 (show-paren-mode t)
 (transient-mark-mode t)
 (recentf-mode)
@@ -263,10 +267,10 @@
 ;; Invoke ruby with '-c' to get syntax checking
 (defun flymake-ruby-init ()
   (let* ((temp-file   (flymake-init-create-temp-buffer-copy
-					   'flymake-create-temp-inplace))
-		 (local-file  (file-relative-name
-					   temp-file
-					   (file-name-directory buffer-file-name))))
+                       'flymake-create-temp-inplace))
+         (local-file  (file-relative-name
+                       temp-file
+                       (file-name-directory buffer-file-name))))
     (list "ruby" (list "-c" local-file))))
 
 (push '(".+\\.rb$" flymake-ruby-init) flymake-allowed-file-name-masks)
@@ -406,18 +410,15 @@
 
 (add-hook 'js2-mode-hook 'js2-mode-on-init)
 
-(defun js-mode-on-init ()
-  (init-mode)
 
-  (setq ac-sources '(ac-source-yasnippet
-                     ac-source-semantic
-                     ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
+;; ********************************************************************************
+;; Haskell Mode
+;;
+(defun haskell-mode-on-init ()
+  (init-mode))
 
-
-  (add-hook 'js-mode-hook 'js-mode-on-init))
-
-;; (add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
+(add-hook 'haskell-mode-hook 'haskell-mode-on-init))
+(add-to-list 'auto-mode-alist  '("\\.hs$" . haskell-mode))
 
 
 ;; ********************************************************************************
@@ -427,14 +428,13 @@
   (init-mode)
 
   (setq ac-sources '(ac-source-yasnippet
-		     ac-source-features
-		     ac-source-functions
-		     ac-source-symbols
-		     ac-source-variables
-		     ac-source-words-in-buffer))
+             ac-source-features
+             ac-source-functions
+             ac-source-symbols
+             ac-source-variables
+             ac-source-words-in-buffer)))
 
-  (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init))
-
+(add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init)
 
 
 ;; ********************************************************************************
@@ -496,8 +496,8 @@
   (make-local-variable 'standard-indent)
   (setq standard-indent 4)
   (setq ac-sources '(ac-source-yasnippet
-		     ac-source-semantic
-		     ac-source-words-in-buffer)))
+             ac-source-semantic
+             ac-source-words-in-buffer)))
 
 (add-hook 'c-mode-hook 'c-mode-on-init)
 
@@ -512,27 +512,27 @@
 (defun nxml-mode-on-init ()
   (init-mode)
   (setq ac-sources '(ac-source-yasnippet
-		     ac-source-semantic
-		     ac-source-words-in-buffer)))
+             ac-source-semantic
+             ac-source-words-in-buffer)))
 
 (add-hook 'nxml-mode-hook 'nxml-mode-on-init)
 
 
 (defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
   (if (equal major-mode 'dired-mode)
-	  (revert-buffer)))
+      (revert-buffer)))
 
 (defadvice switch-to-buffer (after auto-refresh-dired (buffer &optional norecord) activate)
   (if (equal major-mode 'dired-mode)
-	  (revert-buffer)))
+      (revert-buffer)))
 
 (defadvice display-buffer (after auto-refresh-dired (buffer &optional not-this-window frame)  activate)
   (if (equal major-mode 'dired-mode)
-	  (revert-buffer)))
+      (revert-buffer)))
 
 (defadvice other-window (after auto-refresh-dired (arg &optional all-frame) activate)
   (if (equal major-mode 'dired-mode)
-	  (revert-buffer)))
+      (revert-buffer)))
 
 
 
@@ -567,37 +567,37 @@
 (defun insert-newline()
   (interactive)
   (save-excursion
-	(end-of-line)
-	(newline)))
+    (end-of-line)
+    (newline)))
 
 ;; paste with indentation
 (dolist (command '(yank yank-pop))
   (eval `(defadvice ,command (after indent-region activate)
-		   (let ((mark-even-if-inactive transient-mark-mode))
-			 (indent-region (region-beginning) (region-end) nil)))))
+           (let ((mark-even-if-inactive transient-mark-mode))
+             (indent-region (region-beginning) (region-end) nil)))))
 
 
 ;; (setq ibuffer-saved-filter-groups
-;; 	  (quote (("default"
-;; 			   ("Ruby" (mode . ruby-mode))
-;; 			   ("C" (mode . c-mode))
-;; 			   ("Lisp" (mode . emacs-lisp-mode))
-;; 			   ("Javascript" (mode . js2-mode))
-;; 			   ("Dired" (mode . dired-mode))
-;; 			   ("Special" (name . "^\\*.*\\*$"))))))
+;;    (quote (("default"
+;;             ("Ruby" (mode . ruby-mode))
+;;             ("C" (mode . c-mode))
+;;             ("Lisp" (mode . emacs-lisp-mode))
+;;             ("Javascript" (mode . js2-mode))
+;;             ("Dired" (mode . dired-mode))
+;;             ("Special" (name . "^\\*.*\\*$"))))))
 
 (add-hook 'ibuffer-mode-hook
-		  (lambda ()
-			(ibuffer-switch-to-saved-filter-groups "default")))
+          (lambda ()
+            (ibuffer-switch-to-saved-filter-groups "default")))
 
 (setq ibuffer-use-header-line nil)
 
 (setq ibuffer-formats '((mark modified
-							  " " (name 64 64 :left)
-							  ;; " " (size 9 -1 :right)
-							  ;; " " (mode 16 16 :left :elide)
-							  " " filename-and-process)
-						))
+                              " " (name 64 64 :left)
+                              ;; " " (size 9 -1 :right)
+                              ;; " " (mode 16 16 :left :elide)
+                              " " filename-and-process)
+                        ))
 
 (defun git-grep()
   (interactive)
