@@ -1,8 +1,9 @@
-; ********************************************************************************
+;; ********************************************************************************
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/.emacs.d")
-(add-to-list 'load-path "~/.emacs.d/apel")
+;; (add-to-list 'load-path "~/.emacs.d/apel")
+(add-to-list 'load-path "~/.emacs.d/auto-complete")
 (add-to-list 'load-path "~/.emacs.d/emacs-color-theme-solarized")
 (add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
@@ -19,7 +20,7 @@
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 (setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
-             ("gnu" . "http://elpa.gnu.org/packages/")))
+                         ("gnu" . "http://elpa.gnu.org/packages/")))
 
 ;; ********************************************************************************
 ;; Requires
@@ -29,7 +30,6 @@
 (require 'toggle)
 (require 'helm-config)
 (require 'find-file-in-project)
-(require 'browse-kill-ring)
 (require 'session)
 (require 'smart-compile)
 (require 'flymake)
@@ -41,7 +41,11 @@
 (require 'wgrep)
 (require 'go-mode-load)
 
-(rvm-use-default)
+;; ********************************************************************************
+;; Color theme
+;;
+(set-face-background 'header-line nil)
+(set-face-background 'flymake-errline "#ffcccc")
 
 (setq solarized-contrast 'high)
 (color-theme-solarized-light)
@@ -49,9 +53,9 @@
 (setq visible-bell 1)
 (setq ring-bell-function (lambda() ()))
 
-(set-face-background 'header-line nil)
-(set-face-background 'flymake-errline "#ffcccc")
-
+;; ********************************************************************************
+;; Emacs variables
+;;
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq case-fold-search t)
 (setq enable-recursive-minibuffers nil)
@@ -62,84 +66,56 @@
 (setq-default tab-width 4)
 (setq icicle-Completions-text-scale-decrease 0)
 
+
+;; ********************************************************************************
+;; Minor modes
+;;
+(setq initial-major-mode 'text-mode)
+
 (evil-mode 1)
 (tool-bar-mode 0)
 (helm-mode)
+(column-number-mode t)
+(show-paren-mode t)
+(transient-mark-mode t)
+(recentf-mode)
+
+(if (boundp 'mouse-wheel-mode)
+	(mouse-wheel-mode t))
+
+(if (boundp 'scroll-bar-mode)
+    (scroll-bar-mode 0))
 
 (unless (window-system)
   (menu-bar-mode 0))
 
 (setq-default mode-line-format nil)
 
-(setq toggle-mapping-styles
-      '((rspec
-     . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
-        ("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
-        ("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
-        ("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
-        ("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
-        ("app/resources/\\1.rb"   . "spec/resources/\\1_spec.rb")
-        ("app/services/\\1.rb"   . "spec/services/\\1_spec.rb")
-        ("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
-    (ruby
-     . (("lib/\\1.rb"             . "test/test_\\1.rb")
-        ("\\1.rb"                 . "test_\\1.rb")))))
+;; ********************************************************************************
+;; Autocomplete
+;;
+(require 'auto-complete-config)
+(require 'auto-complete-yasnippet)
 
-(defvar autocomplete-initialized nil)
-
-(defun init-autocomplete ()
-  (require 'yasnippet)
-  (require 'auto-complete-config)
-  (require 'auto-complete-yasnippet)
-
-  (yas/initialize)
-  (yas/load-directory "~/.emacs.d/yasnippet/snippets")
-  (yas/load-directory "~/.emacs.d/snippets/")
-  (setq yas/trigger-key "TAB")
-  (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
-  (ac-config-default)
-  (ac-set-trigger-key "TAB")
-  (setq ac-auto-start nil)
-  (global-auto-complete-mode t))
-
-(defun init-mode ()
-  (unless autocomplete-initialized
-    (init-autocomplete)
-    (setq autocomplete-initialized t))
-
-  (add-hook 'before-save-hook 'untabify-buffer nil t)
-  (setq indent-tabs-mode nil)
-  (make-local-variable 'tags-file-name))
+(add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
+(ac-config-default)
+(ac-set-trigger-key "TAB")
+(setq ac-auto-start nil)
+(global-auto-complete-mode t))
 
 ;; ********************************************************************************
-;; Defuns
-
-(defun lgrep-from-isearch ()
-  (interactive)
-  (let ((shk-search-string isearch-string))
-    (grep-compute-defaults)
-    (lgrep (if isearch-regexp shk-search-string (regexp-quote shk-search-string))
-           (format "*.%s" (file-name-extension (buffer-file-name)))
-           default-directory)
-    (isearch-abort)))
-
-(defun occur-from-isearch ()
-  (interactive)
-  (let ((case-fold-search isearch-case-fold-search))
-    (occur (if isearch-regexp isearch-string (regexp-quote isearch-string)))))
-
-(define-key isearch-mode-map (kbd "C-l") 'lgrep-from-isearch)
-(define-key isearch-mode-map (kbd "C-o") 'occur-from-isearch)
-
-(defun indent-buffer ()
-  (interactive)
-  (save-excursion
-    (indent-region (point-min) (point-max) nil)))
-
+;; Common mode setup
+;;
 (defun untabify-buffer ()
   (interactive)
   (save-excursion
     (untabify (point-min) (point-max))))
+
+(defun init-mode ()
+  (add-hook 'before-save-hook 'delete-trailing-whitespace nil t)
+  (add-hook 'before-save-hook 'untabify-buffer nil t)
+  (setq indent-tabs-mode nil)
+  (make-local-variable 'tags-file-name))
 
 (defun sudo-edit (&optional arg)
   (interactive "p")
@@ -147,20 +123,16 @@
       (find-file (concat "/sudo:root@localhost:" (read-file-name "File: ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
-
-(browse-kill-ring-default-keybindings)
-(setq kill-ring-max 20)
-
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
+;; ********************************************************************************
 ;; Desktop
+;;
 (desktop-save-mode t)
 (setq desktop-globals-to-save nil)
 (setq desktop-load-locked-desktop t)
 (setq desktop-save t)
 
 ;; ********************************************************************************
-;; ibuffer
+;; Ibuffer
 ;;
 (setq ibuffer-default-sorting-mode 'major-mode)
 (setq ibuffer-enable nil)
@@ -172,31 +144,10 @@
 (setq imenu-auto-rescan t)
 (setq imenu-sort-function 'imenu--sort-by-name)
 
-;; Modes
-(setq initial-major-mode 'text-mode)
-(column-number-mode t)
-
-(if (boundp 'mouse-wheel-mode)
-  (mouse-wheel-mode t))
-
-(if (boundp 'scroll-bar-mode)
-    (scroll-bar-mode 0))
-
-(show-paren-mode t)
-(transient-mark-mode t)
-(recentf-mode)
-
-(load "find-tags-file")
-
-;; ********************************************************************************
-;; Autoloads
-;;
-(autoload 'rdebug "rdebug" "ruby Debug" t)
-
-
 ;; ********************************************************************************
 ;; Tags
 ;;
+(load "find-tags-file")
 (setq tags-add-tables nil)
 (setq etags-table-search-up-depth 5)
 
@@ -208,19 +159,12 @@
 (add-hook 'after-init-hook 'session-initialize)
 
 ;; ********************************************************************************
-;; RI
-;;
-(setq ri-ruby-script (expand-file-name "~/.emacs.d/ruby/ri-emacs.rb"))
-(autoload 'ri "~/.emacs.d/ruby/ri-ruby.el" nil t)
-
-
-;; ********************************************************************************
 ;; Erlang Mode
 ;;
 (autoload 'erlang-mode "erlang-mode.el" "Major mode for editing erlang files" t)
 (add-to-list 'auto-mode-alist '("\\.erl\\'" . erlang-mode))
 (add-to-list 'auto-mode-alist '("\\.hrl\\'" . erlang-mode))
-
+(add-to-list 'auto-mode-alist '("\\.yaws\\'" . erlang-mode))
 
 ;; ********************************************************************************
 ;; Markdown Mode
@@ -248,15 +192,14 @@
 
 
 ;; ********************************************************************************
-;; Erlang Mode
-;;
-(add-to-list 'auto-mode-alist '("\\.yaws\\'" . erlang-mode))
-
-
-
-;; ********************************************************************************
 ;; Ruby Mode
 ;;
+
+(rvm-use-default)
+
+(setq ri-ruby-script (expand-file-name "~/.emacs.d/ruby/ri-emacs.rb"))
+(autoload 'ri "~/.emacs.d/ruby/ri-ruby.el" nil t)
+(autoload 'rdebug "rdebug" "ruby Debug" t)
 
 (add-to-list 'auto-mode-alist  '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rb$" . ruby-mode))
@@ -277,6 +220,19 @@
 
 (push '("^\\(.*\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3) flymake-err-line-patterns)
 
+(setq toggle-mapping-styles
+      '((rspec
+		 . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
+			("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
+			("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
+			("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
+			("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
+			("app/resources/\\1.rb"   . "spec/resources/\\1_spec.rb")
+			("app/services/\\1.rb"   . "spec/services/\\1_spec.rb")
+			("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
+		(ruby
+		 . (("lib/\\1.rb"             . "test/test_\\1.rb")
+			("\\1.rb"                 . "test_\\1.rb")))))
 
 (defun spec-run-single-file (spec-file &rest opts)
   "Runs spec with the specified options"
@@ -297,15 +253,12 @@
   (init-mode)
   (flymake-mode)
 
-  ;; (define-key ruby-mode-map (kbd "<return>") 'ruby-reindent-then-newline-and-indent)
-
   (setq ruby-deep-indent-paren nil)
   (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
   (setq ac-sources '(ac-source-yasnippet
                      ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers))
-  )
+                     ac-source-words-in-same-mode-buffers)))
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init) ;
 
@@ -416,7 +369,7 @@
 (defun haskell-mode-on-init ()
   (init-mode))
 
-(add-hook 'haskell-mode-hook 'haskell-mode-on-init))
+(add-hook 'haskell-mode-hook 'haskell-mode-on-init)
 (add-to-list 'auto-mode-alist  '("\\.hs$" . haskell-mode))
 
 
@@ -427,11 +380,11 @@
   (init-mode)
 
   (setq ac-sources '(ac-source-yasnippet
-             ac-source-features
-             ac-source-functions
-             ac-source-symbols
-             ac-source-variables
-             ac-source-words-in-buffer)))
+					 ac-source-features
+					 ac-source-functions
+					 ac-source-symbols
+					 ac-source-variables
+					 ac-source-words-in-buffer)))
 
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init)
 
@@ -449,6 +402,9 @@
 (add-hook 'html-mode-hook 'html-mode-on-init)
 
 
+;; ********************************************************************************
+;; Go Mode
+;;
 (defun go-mode-on-init ()
   (init-mode)
 
@@ -495,26 +451,10 @@
   (make-local-variable 'standard-indent)
   (setq standard-indent 4)
   (setq ac-sources '(ac-source-yasnippet
-             ac-source-semantic
-             ac-source-words-in-buffer)))
+					 ac-source-semantic
+					 ac-source-words-in-buffer)))
 
 (add-hook 'c-mode-hook 'c-mode-on-init)
-
-
-
-;; ********************************************************************************
-;; XML Mode
-;;
-(autoload 'nxml-mode "nxml-mode" "XML Mode" t)
-(add-to-list 'auto-mode-alist '("\\.xml$" . nxml-mode))
-
-(defun nxml-mode-on-init ()
-  (init-mode)
-  (setq ac-sources '(ac-source-yasnippet
-             ac-source-semantic
-             ac-source-words-in-buffer)))
-
-(add-hook 'nxml-mode-hook 'nxml-mode-on-init)
 
 
 (defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
@@ -564,29 +504,6 @@
            (let ((mark-even-if-inactive transient-mark-mode))
              (indent-region (region-beginning) (region-end) nil)))))
 
-
-;; (setq ibuffer-saved-filter-groups
-;;    (quote (("default"
-;;             ("Ruby" (mode . ruby-mode))
-;;             ("C" (mode . c-mode))
-;;             ("Lisp" (mode . emacs-lisp-mode))
-;;             ("Javascript" (mode . js2-mode))
-;;             ("Dired" (mode . dired-mode))
-;;             ("Special" (name . "^\\*.*\\*$"))))))
-
-(add-hook 'ibuffer-mode-hook
-          (lambda ()
-            (ibuffer-switch-to-saved-filter-groups "default")))
-
-(setq ibuffer-use-header-line nil)
-
-(setq ibuffer-formats '((mark modified
-                              " " (name 64 64 :left)
-                              ;; " " (size 9 -1 :right)
-                              ;; " " (mode 16 16 :left :elide)
-                              " " filename-and-process)
-                        ))
-
 (defun git-grep()
   (interactive)
   (require 'grep)
@@ -627,6 +544,7 @@
 (global-set-key (kbd "C-c m") 'magit-status)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c o") 'helm-occur)
+(global-set-key (kbd "C-c C-o") 'helm-multi-occur)
 (global-set-key (kbd "C-c k") 'helm-show-kill-ring)
 (global-set-key (kbd "C-c b") 'ibuffer)
 (global-set-key (kbd "C-c i") 'helm-imenu)
@@ -637,13 +555,5 @@
 
 (require 'inline-string-rectangle)
 (require 'mark-more-like-this)
-;; (require 'rename-sgml-tag)
-;; (require 'js2-rename-var)
 
 (global-set-key (kbd "C-x r t") 'inline-string-rectangle)
-
-;; (define-key sgml-mode-map (kbd "C-c C-r") 'rename-sgml-tag)
-;; (define-key js2-mode-map (kbd "C-c C-r") 'js2-rename-var)
-
-;; (global-set-key (kbd "<C-delete>") 'kill-word)
-;; (global-set-key (kbd "<C-backspace>") 'backward-kill-word)
