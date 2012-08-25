@@ -6,6 +6,8 @@
 (add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
 (add-to-list 'load-path "~/.emacs.d/expand-region")
+(add-to-list 'load-path "~/.emacs.d/flymake")
+(add-to-list 'load-path "~/.emacs.d/flymake-ruby")
 (add-to-list 'load-path "~/.emacs.d/helm")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/haskell-mode")
@@ -27,6 +29,7 @@
 (require 'cl)
 (require 'flymake)
 (require 'flymake-cursor)
+(require 'flymake-ruby)
 (require 'wgrep)
 
 ;; ********************************************************************************
@@ -198,20 +201,6 @@
 (add-to-list 'auto-mode-alist  '("\\.ru$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))
 
-;; Invoke ruby with '-c' to get syntax checking
-(defun flymake-ruby-init ()
-  (let* ((temp-file   (flymake-init-create-temp-buffer-copy
-                       'flymake-create-temp-inplace))
-         (local-file  (file-relative-name
-                       temp-file
-                       (file-name-directory buffer-file-name))))
-    (list "ruby" (list "-c" local-file))))
-
-(push '(".+\\.rb$" flymake-ruby-init) flymake-allowed-file-name-masks)
-(push '("Rakefile$" flymake-ruby-init) flymake-allowed-file-name-masks)
-
-(push '("^\\(.*\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3) flymake-err-line-patterns)
-
 (require 'toggle)
 (setq toggle-mapping-styles
       '((rspec
@@ -244,41 +233,14 @@
 
 (defun ruby-mode-on-init ()
   (init-mode)
-  (flymake-mode)
+  (flymake-ruby-init)
 
   (setq ruby-deep-indent-paren nil)
   (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
-
-  (setq ac-sources '( ac-source-words-in-buffer
+  (setq ac-sources '(ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers)))
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init) ;
-
-(defun ruby-imenu-create-index-in-block (prefix beg end)
-  (let ((index-alist '()) (case-fold-search nil)
-        name next pos decl sing)
-    (goto-char beg)
-    (while (re-search-forward "^\\s *\\(\\(class\\s +\\|\\(class\\s *<<\\s *\\)\\|module\\s +\\)\\([^\(<\n ]+\\)\\|\\(def\\|alias\\)\\s +\\([^\(\n ]+\\)\\)" end t)
-      (setq sing (match-beginning 3))
-      (setq decl (match-string 5))
-      (setq next (match-end 0))
-      (setq name (or (match-string 4) (match-string 6)))
-      (setq pos (match-beginning 0))
-      (cond
-       ((string= "alias" decl)
-        (push (cons name pos) index-alist))
-       ((string= "def" decl)
-        (push (cons name pos) index-alist)
-        (ruby-accurate-end-of-block end))
-       (t
-        (ruby-accurate-end-of-block end)
-        (setq beg (point))
-        (setq index-alist
-              (nconc (ruby-imenu-create-index-in-block
-                      (concat name (if sing "." "#"))
-                      next beg) index-alist))
-        (goto-char beg))))
-    index-alist))
 
 ;; ********************************************************************************
 ;; RHTML Mode
