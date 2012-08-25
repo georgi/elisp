@@ -4,3 +4,6 @@
 [submodule "helm"]
 	path = helm
 	url = git://github.com/emacs-helm/helm.git
+[submodule "magit"]
+	path = magit
+	url = git://github.com/magit/magit.git
