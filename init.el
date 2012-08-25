@@ -2,7 +2,6 @@
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/.emacs.d")
-;; (add-to-list 'load-path "~/.emacs.d/apel")
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
 (add-to-list 'load-path "~/.emacs.d/emacs-color-theme-solarized")
 (add-to-list 'load-path "~/.emacs.d/erlang")
@@ -13,11 +12,9 @@
 (add-to-list 'load-path "~/.emacs.d/haskell-mode")
 (add-to-list 'load-path "~/.emacs.d/magit")
 (add-to-list 'load-path "~/.emacs.d/mark-multiple")
-(add-to-list 'load-path "~/.emacs.d/nxml-mode")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
 (add-to-list 'load-path "~/.emacs.d/python-mode")
-(add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 (setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
                          ("gnu" . "http://elpa.gnu.org/packages/")))
@@ -25,25 +22,17 @@
 ;; ********************************************************************************
 ;; Requires
 
-(require 'evil)
 (require 'cl)
-(require 'toggle)
-(require 'helm-config)
 (require 'find-file-in-project)
-(require 'session)
-(require 'smart-compile)
 (require 'flymake)
 (require 'flymake-cursor)
-(require 'color-theme-solarized)
-(require 'expand-region)
-(require 'rvm)
-(require 'magit)
 (require 'wgrep)
-(require 'go-mode-load)
 
 ;; ********************************************************************************
 ;; Color theme
 ;;
+(require 'color-theme-solarized)
+
 (set-face-background 'header-line nil)
 (set-face-background 'flymake-errline "#ffcccc")
 
@@ -60,7 +49,6 @@
 (setq case-fold-search t)
 (setq enable-recursive-minibuffers nil)
 (setq inhibit-startup-screen t)
-(setq session-initialize t)
 (setq standard-indent 2)
 (setq tags-revert-without-query t)
 (setq-default tab-width 4)
@@ -72,16 +60,20 @@
 ;;
 (setq initial-major-mode 'text-mode)
 
-(evil-mode 1)
 (tool-bar-mode 0)
-(helm-mode)
 (column-number-mode t)
 (show-paren-mode t)
 (transient-mark-mode t)
 (recentf-mode)
 
+(require 'evil)
+(evil-mode 1)
+
+(require 'helm-config)
+(helm-mode)
+
 (if (boundp 'mouse-wheel-mode)
-	(mouse-wheel-mode t))
+  (mouse-wheel-mode t))
 
 (if (boundp 'scroll-bar-mode)
     (scroll-bar-mode 0))
@@ -95,13 +87,12 @@
 ;; Autocomplete
 ;;
 (require 'auto-complete-config)
-(require 'auto-complete-yasnippet)
 
 (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
 (ac-config-default)
 (ac-set-trigger-key "TAB")
 (setq ac-auto-start nil)
-(global-auto-complete-mode t))
+(global-auto-complete-mode t)
 
 ;; ********************************************************************************
 ;; Common mode setup
@@ -155,6 +146,7 @@
 ;; ********************************************************************************
 ;; Session
 ;;
+(require 'session)
 (setq session-initialize t)
 (add-hook 'after-init-hook 'session-initialize)
 
@@ -194,7 +186,7 @@
 ;; ********************************************************************************
 ;; Ruby Mode
 ;;
-
+(require 'rvm)
 (rvm-use-default)
 
 (setq ri-ruby-script (expand-file-name "~/.emacs.d/ruby/ri-emacs.rb"))
@@ -220,19 +212,20 @@
 
 (push '("^\\(.*\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3) flymake-err-line-patterns)
 
+(require 'toggle)
 (setq toggle-mapping-styles
       '((rspec
-		 . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
-			("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
-			("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
-			("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
-			("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
-			("app/resources/\\1.rb"   . "spec/resources/\\1_spec.rb")
-			("app/services/\\1.rb"   . "spec/services/\\1_spec.rb")
-			("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
-		(ruby
-		 . (("lib/\\1.rb"             . "test/test_\\1.rb")
-			("\\1.rb"                 . "test_\\1.rb")))))
+         . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
+            ("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
+            ("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
+            ("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
+            ("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
+            ("app/resources/\\1.rb"   . "spec/resources/\\1_spec.rb")
+            ("app/services/\\1.rb"   . "spec/services/\\1_spec.rb")
+            ("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
+        (ruby
+         . (("lib/\\1.rb"             . "test/test_\\1.rb")
+            ("\\1.rb"                 . "test_\\1.rb")))))
 
 (defun spec-run-single-file (spec-file &rest opts)
   "Runs spec with the specified options"
@@ -256,8 +249,7 @@
   (setq ruby-deep-indent-paren nil)
   (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
 
-  (setq ac-sources '(ac-source-yasnippet
-                     ac-source-words-in-buffer
+  (setq ac-sources '( ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers)))
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init) ;
@@ -332,8 +324,7 @@
 (defun js2-mode-on-init ()
   (init-mode)
 
-  (setq ac-sources '(ac-source-yasnippet
-                     ac-source-semantic
+  (setq ac-sources '( ac-source-semantic
                      ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers))
 
@@ -379,12 +370,11 @@
 (defun emacs-lisp-mode-on-init ()
   (init-mode)
 
-  (setq ac-sources '(ac-source-yasnippet
-					 ac-source-features
-					 ac-source-functions
-					 ac-source-symbols
-					 ac-source-variables
-					 ac-source-words-in-buffer)))
+  (setq ac-sources '(ac-source-features
+                      ac-source-functions
+                      ac-source-symbols
+                      ac-source-variables
+                      ac-source-words-in-buffer)))
 
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init)
 
@@ -405,11 +395,12 @@
 ;; ********************************************************************************
 ;; Go Mode
 ;;
+(require 'go-mode-load)
+
 (defun go-mode-on-init ()
   (init-mode)
 
-  (setq ac-sources '(ac-source-yasnippet
-                     ac-source-words-in-buffer
+  (setq ac-sources '(ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers)))
 
 (add-hook 'go-mode-hook 'go-mode-on-init)
@@ -450,9 +441,8 @@
 
   (make-local-variable 'standard-indent)
   (setq standard-indent 4)
-  (setq ac-sources '(ac-source-yasnippet
-					 ac-source-semantic
-					 ac-source-words-in-buffer)))
+  (setq ac-sources '(ac-source-semantic
+                      ac-source-words-in-buffer)))
 
 (add-hook 'c-mode-hook 'c-mode-on-init)
 
@@ -478,6 +468,7 @@
 ;; ********************************************************************************
 ;; Smart Compile
 ;;
+(require 'smart-compile)
 
 (add-to-list 'smart-compile-alist '("^Rakefile$"  . "rake -f %f")) ;
 (add-to-list 'smart-compile-alist '("\\.js$"      . "node %f"))
@@ -528,10 +519,14 @@
 (define-key evil-motion-state-map (kbd "C-k") 'evil-backward-paragraph)
 (define-key evil-motion-state-map (kbd "C-j") 'evil-forward-paragraph)
 (define-key evil-insert-state-map (kbd "C-g") 'evil-force-normal-state)
+
+(require 'expand-region)
 (define-key evil-motion-state-map (kbd "SPC") 'er/expand-region)
 
 ;; (global-set-key (kbd "C-c p") 'mark-previous-like-this)
 ;; (global-set-key (kbd "C-c n") 'mark-next-like-this)
+
+(require 'magit)
 
 (global-set-key (kbd "C-c RET") 'helm-mini)
 (global-set-key (kbd "C-c c") 'smart-compile)

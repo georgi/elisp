@@ -16,9 +16,6 @@
 [submodule "evil"]
 	path = evil
 	url = git://github.com/emacsmirror/evil.git
-[submodule "python-mode"]
-	path = python-mode
-	url = git://github.com/emacsmirror/python-mode.git
 [submodule "auto-complete"]
 	path = auto-complete
 	url = git://github.com/m2ym/auto-complete.git
