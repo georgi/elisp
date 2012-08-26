@@ -273,14 +273,12 @@
 
 (autoload 'js2-mode "js2-mode" "JS2 Mode." t)
 
-(setq js2-mode-dev-mode-p t)
-(setq js2-mode-must-byte-compile nil)
 (setq js2-rebind-eol-bol-keys nil)
 
 (defun js2-mode-on-init ()
   (init-mode)
 
-  (setq ac-sources '( ac-source-semantic
+  (setq ac-sources '(ac-source-semantic
                      ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers))
 
@@ -313,11 +311,14 @@
 ;; ********************************************************************************
 ;; Haskell Mode
 ;;
+(require 'haskell-mode)
+
 (defun haskell-mode-on-init ()
-  (init-mode))
+  (init-mode)
+  (haskell-flymake-init)
+  (turn-on-haskell-indentation))
 
 (add-hook 'haskell-mode-hook 'haskell-mode-on-init)
-(add-to-list 'auto-mode-alist  '("\\.hs$" . haskell-mode))
 
 
 ;; ********************************************************************************

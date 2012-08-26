@@ -28,3 +28,6 @@
 [submodule "flymake-ruby"]
 	path = flymake-ruby
 	url = git://github.com/purcell/flymake-ruby.git
+[submodule "js2-mode"]
+	path = js2-mode
+	url = git://github.com/mooz/js2-mode.git
