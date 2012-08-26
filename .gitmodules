@@ -40,3 +40,9 @@
 [submodule "sass-mode"]
 	path = sass-mode
 	url = git://github.com/emacsmirror/sass-mode.git
+[submodule "toggle"]
+	path = toggle
+	url = git://github.com/emacsmirror/toggle.git
+[submodule "wgrep"]
+	path = wgrep
+	url = git://github.com/mhayashi1120/Emacs-wgrep.git
