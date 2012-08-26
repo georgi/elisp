@@ -55,3 +55,6 @@
 [submodule "chuck-mode"]
 	path = chuck-mode
 	url = git://github.com/emacsmirror/chuck-mode.git
+[submodule "expand-region.el"]
+	path = expand-region.el
+	url = git://github.com/magnars/expand-region.el.git
