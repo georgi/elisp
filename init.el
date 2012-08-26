@@ -118,14 +118,6 @@
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
 ;; ********************************************************************************
-;; Desktop
-;;
-(desktop-save-mode t)
-(setq desktop-globals-to-save nil)
-(setq desktop-load-locked-desktop t)
-(setq desktop-save t)
-
-;; ********************************************************************************
 ;; Ibuffer
 ;;
 (setq ibuffer-default-sorting-mode 'major-mode)
