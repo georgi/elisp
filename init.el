@@ -27,6 +27,7 @@
 (add-to-list 'load-path "~/.emacs.d/toggle")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
 (add-to-list 'load-path "~/.emacs.d/yaml-mode")
+(add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
 
@@ -102,6 +103,14 @@
 (ac-set-trigger-key "TAB")
 (setq ac-auto-start nil)
 (global-auto-complete-mode t)
+
+
+;; ********************************************************************************
+;; Yasnippet
+;;
+(require 'yasnippet)
+(yas-global-mode)
+
 
 ;; ********************************************************************************
 ;; Common mode setup

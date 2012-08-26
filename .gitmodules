@@ -79,3 +79,6 @@
 [submodule "ruby-electric"]
 	path = ruby-electric
 	url = git://github.com/qoobaa/ruby-electric.git
+[submodule "yasnippet"]
+	path = yasnippet
+	url = git://github.com/capitaomorte/yasnippet.git
