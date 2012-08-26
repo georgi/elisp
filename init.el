@@ -8,6 +8,7 @@
 (add-to-list 'load-path "~/.emacs.d/evil")
 (add-to-list 'load-path "~/.emacs.d/expand-region")
 (add-to-list 'load-path "~/.emacs.d/flymake")
+(add-to-list 'load-path "~/.emacs.d/flymake-cursor")
 (add-to-list 'load-path "~/.emacs.d/flymake-ruby")
 (add-to-list 'load-path "~/.emacs.d/helm")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
