@@ -17,6 +17,7 @@
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
 (add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
+(add-to-list 'load-path "~/.emacs.d/sass-mode")
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
 

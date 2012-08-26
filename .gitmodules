@@ -37,3 +37,6 @@
 [submodule "smart-compile-plus"]
 	path = smart-compile-plus
 	url = git://github.com/emacsmirror/smart-compile-plus.git
+[submodule "sass-mode"]
+	path = sass-mode
+	url = git://github.com/emacsmirror/sass-mode.git
