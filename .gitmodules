@@ -76,3 +76,6 @@
 [submodule "ruby-end"]
 	path = ruby-end
 	url = git://github.com/little-arhat/ruby-end.git
+[submodule "ruby-electric"]
+	path = ruby-electric
+	url = git://github.com/qoobaa/ruby-electric.git

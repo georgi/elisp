@@ -19,6 +19,7 @@
 (add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby-end")
+(add-to-list 'load-path "~/.emacs.d/ruby-electric")
 (add-to-list 'load-path "~/.emacs.d/rvm")
 (add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
 (add-to-list 'load-path "~/.emacs.d/sass-mode")
@@ -186,6 +187,7 @@
 ;; Ruby Mode
 ;;
 (require 'ruby-end)
+(require 'ruby-electric)
 (require 'rvm)
 (rvm-use-default)
 
@@ -231,6 +233,7 @@
 (defun ruby-mode-on-init ()
   (init-mode)
   (flymake-ruby-load)
+  (ruby-electric-mode)
 
   (setq ruby-deep-indent-paren nil)
   (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
