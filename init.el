@@ -14,7 +14,7 @@
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/haskell-mode")
 (add-to-list 'load-path "~/.emacs.d/magit")
-(add-to-list 'load-path "~/.emacs.d/mark-multiple")
+(add-to-list 'load-path "~/.emacs.d/multiple-cursors")
 (add-to-list 'load-path "~/.emacs.d/markdown-mode")
 (add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
@@ -511,8 +511,11 @@
 (require 'expand-region)
 (define-key evil-motion-state-map (kbd "SPC") 'er/expand-region)
 
-;; (global-set-key (kbd "C-c p") 'mark-previous-like-this)
-;; (global-set-key (kbd "C-c n") 'mark-next-like-this)
+(require 'multiple-cursors)
+(global-set-key (kbd "M-SPC") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 (require 'magit)
 
@@ -536,8 +539,3 @@
 (global-set-key (kbd "C-c v") 'spec-verify)
 (global-set-key (kbd "C-c t") 'toggle-buffer)
 (global-set-key (kbd "C-c C-s") 'spec-verify-single)
-
-(require 'inline-string-rectangle)
-(require 'mark-more-like-this)
-
-(global-set-key (kbd "C-x r t") 'inline-string-rectangle)
