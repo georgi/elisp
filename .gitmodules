@@ -73,3 +73,6 @@
 [submodule "flymake-cursor"]
 	path = flymake-cursor
 	url = git://github.com/emacsmirror/flymake-cursor.git
+[submodule "ruby-end"]
+	path = ruby-end
+	url = git://github.com/little-arhat/ruby-end.git
