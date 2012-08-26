@@ -55,12 +55,12 @@
 [submodule "chuck-mode"]
 	path = chuck-mode
 	url = git://github.com/emacsmirror/chuck-mode.git
-[submodule "expand-region.el"]
-	path = expand-region.el
-	url = git://github.com/magnars/expand-region.git
-[submodule "mark-multiple.el"]
-	path = mark-multiple.el
-	url = git://github.com/magnars/mark-multiple.git
+[submodule "expand-region"]
+	path = expand-region
+	url = git://github.com/magnars/expand-region.el.git
+[submodule "mark-multiple"]
+	path = mark-multiple
+	url = git://github.com/magnars/mark-multiple.el.git
 [submodule "rhtml"]
 	path = rhtml
 	url = git://github.com/eschulte/rhtml.git
