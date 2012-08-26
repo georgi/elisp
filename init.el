@@ -20,6 +20,7 @@
 (add-to-list 'load-path "~/.emacs.d/sass-mode")
 (add-to-list 'load-path "~/.emacs.d/toggle")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
+(add-to-list 'load-path "~/.emacs.d/yaml-mode")
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
 
@@ -505,6 +506,7 @@
 
 (require 'magit)
 
+(global-set-key (kbd "<C-return>") 'helm-mini)
 (global-set-key (kbd "C-c RET") 'helm-mini)
 (global-set-key (kbd "C-c c") 'smart-compile)
 (global-set-key (kbd "C-c f") 'find-file-in-project)
