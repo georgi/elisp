@@ -67,3 +67,6 @@
 [submodule "markdown-mode"]
 	path = markdown-mode
 	url = git://github.com/nex3/markdown-mode.git
+[submodule "rvm"]
+	path = rvm
+	url = git://github.com/senny/rvm.el.git
