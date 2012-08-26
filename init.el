@@ -16,6 +16,7 @@
 (add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby")
+(add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
 
@@ -425,7 +426,7 @@
 ;; ********************************************************************************
 ;; Smart Compile
 ;;
-(require 'smart-compile)
+(require 'smart-compile+)
 
 (add-to-list 'smart-compile-alist '("^Rakefile$"  . "rake -f %f")) ;
 (add-to-list 'smart-compile-alist '("\\.js$"      . "node %f"))

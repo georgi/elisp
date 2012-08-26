@@ -34,3 +34,6 @@
 [submodule "haml-mode"]
 	path = haml-mode
 	url = git://github.com/rradonic/haml-mode.git
+[submodule "smart-compile-plus"]
+	path = smart-compile-plus
+	url = git://github.com/emacsmirror/smart-compile-plus.git
