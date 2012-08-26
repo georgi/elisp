@@ -49,3 +49,9 @@
 [submodule "yaml-mode"]
 	path = yaml-mode
 	url = git://github.com/yoshiki/yaml-mode.git
+[submodule "session"]
+	path = session
+	url = git://github.com/tarsius/session.git
+[submodule "chuck-mode"]
+	path = chuck-mode
+	url = git://github.com/emacsmirror/chuck-mode.git

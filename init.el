@@ -3,6 +3,7 @@
 ;;
 (add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
+(add-to-list 'load-path "~/.emacs.d/chuck-mode")
 (add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
 (add-to-list 'load-path "~/.emacs.d/expand-region")
@@ -18,6 +19,7 @@
 (add-to-list 'load-path "~/.emacs.d/ruby")
 (add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
 (add-to-list 'load-path "~/.emacs.d/sass-mode")
+(add-to-list 'load-path "~/.emacs.d/session")
 (add-to-list 'load-path "~/.emacs.d/toggle")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
 (add-to-list 'load-path "~/.emacs.d/yaml-mode")
