@@ -326,14 +326,19 @@
 ;; ********************************************************************************
 ;; Haskell Mode
 ;;
-(require 'haskell-mode)
+(setq haskell-hoogle-command (expand-file-name "~/Library/Haskell/bin/hoogle"))
 
 (defun haskell-mode-on-init ()
   (init-mode)
   (haskell-flymake-init)
+  (require 'inf-haskell)
   (turn-on-haskell-indentation))
 
 (add-hook 'haskell-mode-hook 'haskell-mode-on-init)
+
+(autoload 'haskell-mode "haskell-mode" "Haskell Mode." t)
+
+(add-to-list 'auto-mode-alist '("\\.hs$" . haskell-mode))
 
 
 ;; ********************************************************************************
@@ -528,6 +533,7 @@
 (global-set-key (kbd "C-c e") 'helm-c-etags-select)
 (global-set-key (kbd "C-c q") 'auto-fill-mode)
 (global-set-key (kbd "C-c g") 'git-grep)
+(global-set-key (kbd "C-c h") 'hoogle)
 (global-set-key (kbd "C-c m") 'magit-status)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c o") 'helm-occur)
