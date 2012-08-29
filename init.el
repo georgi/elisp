@@ -29,8 +29,6 @@
 (add-to-list 'load-path "~/.emacs.d/yaml-mode")
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
-
 (setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
                          ("gnu" . "http://elpa.gnu.org/packages/")))
 
@@ -46,9 +44,9 @@
 ;; ********************************************************************************
 ;; Color theme
 ;;
-(setq solarized-contrast 'high)
-
-(if (fboundp 'load-theme)
+(when (boundp 'custom-theme-load-path)
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
+  (setq solarized-contrast 'high)
   (load-theme 'solarized-light t))
 
 (setq visible-bell 1)
