@@ -18,7 +18,7 @@
 	url = git://github.com/emacsmirror/evil.git
 [submodule "auto-complete"]
 	path = auto-complete
-	url = git://github.com/m2ym/auto-complete.git
+	url = git://github.com/auto-complete/auto-complete.git
 [submodule "popup-el"]
 	path = popup-el
 	url = git://github.com/m2ym/popup-el.git
