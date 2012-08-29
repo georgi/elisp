@@ -21,7 +21,7 @@
 	url = git://github.com/auto-complete/auto-complete.git
 [submodule "popup-el"]
 	path = popup-el
-	url = git://github.com/m2ym/popup-el.git
+	url = git://github.com/auto-complete/popup-el.git
 [submodule "flymake"]
 	path = flymake
 	url = git://github.com/emacsmirror/flymake.git
