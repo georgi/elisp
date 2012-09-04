@@ -16,6 +16,7 @@
 (add-to-list 'load-path "~/.emacs.d/magit")
 (add-to-list 'load-path "~/.emacs.d/multiple-cursors")
 (add-to-list 'load-path "~/.emacs.d/markdown-mode")
+(add-to-list 'load-path "~/.emacs.d/pig-mode")
 (add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby-end")
@@ -182,6 +183,13 @@
 (autoload 'chuck-mode "chuck-mode" "Chuck Mode." t)
 (add-to-list 'auto-mode-alist '("\\.ck\\'" . chuck-mode))
 
+
+;; ********************************************************************************
+;; Pig Mode
+;;
+
+(autoload 'pig-mode "pig-mode" "Pig Mode." t)
+(add-to-list 'auto-mode-alist '("\\.pig\\'" . pig-mode))
 
 ;; ********************************************************************************
 ;; Ruby Mode
@@ -538,3 +546,16 @@
 (global-set-key (kbd "C-c v") 'spec-verify)
 (global-set-key (kbd "C-c t") 'toggle-buffer)
 (global-set-key (kbd "C-c C-s") 'spec-verify-single)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes (quote ("fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" default)))
+ '(session-use-package t nil (session)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
