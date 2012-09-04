@@ -62,8 +62,6 @@
 (setq standard-indent 2)
 (setq tags-revert-without-query t)
 (setq-default tab-width 4)
-(setq icicle-Completions-text-scale-decrease 0)
-
 
 ;; ********************************************************************************
 ;; Minor modes
@@ -75,18 +73,13 @@
 (show-paren-mode t)
 (transient-mark-mode t)
 (recentf-mode)
+(xterm-mouse-mode t)
 
 (require 'evil)
 (evil-mode 1)
 
 (require 'helm-config)
 (helm-mode)
-
-(if (boundp 'mouse-wheel-mode)
-  (mouse-wheel-mode t))
-
-(if (boundp 'scroll-bar-mode)
-    (scroll-bar-mode 0))
 
 (unless (window-system)
   (menu-bar-mode 0))
@@ -497,6 +490,8 @@
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
 ;; Movement
+(global-set-key (kbd "<mouse-5>") 'scroll-up-line)
+(global-set-key (kbd "<mouse-4>") 'scroll-down-line)
 (global-set-key (kbd "<up>") 'evil-previous-line)
 (global-set-key (kbd "<down>") 'evil-next-line)
 (global-set-key (kbd "<left>") 'evil-backward-char)
