@@ -91,3 +91,9 @@
 [submodule "pig-mode"]
 	path = pig-mode
 	url = https://github.com/motus/pig-mode
+[submodule "frame-fns"]
+	path = frame-fns
+	url = git://github.com/emacsmirror/frame-fns.git
+[submodule "frame-cmds"]
+	path = frame-cmds
+	url = git://github.com/emacsmirror/frame-cmds.git

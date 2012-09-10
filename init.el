@@ -10,6 +10,8 @@
 (add-to-list 'load-path "~/.emacs.d/flymake")
 (add-to-list 'load-path "~/.emacs.d/flymake-cursor")
 (add-to-list 'load-path "~/.emacs.d/flymake-ruby")
+(add-to-list 'load-path "~/.emacs.d/frame-cmds")
+(add-to-list 'load-path "~/.emacs.d/frame-fns")
 (add-to-list 'load-path "~/.emacs.d/helm")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/haskell-mode")
@@ -40,6 +42,7 @@
 (require 'flymake)
 (require 'flymake-cursor)
 (require 'flymake-ruby)
+(require 'frame-cmds)
 (require 'wgrep)
 
 ;; ********************************************************************************
@@ -546,3 +549,13 @@
 (global-set-key (kbd "C-c v") 'spec-verify)
 (global-set-key (kbd "C-c t") 'toggle-buffer)
 (global-set-key (kbd "C-c C-s") 'spec-verify-single)
+
+
+(global-set-key (kbd "<s-up>") 'move-frame-up)
+(global-set-key (kbd "<s-down>") 'move-frame-down)
+(global-set-key (kbd "<s-left>") 'move-frame-left)
+(global-set-key (kbd "<s-right>") 'move-frame-right)
+(global-set-key (kbd "<S-s-down>") 'enlarge-frame)
+(global-set-key (kbd "<S-s-right>") 'enlarge-frame-horizontally)
+(global-set-key (kbd "<S-s-up>") 'shrink-frame)
+(global-set-key (kbd "<S-s-left>") 'shrink-frame-horizontally)
