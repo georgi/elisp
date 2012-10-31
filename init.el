@@ -51,7 +51,9 @@
 (when (boundp 'custom-theme-load-path)
   (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
   (setq solarized-contrast 'high)
-  (load-theme 'solarized-light t))
+  (load-theme 'wombat t)
+  ;; (load-theme 'solarized-light t)
+  )
 
 (setq visible-bell 1)
 (setq ring-bell-function (lambda() ()))
