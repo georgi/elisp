@@ -519,6 +519,9 @@
 (define-key evil-motion-state-map (kbd "C-j") 'evil-forward-paragraph)
 (define-key evil-insert-state-map (kbd "C-g") 'evil-force-normal-state)
 
+(define-key evil-ex-map "b" 'helm-buffers-list)
+(define-key evil-ex-map "e" 'find-file)
+
 (require 'expand-region)
 (define-key evil-motion-state-map (kbd "SPC") 'er/expand-region)
 
@@ -539,7 +542,7 @@
 (global-set-key (kbd "C-c e") 'helm-c-etags-select)
 (global-set-key (kbd "C-c q") 'auto-fill-mode)
 (global-set-key (kbd "C-c g") 'git-grep)
-(global-set-key (kbd "C-c h") 'hoogle)
+(global-set-key (kbd "C-c h") 'tile-frames-horizontally)
 (global-set-key (kbd "C-c m") 'magit-status)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c o") 'helm-occur)
@@ -551,13 +554,16 @@
 (global-set-key (kbd "C-c v") 'spec-verify)
 (global-set-key (kbd "C-c t") 'toggle-buffer)
 (global-set-key (kbd "C-c C-s") 'spec-verify-single)
-
-
-(global-set-key (kbd "<s-up>") 'move-frame-up)
-(global-set-key (kbd "<s-down>") 'move-frame-down)
-(global-set-key (kbd "<s-left>") 'move-frame-left)
-(global-set-key (kbd "<s-right>") 'move-frame-right)
-(global-set-key (kbd "<S-s-down>") 'enlarge-frame)
-(global-set-key (kbd "<S-s-right>") 'enlarge-frame-horizontally)
-(global-set-key (kbd "<S-s-up>") 'shrink-frame)
-(global-set-key (kbd "<S-s-left>") 'shrink-frame-horizontally)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes (quote ("fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" default)))
+ '(session-use-package t nil (session)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
