@@ -132,9 +132,11 @@
 ;; ********************************************************************************
 ;; Ibuffer
 ;;
+(require 'ibuf-ext)
 (setq ibuffer-default-sorting-mode 'major-mode)
 (setq ibuffer-enable nil)
 (setq ibuffer-expert t)
+(add-to-list 'ibuffer-never-show-predicates "^\\*")
 
 ;; ********************************************************************************
 ;; I-Menu
