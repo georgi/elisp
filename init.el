@@ -12,6 +12,7 @@
 (add-to-list 'load-path "~/.emacs.d/flymake-ruby")
 (add-to-list 'load-path "~/.emacs.d/frame-cmds")
 (add-to-list 'load-path "~/.emacs.d/frame-fns")
+(add-to-list 'load-path "~/.emacs.d/ghc-mod")
 (add-to-list 'load-path "~/.emacs.d/helm")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/haskell-mode")
@@ -44,6 +45,11 @@
 (require 'flymake-ruby)
 (require 'frame-cmds)
 (require 'wgrep)
+
+(require 'mouse)
+(xterm-mouse-mode t)
+(defun track-mouse (e))
+(setq mouse-sel-mode t)
 
 ;; ********************************************************************************
 ;; Color theme
@@ -247,7 +253,7 @@
 
 (defun ruby-mode-on-init ()
   (init-mode)
-  (flymake-ruby-load)
+  ;; (flymake-ruby-load)
   (ruby-electric-mode)
 
   (setq ruby-deep-indent-paren nil)
@@ -332,19 +338,21 @@
 ;; ********************************************************************************
 ;; Haskell Mode
 ;;
-(setq haskell-hoogle-command (expand-file-name "~/Library/Haskell/bin/hoogle"))
-
 (defun haskell-mode-on-init ()
   (init-mode)
-  (haskell-flymake-init)
+  (flymake-mode)
+  (ghc-init)
   (require 'inf-haskell)
   (turn-on-haskell-indentation))
 
 (add-hook 'haskell-mode-hook 'haskell-mode-on-init)
 
+(autoload 'ghc-init "ghc" nil t)
 (autoload 'haskell-mode "haskell-mode" "Haskell Mode." t)
 
 (add-to-list 'auto-mode-alist '("\\.hs$" . haskell-mode))
+
+(setq haskell-program-name "ghci")
 
 
 ;; ********************************************************************************
