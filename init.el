@@ -545,6 +545,8 @@
 
 (global-set-key (kbd "<C-return>") 'helm-mini)
 (global-set-key (kbd "C-c RET") 'helm-mini)
+(global-set-key (kbd "C-c <left>") 'previous-buffer)
+(global-set-key (kbd "C-c <right>") 'next-buffer)
 (global-set-key (kbd "C-c c") 'smart-compile)
 (global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c .") 'find-tag)
