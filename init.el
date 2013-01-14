@@ -4,6 +4,7 @@
 (add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
 (add-to-list 'load-path "~/.emacs.d/chuck-mode")
+(add-to-list 'load-path "~/.emacs.d/clojure-mode")
 (add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
 (add-to-list 'load-path "~/.emacs.d/expand-region")
@@ -160,9 +161,9 @@
 ;; ********************************************************************************
 ;; Session
 ;;
-(require 'session)
-(setq session-initialize t)
-(add-hook 'after-init-hook 'session-initialize)
+;; (require 'session)
+;; (setq session-initialize t)
+;; (add-hook 'after-init-hook 'session-initialize)
 
 ;; ********************************************************************************
 ;; Erlang Mode
@@ -195,6 +196,14 @@
 
 (autoload 'chuck-mode "chuck-mode" "Chuck Mode." t)
 (add-to-list 'auto-mode-alist '("\\.ck\\'" . chuck-mode))
+
+
+;; ********************************************************************************
+;; Clojure Mode
+;;
+
+(autoload 'clojure-mode "clojure-mode" "Clojure Mode." t)
+(add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
 
 
 ;; ********************************************************************************
@@ -238,7 +247,7 @@
 
 (defun spec-run-single-file (spec-file &rest opts)
   "Runs spec with the specified options"
-  (compile (concat (first rvm--current-ruby-binary-path) "ruby ~/.emacs.d/spin " spec-file " " (mapconcat (lambda (x) x) opts " ")))
+  (compile (concat "bundle exec rspec " spec-file " " (mapconcat (lambda (x) x) opts " ")))
   (end-of-buffer-other-window 0))
 
 (defun spec-verify ()
@@ -508,25 +517,44 @@
      (file (completing-read "Find file in project: " files)))
     (find-file (concat default-directory file))))
 
+(defun next-user-buffer ()
+  "Switch to the next user buffer.
+User buffers are those whose name does not start with *."
+  (interactive)
+  (next-buffer)
+  (let ((i 0))
+    (while (and (string-match "^*" (buffer-name)) (< i 50))
+      (setq i (1+ i)) (next-buffer) )))
 
+(defun previous-user-buffer ()
+  "Switch to the previous user buffer.
+User buffers are those whose name does not start with *."
+  (interactive)
+  (previous-buffer)
+  (let ((i 0))
+    (while (and (string-match "^*" (buffer-name)) (< i 50))
+      (setq i (1+ i)) (previous-buffer) )))
 
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
 ;; Movement
 (global-set-key (kbd "<mouse-5>") 'scroll-up-line)
 (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
-(global-set-key (kbd "<up>") 'evil-previous-line)
-(global-set-key (kbd "<down>") 'evil-next-line)
-(global-set-key (kbd "<left>") 'evil-backward-char)
-(global-set-key (kbd "<right>") 'evil-forward-char)
-(global-set-key (kbd "<C-left>") 'evil-backward-word-begin)
-(global-set-key (kbd "<C-right>") 'evil-forward-word-begin)
-(global-set-key (kbd "<C-up>") 'evil-backward-paragraph)
-(global-set-key (kbd "<C-down>") 'evil-forward-paragraph)
 
+(define-key evil-motion-state-map (kbd "<up>") 'evil-previous-line)
+(define-key evil-motion-state-map (kbd "<down>") 'evil-next-line)
+(define-key evil-motion-state-map (kbd "<left>") 'evil-backward-char)
+(define-key evil-motion-state-map (kbd "<right>") 'evil-forward-char)
+(define-key evil-motion-state-map (kbd "<C-left>") 'evil-backward-word-begin)
+(define-key evil-motion-state-map (kbd "<C-right>") 'evil-forward-word-begin)
+(define-key evil-motion-state-map (kbd "<C-up>") 'evil-backward-paragraph)
+(define-key evil-motion-state-map (kbd "<C-down>") 'evil-forward-paragraph)
 (define-key evil-motion-state-map (kbd "RET") 'insert-newline)
 (define-key evil-motion-state-map (kbd "C-k") 'evil-backward-paragraph)
 (define-key evil-motion-state-map (kbd "C-j") 'evil-forward-paragraph)
+(define-key evil-motion-state-map (kbd ";") 'previous-user-buffer)
+(define-key evil-motion-state-map (kbd "'") 'next-user-buffer)
+
 (define-key evil-insert-state-map (kbd "C-g") 'evil-force-normal-state)
 
 (define-key evil-ex-map "b" 'helm-buffers-list)
@@ -545,8 +573,6 @@
 
 (global-set-key (kbd "<C-return>") 'helm-mini)
 (global-set-key (kbd "C-c RET") 'helm-mini)
-(global-set-key (kbd "C-c <left>") 'previous-buffer)
-(global-set-key (kbd "C-c <right>") 'next-buffer)
 (global-set-key (kbd "C-c c") 'smart-compile)
 (global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c .") 'find-tag)
@@ -566,13 +592,13 @@
 (global-set-key (kbd "C-c v") 'spec-verify)
 (global-set-key (kbd "C-c t") 'toggle-buffer)
 (global-set-key (kbd "C-c C-s") 'spec-verify-single)
+(put 'dired-find-alternate-file 'disabled nil)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" default)))
- '(session-use-package t nil (session)))
+ '(custom-safe-themes (quote ("1e7e097ec8cb1f8c3a912d7e1e0331caeed49fef6cff220be63bd2a6ba4cc365" default))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

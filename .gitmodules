@@ -97,3 +97,6 @@
 [submodule "frame-cmds"]
 	path = frame-cmds
 	url = git://github.com/emacsmirror/frame-cmds.git
+[submodule "clojure-mode"]
+	path = clojure-mode
+	url = git://github.com/technomancy/clojure-mode.git
