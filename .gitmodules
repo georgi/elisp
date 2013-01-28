@@ -100,3 +100,9 @@
 [submodule "clojure-mode"]
 	path = clojure-mode
 	url = git://github.com/technomancy/clojure-mode.git
+[submodule "twitter"]
+	path = twitter
+	url = git://git.busydoingnothing.co.uk/twitter.git
+[submodule "emacs-oauth"]
+	path = emacs-oauth
+	url = git://github.com/psanford/emacs-oauth.git

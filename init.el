@@ -541,6 +541,8 @@ User buffers are those whose name does not start with *."
 (global-set-key (kbd "<mouse-5>") 'scroll-up-line)
 (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
 
+(global-set-key (kbd "DEL") 'backward-delete-char-untabify)
+
 (define-key evil-motion-state-map (kbd "<up>") 'evil-previous-line)
 (define-key evil-motion-state-map (kbd "<down>") 'evil-next-line)
 (define-key evil-motion-state-map (kbd "<left>") 'evil-backward-char)
