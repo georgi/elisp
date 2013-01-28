@@ -48,6 +48,9 @@
 (setq visible-bell 1)
 (setq ring-bell-function (lambda() ()))
 
+(setq solarized-env (getenv "SOLARIZED_MODE"))
+(setq solarized-mode (intern (if solarized-env solarized-env "light")))
+
 ;; ********************************************************************************
 ;; Emacs variables
 ;;
@@ -489,15 +492,6 @@ User buffers are those whose name does not start with *."
 
 (define-key evil-ex-map "b" 'helm-buffers-list)
 (define-key evil-ex-map "e" 'find-file)
-
-(require 'expand-region)
-(define-key evil-motion-state-map (kbd "SPC") 'er/expand-region)
-
-(require 'multiple-cursors)
-(global-set-key (kbd "M-SPC") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 (require 'magit)
 
