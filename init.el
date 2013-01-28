@@ -7,18 +7,14 @@
 (add-to-list 'load-path "~/.emacs.d/clojure-mode")
 (add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
-(add-to-list 'load-path "~/.emacs.d/expand-region")
 (add-to-list 'load-path "~/.emacs.d/flymake")
 (add-to-list 'load-path "~/.emacs.d/flymake-cursor")
 (add-to-list 'load-path "~/.emacs.d/flymake-ruby")
-(add-to-list 'load-path "~/.emacs.d/frame-cmds")
-(add-to-list 'load-path "~/.emacs.d/frame-fns")
 (add-to-list 'load-path "~/.emacs.d/ghc-mod")
 (add-to-list 'load-path "~/.emacs.d/helm")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/haskell-mode")
 (add-to-list 'load-path "~/.emacs.d/magit")
-(add-to-list 'load-path "~/.emacs.d/multiple-cursors")
 (add-to-list 'load-path "~/.emacs.d/markdown-mode")
 (add-to-list 'load-path "~/.emacs.d/pig-mode")
 (add-to-list 'load-path "~/.emacs.d/popup-el")
@@ -27,12 +23,9 @@
 (add-to-list 'load-path "~/.emacs.d/ruby-electric")
 (add-to-list 'load-path "~/.emacs.d/rvm")
 (add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
-(add-to-list 'load-path "~/.emacs.d/sass-mode")
 (add-to-list 'load-path "~/.emacs.d/session")
-(add-to-list 'load-path "~/.emacs.d/toggle")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
 (add-to-list 'load-path "~/.emacs.d/yaml-mode")
-(add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 (setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
                          ("gnu" . "http://elpa.gnu.org/packages/")))
@@ -44,7 +37,6 @@
 (require 'flymake)
 (require 'flymake-cursor)
 (require 'flymake-ruby)
-(require 'frame-cmds)
 (require 'wgrep)
 
 (require 'mouse)
@@ -52,16 +44,7 @@
 (defun track-mouse (e))
 (setq mouse-sel-mode t)
 
-;; ********************************************************************************
-;; Color theme
-;;
-(when (boundp 'custom-theme-load-path)
-  (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
-  (setq solarized-contrast 'high)
-  (load-theme 'wombat t)
-  ;; (load-theme 'solarized-light t)
-  )
-
+(load-theme 'wombat t)
 (setq visible-bell 1)
 (setq ring-bell-function (lambda() ()))
 
@@ -107,13 +90,6 @@
 (ac-set-trigger-key "TAB")
 (setq ac-auto-start nil)
 (global-auto-complete-mode t)
-
-
-;; ********************************************************************************
-;; Yasnippet
-;;
-(require 'yasnippet)
-(yas-global-mode)
 
 
 ;; ********************************************************************************
@@ -230,21 +206,6 @@
 (add-to-list 'auto-mode-alist  '("\\.ru$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))
 
-(require 'toggle)
-(setq toggle-mapping-styles
-      '((rspec
-         . (("app/models/\\1.rb"      . "spec/models/\\1_spec.rb")
-            ("app/controllers/\\1.rb" . "spec/controllers/\\1_spec.rb")
-            ("app/views/\\1.rb"       . "spec/views/\\1_spec.rb")
-            ("app/helpers/\\1.rb"     . "spec/helpers/\\1_spec.rb")
-            ("app/processors/\\1.rb"  . "spec/processors/\\1_spec.rb")
-            ("app/resources/\\1.rb"   . "spec/resources/\\1_spec.rb")
-            ("app/services/\\1.rb"   . "spec/services/\\1_spec.rb")
-            ("spec/lib/\\1_spec.rb"   . "lib/\\1.rb")))
-        (ruby
-         . (("lib/\\1.rb"             . "test/test_\\1.rb")
-            ("\\1.rb"                 . "test_\\1.rb")))))
-
 (defun spec-run-single-file (spec-file &rest opts)
   "Runs spec with the specified options"
   (compile (concat "bundle exec rspec " spec-file " " (mapconcat (lambda (x) x) opts " ")))
@@ -292,14 +253,6 @@
 (autoload 'yaml-mode "yaml-mode" "YAML Mode." t)
 
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-
-
-;; ********************************************************************************
-;; HAML Mode
-;;
-(autoload 'haml-mode "haml-mode" "HAML Mode." t)
-
-(add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
 
 
 ;; ********************************************************************************
@@ -393,20 +346,6 @@
 
 
 ;; ********************************************************************************
-;; Go Mode
-;;
-(require 'go-mode-load)
-
-(defun go-mode-on-init ()
-  (init-mode)
-
-  (setq ac-sources '(ac-source-words-in-buffer
-                     ac-source-words-in-same-mode-buffers)))
-
-(add-hook 'go-mode-hook 'go-mode-on-init)
-
-
-;; ********************************************************************************
 ;; CSS Mode
 ;;
 (defconst css-imenu-generic-expression
@@ -421,17 +360,6 @@
        css-imenu-generic-expression))
 
 (add-hook 'css-mode-hook 'css-mode-on-init)
-
-;; ********************************************************************************
-;; SASS Mode
-;;
-(defun sass-mode-on-init ()
-  (init-mode))
-
-(add-hook 'sass-mode-hook 'sass-mode-on-init)
-(autoload 'sass-mode "sass-mode" "Sass Mode" t)
-(add-to-list 'auto-mode-alist '("\\.sass$" . sass-mode))
-
 
 ;; ********************************************************************************
 ;; C Mode
@@ -594,16 +522,3 @@ User buffers are those whose name does not start with *."
 (global-set-key (kbd "C-c v") 'spec-verify)
 (global-set-key (kbd "C-c t") 'toggle-buffer)
 (global-set-key (kbd "C-c C-s") 'spec-verify-single)
-(put 'dired-find-alternate-file 'disabled nil)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("1e7e097ec8cb1f8c3a912d7e1e0331caeed49fef6cff220be63bd2a6ba4cc365" default))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
