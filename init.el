@@ -3,6 +3,7 @@
 ;;
 (add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
+(add-to-list 'load-path "~/.emacs.d/auto-complete-clang")
 (add-to-list 'load-path "~/.emacs.d/chuck-mode")
 (add-to-list 'load-path "~/.emacs.d/clojure-mode")
 (add-to-list 'load-path "~/.emacs.d/erlang")
@@ -26,9 +27,7 @@
 (add-to-list 'load-path "~/.emacs.d/session")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
 (add-to-list 'load-path "~/.emacs.d/yaml-mode")
-
-(setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
-                         ("gnu" . "http://elpa.gnu.org/packages/")))
+(add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 ;; ********************************************************************************
 ;; Requires
@@ -76,27 +75,39 @@
 (transient-mark-mode t)
 (recentf-mode)
 (xterm-mouse-mode t)
+(unless (window-system)
+  (menu-bar-mode 0))
 
+;; ********************************************************************************
+;; Evil
+;;
 (require 'evil)
 (evil-mode 1)
 
+;; ********************************************************************************
+;; Helm
+;;
 (require 'helm-config)
 (helm-mode)
-
-(unless (window-system)
-  (menu-bar-mode 0))
 
 ;; ********************************************************************************
 ;; Autocomplete
 ;;
 (require 'auto-complete-config)
+(require 'auto-complete-clang)
 
 (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
 (ac-config-default)
 (ac-set-trigger-key "TAB")
-(setq ac-auto-start nil)
+(setq ac-quick-help-delay 0.1)
+(setq ac-auto-start t)
 (global-auto-complete-mode t)
 
+;; ********************************************************************************
+;; Yasnippet
+;;
+(require 'yasnippet)
+(yas-global-mode 1)
 
 ;; ********************************************************************************
 ;; Common mode setup
@@ -306,6 +317,7 @@
   (flymake-mode)
   (ghc-init)
   (require 'inf-haskell)
+  (setq ac-sources '(ac-source-ghc-mod))
   (turn-on-haskell-indentation))
 
 (add-hook 'haskell-mode-hook 'haskell-mode-on-init)
@@ -325,10 +337,10 @@
   (init-mode)
 
   (setq ac-sources '(ac-source-features
-                      ac-source-functions
-                      ac-source-symbols
-                      ac-source-variables
-                      ac-source-words-in-buffer)))
+                     ac-source-functions
+                     ac-source-symbols
+                     ac-source-variables
+                     ac-source-words-in-buffer)))
 
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-on-init)
 
@@ -370,10 +382,21 @@
 
   (make-local-variable 'standard-indent)
   (setq standard-indent 4)
-  (setq ac-sources '(ac-source-semantic
-                      ac-source-words-in-buffer)))
+  (setq ac-sources '(ac-source-clang)))
 
 (add-hook 'c-mode-hook 'c-mode-on-init)
+
+;; ********************************************************************************
+;; C++ Mode
+;;
+(defun c++-mode-init()
+  (init-mode)
+
+  (make-local-variable 'standard-indent)
+  (setq standard-indent 4)
+  (setq ac-sources '(ac-source-clang)))
+
+(add-hook 'c++-mode-hook 'c++-mode-init)
 
 
 (defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)

@@ -106,3 +106,6 @@
 [submodule "emacs-oauth"]
 	path = emacs-oauth
 	url = git://github.com/psanford/emacs-oauth.git
+[submodule "auto-complete-clang"]
+	path = auto-complete-clang
+	url = git://github.com/brianjcj/auto-complete-clang.git
