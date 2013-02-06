@@ -398,6 +398,19 @@
 
 (add-hook 'c++-mode-hook 'c++-mode-init)
 
+;; ********************************************************************************
+;; Objective C
+;;
+(defun objc-mode-init()
+  (init-mode)
+
+  (auto-complete-mode)
+
+  (make-local-variable 'standard-indent)
+  (setq standard-indent 4)
+  (setq ac-sources '(ac-source-clang)))
+
+(add-hook 'objc-mode-hook 'objc-mode-init)
 
 (defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
   (if (equal major-mode 'dired-mode)
