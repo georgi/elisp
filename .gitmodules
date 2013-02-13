@@ -33,7 +33,7 @@
 	url = git://github.com/mooz/js2-mode.git
 [submodule "haml-mode"]
 	path = haml-mode
-	url = git://github.com/rradonic/haml-mode.git
+	url = git://github.com/nex3/haml-mode.git
 [submodule "smart-compile-plus"]
 	path = smart-compile-plus
 	url = git://github.com/emacsmirror/smart-compile-plus.git

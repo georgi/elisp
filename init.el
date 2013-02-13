@@ -12,6 +12,7 @@
 (add-to-list 'load-path "~/.emacs.d/flymake-cursor")
 (add-to-list 'load-path "~/.emacs.d/flymake-ruby")
 (add-to-list 'load-path "~/.emacs.d/ghc-mod")
+(add-to-list 'load-path "~/.emacs.d/haml-mode")
 (add-to-list 'load-path "~/.emacs.d/helm")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/haskell-mode")
@@ -100,7 +101,7 @@
 (ac-config-default)
 (ac-set-trigger-key "TAB")
 (setq ac-quick-help-delay 0.1)
-(setq ac-auto-start t)
+(setq ac-auto-start nil)
 (global-auto-complete-mode t)
 
 ;; ********************************************************************************
@@ -260,6 +261,17 @@
 
 
 ;; ********************************************************************************
+;; HAML Mode
+;;
+(autoload 'haml-mode "haml-mode" "HAML Mode" t)
+(add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
+
+(defun haml-mode-init ()
+  (init-mode))
+
+(add-hook 'haml-mode-hook 'haml-mode-on-init)
+
+;; ********************************************************************************
 ;; YAML Mode
 ;;
 (autoload 'yaml-mode "yaml-mode" "YAML Mode." t)
@@ -382,7 +394,7 @@
 
   (make-local-variable 'standard-indent)
   (setq standard-indent 4)
-  (setq ac-sources '(ac-source-clang)))
+  (setq ac-sources '(ac-source-words-in-buffer)))
 
 (add-hook 'c-mode-hook 'c-mode-on-init)
 
@@ -464,8 +476,7 @@
   (interactive)
   (require 'grep)
   (require 'vc-git)
-  (let ((dir (read-directory-name "In directory: ")))
-    (vc-git-grep (grep-read-regexp) "." dir)))
+  (vc-git-grep (grep-read-regexp) "." (find-git-dir default-directory)))
 
 (defun find-git-dir (dir)
  (let ((f (expand-file-name ".git" dir))
@@ -514,38 +525,32 @@ User buffers are those whose name does not start with *."
 (define-key evil-motion-state-map (kbd "<right>") 'evil-forward-char)
 (define-key evil-motion-state-map (kbd "RET") 'insert-newline)
 
-(define-key evil-normal-state-map " ." 'find-tag)
-(define-key evil-normal-state-map " /" 'helm-do-grep)
-(define-key evil-normal-state-map " b" 'helm-buffers-list)
-(define-key evil-normal-state-map " c" 'smart-compile)
-(define-key evil-normal-state-map " d" 'dired)
-(define-key evil-normal-state-map " e" 'find-file)
-(define-key evil-normal-state-map " f" 'find-file-in-project)
-(define-key evil-normal-state-map " g" 'git-grep)
-(define-key evil-normal-state-map " i" 'helm-imenu)
-(define-key evil-normal-state-map " j" 'previous-user-buffer)
-(define-key evil-normal-state-map " k" 'next-user-buffer)
-(define-key evil-normal-state-map " l" 'kill-this-buffer)
-(define-key evil-normal-state-map " m" 'magit-status)
-(define-key evil-normal-state-map " n" 'next-error)
-(define-key evil-normal-state-map " o" 'helm-occur)
-(define-key evil-normal-state-map " p" 'helm-mini)
-(define-key evil-normal-state-map " q" 'save-buffers-kill-terminal)
-(define-key evil-normal-state-map " s" 'save-buffer)
-(define-key evil-normal-state-map " r" 'recompile)
-(define-key evil-normal-state-map " v" 'spec-verify)
+(global-set-key (kbd "C-c .") 'find-tag)
+(global-set-key (kbd "C-c /") 'helm-do-grep)
+(global-set-key (kbd "C-c b") 'helm-buffers-list)
+(global-set-key (kbd "C-c c") 'smart-compile)
+(global-set-key (kbd "C-c d") 'dired)
+(global-set-key (kbd "C-c e") 'helm-c-etags-select)
+(global-set-key (kbd "C-c f") 'find-file-in-project)
+(global-set-key (kbd "C-c g") 'git-grep)
+(global-set-key (kbd "C-c i") 'helm-imenu)
+(global-set-key (kbd "C-c k") 'helm-show-kill-ring)
+(global-set-key (kbd "C-c m") 'magit-status)
+(global-set-key (kbd "C-c n") 'next-error)
+(global-set-key (kbd "C-c o") 'helm-occur)
+(global-set-key (kbd "C-c q") 'save-buffers-kill-terminal)
+(global-set-key (kbd "C-c s") 'save-buffer)
+(global-set-key (kbd "C-c r") 'recompile)
+(global-set-key (kbd "C-c v") 'spec-verify)
+
+(global-set-key (kbd "M-SPC") 'helm-mini)
+(global-set-key (kbd "M-j") 'previous-user-buffer)
+(global-set-key (kbd "M-k") 'next-user-buffer)
+(global-set-key (kbd "M-l") 'kill-this-buffer)
 
 (define-key evil-insert-state-map  "\C-k" 'evil-normal-state)
 (define-key evil-normal-state-map  "\C-k" 'evil-force-normal-state)
 (define-key evil-replace-state-map "\C-k" 'evil-normal-state)
 (define-key evil-visual-state-map  "\C-k" 'evil-exit-visual-state)
-
-(require 'magit)
-
-(global-set-key (kbd "C-c b") 'ibuffer)
-(global-set-key (kbd "C-c e") 'helm-c-etags-select)
-(global-set-key (kbd "C-c q") 'auto-fill-mode)
-(global-set-key (kbd "C-c k") 'helm-show-kill-ring)
-(global-set-key (kbd "C-c C-s") 'spec-verify-single)
 
 (put 'dired-find-alternate-file 'disabled nil)
