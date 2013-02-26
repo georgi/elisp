@@ -329,7 +329,9 @@
   (flymake-mode)
   (ghc-init)
   (require 'inf-haskell)
-  (setq ac-sources '(ac-source-ghc-mod))
+  (setq ac-sources '(ac-source-ghc-mod
+                     ac-source-words-in-buffer
+                     ac-source-words-in-same-mode-buffers))
   (turn-on-haskell-indentation))
 
 (add-hook 'haskell-mode-hook 'haskell-mode-on-init)
@@ -394,7 +396,7 @@
 
   (make-local-variable 'standard-indent)
   (setq standard-indent 4)
-  (setq ac-sources '(ac-source-words-in-buffer)))
+  (setq ac-sources '(ac-source-clang)))
 
 (add-hook 'c-mode-hook 'c-mode-on-init)
 
@@ -527,7 +529,7 @@ User buffers are those whose name does not start with *."
 
 (global-set-key (kbd "C-c .") 'find-tag)
 (global-set-key (kbd "C-c /") 'helm-do-grep)
-(global-set-key (kbd "C-c b") 'helm-buffers-list)
+(global-set-key (kbd "C-c b") 'ibuffer)
 (global-set-key (kbd "C-c c") 'smart-compile)
 (global-set-key (kbd "C-c d") 'dired)
 (global-set-key (kbd "C-c e") 'helm-c-etags-select)
@@ -543,10 +545,11 @@ User buffers are those whose name does not start with *."
 (global-set-key (kbd "C-c r") 'recompile)
 (global-set-key (kbd "C-c v") 'spec-verify)
 
-(global-set-key (kbd "M-SPC") 'helm-mini)
-(global-set-key (kbd "M-j") 'previous-user-buffer)
-(global-set-key (kbd "M-k") 'next-user-buffer)
-(global-set-key (kbd "M-l") 'kill-this-buffer)
+(define-key haskell-mode-map (kbd "M-RET") nil)
+(global-set-key (kbd "M-RET") 'helm-mini)
+(global-set-key (kbd "ESC <left>") 'previous-user-buffer)
+(global-set-key (kbd "ESC <right>") 'next-user-buffer)
+(global-set-key (kbd "M-k") 'kill-this-buffer)
 
 (define-key evil-insert-state-map  "\C-k" 'evil-normal-state)
 (define-key evil-normal-state-map  "\C-k" 'evil-force-normal-state)
