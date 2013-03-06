@@ -9,7 +9,6 @@
 (add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
 (add-to-list 'load-path "~/.emacs.d/flymake")
-(add-to-list 'load-path "~/.emacs.d/flymake-cursor")
 (add-to-list 'load-path "~/.emacs.d/flymake-ruby")
 (add-to-list 'load-path "~/.emacs.d/ghc-mod")
 (add-to-list 'load-path "~/.emacs.d/haml-mode")
@@ -23,7 +22,6 @@
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby-end")
 (add-to-list 'load-path "~/.emacs.d/ruby-electric")
-(add-to-list 'load-path "~/.emacs.d/rvm")
 (add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
 (add-to-list 'load-path "~/.emacs.d/session")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
@@ -35,7 +33,6 @@
 
 (require 'cl)
 (require 'flymake)
-(require 'flymake-cursor)
 (require 'flymake-ruby)
 (require 'wgrep)
 
@@ -44,7 +41,6 @@
 (defun track-mouse (e))
 (setq mouse-sel-mode t)
 
-(load-theme 'wombat t)
 (setq visible-bell 1)
 (setq ring-bell-function (lambda() ()))
 
@@ -53,6 +49,10 @@
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/solarized")
 (load-theme  'solarized 't)
+
+(custom-set-variables
+ '(help-at-pt-timer-delay 0.9)
+ '(help-at-pt-display-when-idle '(flymake-overlay)))
 
 ;; ********************************************************************************
 ;; Emacs variables
@@ -212,8 +212,6 @@
 ;;
 (require 'ruby-end)
 (require 'ruby-electric)
-(require 'rvm)
-(rvm-use-default)
 
 (setq ri-ruby-script (expand-file-name "~/.emacs.d/ruby/ri-emacs.rb"))
 (autoload 'ri "~/.emacs.d/ruby/ri-ruby.el" nil t)
@@ -236,7 +234,7 @@
 
 (defun ruby-mode-on-init ()
   (init-mode)
-  ;; (flymake-ruby-load)
+  (flymake-ruby-load)
   (ruby-electric-mode)
 
   (setq ruby-deep-indent-paren nil)
@@ -329,6 +327,7 @@
   (flymake-mode)
   (ghc-init)
   (require 'inf-haskell)
+  (define-key haskell-mode-map (kbd "M-RET") nil)
   (setq ac-sources '(ac-source-ghc-mod
                      ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers))
@@ -545,7 +544,6 @@ User buffers are those whose name does not start with *."
 (global-set-key (kbd "C-c r") 'recompile)
 (global-set-key (kbd "C-c v") 'spec-verify)
 
-(define-key haskell-mode-map (kbd "M-RET") nil)
 (global-set-key (kbd "M-RET") 'helm-mini)
 (global-set-key (kbd "ESC <left>") 'previous-user-buffer)
 (global-set-key (kbd "ESC <right>") 'next-user-buffer)
