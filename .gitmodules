@@ -109,3 +109,6 @@
 [submodule "auto-complete-clang"]
 	path = auto-complete-clang
 	url = git://github.com/brianjcj/auto-complete-clang.git
+[submodule "nrepl.el"]
+	path = nrepl.el
+	url = git://github.com/kingtim/nrepl.el.git

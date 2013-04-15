@@ -17,6 +17,7 @@
 (add-to-list 'load-path "~/.emacs.d/haskell-mode")
 (add-to-list 'load-path "~/.emacs.d/magit")
 (add-to-list 'load-path "~/.emacs.d/markdown-mode")
+(add-to-list 'load-path "~/.emacs.d/nrepl.el")
 (add-to-list 'load-path "~/.emacs.d/pig-mode")
 (add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
@@ -35,8 +36,9 @@
 (require 'flymake)
 (require 'flymake-ruby)
 (require 'wgrep)
-
+(require 'nrepl)
 (require 'mouse)
+
 (xterm-mouse-mode t)
 (defun track-mouse (e))
 (setq mouse-sel-mode t)
@@ -198,7 +200,7 @@
 
 (autoload 'clojure-mode "clojure-mode" "Clojure Mode." t)
 (add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
-
+(add-hook 'clojure-mode-hook 'paredit-mode)
 
 ;; ********************************************************************************
 ;; Pig Mode
