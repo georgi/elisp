@@ -112,3 +112,6 @@
 [submodule "nrepl.el"]
 	path = nrepl.el
 	url = git://github.com/kingtim/nrepl.el.git
+[submodule "actionscript-mode"]
+	path = actionscript-mode
+	url = git://github.com/austinhaas/actionscript-mode.git

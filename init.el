@@ -2,6 +2,7 @@
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/.emacs.d")
+(add-to-list 'load-path "~/.emacs.d/actionscript-mode")
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
 (add-to-list 'load-path "~/.emacs.d/auto-complete-clang")
 (add-to-list 'load-path "~/.emacs.d/chuck-mode")
@@ -278,6 +279,13 @@
 
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
+
+;; ********************************************************************************
+;; AS3 Mode
+;;
+
+(autoload 'actionscript-mode "actionscript-mode" "Major mode for actionscript." t)
+(add-to-list 'auto-mode-alist '("\\.as$" . actionscript-mode))
 
 ;; ********************************************************************************
 ;; JS2 Mode
