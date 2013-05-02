@@ -31,9 +31,6 @@
 [submodule "js2-mode"]
 	path = js2-mode
 	url = git://github.com/mooz/js2-mode.git
-[submodule "haml-mode"]
-	path = haml-mode
-	url = git://github.com/nex3/haml-mode.git
 [submodule "smart-compile-plus"]
 	path = smart-compile-plus
 	url = git://github.com/emacsmirror/smart-compile-plus.git
@@ -130,3 +127,6 @@
 [submodule "actionscript-mode"]
 	path = actionscript-mode
 	url = git://github.com/austinhaas/actionscript-mode.git
+[submodule "haml-mode"]
+	path = haml-mode
+	url = git://github.com/nex3/haml-mode.git
