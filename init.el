@@ -4,6 +4,7 @@
 (add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/ac-slime")
 (add-to-list 'load-path "~/.emacs.d/ac-nrepl")
+(add-to-list 'load-path "~/.emacs.d/actionscript-mode")
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
 (add-to-list 'load-path "~/.emacs.d/auto-complete-clang")
 (add-to-list 'load-path "~/.emacs.d/chuck-mode")
@@ -50,6 +51,7 @@
 (slime-setup)
 
 (require 'mouse)
+
 (xterm-mouse-mode t)
 (defun track-mouse (e))
 (setq mouse-sel-mode t)
@@ -219,7 +221,6 @@
 (eval-after-load "auto-complete"
                  '(add-to-list 'ac-modes 'nrepl-mode))
 
-
 ;; ********************************************************************************
 ;; Pig Mode
 ;;
@@ -296,6 +297,13 @@
 
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
+
+;; ********************************************************************************
+;; AS3 Mode
+;;
+
+(autoload 'actionscript-mode "actionscript-mode" "Major mode for actionscript." t)
+(add-to-list 'auto-mode-alist '("\\.as$" . actionscript-mode))
 
 ;; ********************************************************************************
 ;; JS2 Mode
