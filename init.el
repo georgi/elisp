@@ -2,6 +2,8 @@
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/.emacs.d")
+(add-to-list 'load-path "~/.emacs.d/ac-slime")
+(add-to-list 'load-path "~/.emacs.d/ac-nrepl")
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
 (add-to-list 'load-path "~/.emacs.d/auto-complete-clang")
 (add-to-list 'load-path "~/.emacs.d/chuck-mode")
@@ -17,6 +19,8 @@
 (add-to-list 'load-path "~/.emacs.d/haskell-mode")
 (add-to-list 'load-path "~/.emacs.d/magit")
 (add-to-list 'load-path "~/.emacs.d/markdown-mode")
+(add-to-list 'load-path "~/.emacs.d/nrepl.el")
+(add-to-list 'load-path "~/.emacs.d/paredit")
 (add-to-list 'load-path "~/.emacs.d/pig-mode")
 (add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
@@ -24,6 +28,8 @@
 (add-to-list 'load-path "~/.emacs.d/ruby-electric")
 (add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
 (add-to-list 'load-path "~/.emacs.d/session")
+(add-to-list 'load-path "~/.emacs.d/ritz/swank/elisp")
+(add-to-list 'load-path "~/.emacs.d/ritz/slime")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
 (add-to-list 'load-path "~/.emacs.d/yaml-mode")
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
@@ -35,6 +41,13 @@
 (require 'flymake)
 (require 'flymake-ruby)
 (require 'wgrep)
+(require 'nrepl)
+(require 'paredit)
+(require 'slime)
+(require 'slime-ritz)
+(require 'ac-slime)
+
+(slime-setup)
 
 (require 'mouse)
 (xterm-mouse-mode t)
@@ -198,6 +211,13 @@
 
 (autoload 'clojure-mode "clojure-mode" "Clojure Mode." t)
 (add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
+(add-hook 'clojure-mode-hook 'paredit-mode)
+
+(require 'ac-nrepl)
+(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
+(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
+(eval-after-load "auto-complete"
+                 '(add-to-list 'ac-modes 'nrepl-mode))
 
 
 ;; ********************************************************************************
