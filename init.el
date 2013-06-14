@@ -2,7 +2,6 @@
 ;; Load Path
 ;;
 (add-to-list 'load-path "~/.emacs.d")
-(add-to-list 'load-path "~/.emacs.d/ac-slime")
 (add-to-list 'load-path "~/.emacs.d/ac-nrepl")
 (add-to-list 'load-path "~/.emacs.d/actionscript-mode")
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
@@ -26,8 +25,6 @@
 (add-to-list 'load-path "~/.emacs.d/ruby-end")
 (add-to-list 'load-path "~/.emacs.d/ruby-electric")
 (add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
-(add-to-list 'load-path "~/.emacs.d/ritz/swank/elisp")
-(add-to-list 'load-path "~/.emacs.d/ritz/slime")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
 (add-to-list 'load-path "~/.emacs.d/yaml-mode")
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
@@ -41,11 +38,7 @@
 (require 'wgrep)
 (require 'nrepl)
 (require 'paredit)
-(require 'slime)
-(require 'slime-ritz)
-(require 'ac-slime)
-
-(slime-setup)
+(require 'ac-nrepl)
 
 (require 'mouse)
 
@@ -196,7 +189,6 @@
 (add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
 (add-hook 'clojure-mode-hook 'paredit-mode)
 
-(require 'ac-nrepl)
 (add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
 (add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
 (eval-after-load "auto-complete"
