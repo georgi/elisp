@@ -9,7 +9,6 @@
 (add-to-list 'load-path "~/.emacs.d/auto-complete-clang")
 (add-to-list 'load-path "~/.emacs.d/chuck-mode")
 (add-to-list 'load-path "~/.emacs.d/clojure-mode")
-(add-to-list 'load-path "~/.emacs.d/erlang")
 (add-to-list 'load-path "~/.emacs.d/evil")
 (add-to-list 'load-path "~/.emacs.d/flymake")
 (add-to-list 'load-path "~/.emacs.d/flymake-ruby")
@@ -460,10 +459,8 @@
 
 (add-to-list 'smart-compile-alist '("^Rakefile$"  . "rake -f %f")) ;
 (add-to-list 'smart-compile-alist '("\\.js$"      . "node %f"))
-(add-to-list 'smart-compile-alist '("\\.go$"      . "go run %f"))
 (add-to-list 'smart-compile-alist '("\\.rb$"      . "ruby %f"))
-(add-to-list 'smart-compile-alist '("_spec\\.rb$" . "spec %f"))
-(add-to-list 'smart-compile-alist '("\\.scm$"     . "scheme %f"))
+(add-to-list 'smart-compile-alist '("_spec\\.rb$" . "rspec %f"))
 (add-to-list 'smart-compile-alist '(haskell-mode  . "ghc -o %n %f")) ;
 
 
