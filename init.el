@@ -23,12 +23,10 @@
 (add-to-list 'load-path "~/.emacs.d/nrepl.el")
 (add-to-list 'load-path "~/.emacs.d/paredit")
 (add-to-list 'load-path "~/.emacs.d/pig-mode")
-(add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby-end")
 (add-to-list 'load-path "~/.emacs.d/ruby-electric")
 (add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
-(add-to-list 'load-path "~/.emacs.d/session")
 (add-to-list 'load-path "~/.emacs.d/ritz/swank/elisp")
 (add-to-list 'load-path "~/.emacs.d/ritz/slime")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
@@ -165,22 +163,6 @@
 ;;
 (setq tags-add-tables nil)
 (setq etags-table-search-up-depth 5)
-
-
-;; ********************************************************************************
-;; Session
-;;
-;; (require 'session)
-;; (setq session-initialize t)
-;; (add-hook 'after-init-hook 'session-initialize)
-
-;; ********************************************************************************
-;; Erlang Mode
-;;
-(autoload 'erlang-mode "erlang-mode.el" "Major mode for editing erlang files" t)
-(add-to-list 'auto-mode-alist '("\\.erl\\'" . erlang-mode))
-(add-to-list 'auto-mode-alist '("\\.hrl\\'" . erlang-mode))
-(add-to-list 'auto-mode-alist '("\\.yaws\\'" . erlang-mode))
 
 ;; ********************************************************************************
 ;; Markdown Mode
