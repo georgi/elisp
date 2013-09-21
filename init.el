@@ -1,6 +1,4 @@
 ;; ********************************************************************************
-;; Load Path
-;;
 (add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/ac-nrepl")
 (add-to-list 'load-path "~/.emacs.d/actionscript-mode")
@@ -21,10 +19,12 @@
 (add-to-list 'load-path "~/.emacs.d/nrepl.el")
 (add-to-list 'load-path "~/.emacs.d/paredit")
 (add-to-list 'load-path "~/.emacs.d/pig-mode")
+(add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
 (add-to-list 'load-path "~/.emacs.d/ruby-end")
 (add-to-list 'load-path "~/.emacs.d/ruby-electric")
 (add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
+(add-to-list 'load-path "~/.emacs.d/scala-mode2")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
 (add-to-list 'load-path "~/.emacs.d/yaml-mode")
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
@@ -171,6 +171,14 @@
 (autoload 'python-mode "python-mode" "Python Mode." t)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
+
+
+;; ********************************************************************************
+;; Scala Mode
+;;
+
+(autoload 'scala-mode "scala-mode2" "Scala Mode." t)
+(add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-mode))
 
 
 ;; ********************************************************************************

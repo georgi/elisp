@@ -130,3 +130,6 @@
 [submodule "haml-mode"]
 	path = haml-mode
 	url = git://github.com/nex3/haml-mode.git
+[submodule "scala-mode2"]
+	path = scala-mode2
+	url = git://github.com/hvesalai/scala-mode2.git
