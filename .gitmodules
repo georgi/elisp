@@ -70,12 +70,6 @@
 [submodule "flymake-cursor"]
 	path = flymake-cursor
 	url = git://github.com/emacsmirror/flymake-cursor.git
-[submodule "ruby-end"]
-	path = ruby-end
-	url = git://github.com/janmejay/ruby-end.git
-[submodule "ruby-electric"]
-	path = ruby-electric
-	url = git://github.com/qoobaa/ruby-electric.git
 [submodule "yasnippet"]
 	path = yasnippet
 	url = git://github.com/capitaomorte/yasnippet.git

@@ -21,8 +21,6 @@
 (add-to-list 'load-path "~/.emacs.d/pig-mode")
 (add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
-(add-to-list 'load-path "~/.emacs.d/ruby-end")
-(add-to-list 'load-path "~/.emacs.d/ruby-electric")
 (add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
 (add-to-list 'load-path "~/.emacs.d/scala-mode2")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
@@ -179,6 +177,18 @@
 
 (autoload 'scala-mode "scala-mode2" "Scala Mode." t)
 (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-mode))
+(add-to-list 'auto-mode-alist '("\\.scala\\'" . scala-mode))
+
+(defun scala-mode-on-init ()
+  (init-mode)
+  (setq ac-sources '(ensime-completions)))
+
+(if (file-exists-p "~/.emacs.d/ensime")
+ (progn
+   (add-to-list 'load-path "~/.emacs.d/ensime/elisp")
+   (require 'ensime)
+   (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+   (add-hook 'scala-mode-hook 'scala-mode-on-init)))
 
 
 ;; ********************************************************************************
@@ -212,9 +222,6 @@
 ;; ********************************************************************************
 ;; Ruby Mode
 ;;
-(require 'ruby-end)
-(require 'ruby-electric)
-
 (setq ri-ruby-script (expand-file-name "~/.emacs.d/ruby/ri-emacs.rb"))
 (autoload 'ri "~/.emacs.d/ruby/ri-ruby.el" nil t)
 (autoload 'rdebug "rdebug" "ruby Debug" t)
@@ -224,20 +231,9 @@
 (add-to-list 'auto-mode-alist  '("\\.ru$" . ruby-mode))
 (add-to-list 'auto-mode-alist  '("\\.rake$" . ruby-mode))
 
-(defun spec-run-single-file (spec-file &rest opts)
-  "Runs spec with the specified options"
-  (compile (concat "bundle exec ruby " spec-file " " (mapconcat (lambda (x) x) opts " ")))
-  (end-of-buffer-other-window 0))
-
-(defun spec-verify ()
-  "Runs the specified spec for the current buffer."
-  (interactive)
-  (spec-run-single-file (buffer-file-name)))
-
 (defun ruby-mode-on-init ()
   (init-mode)
   (flymake-ruby-load)
-  (ruby-electric-mode)
 
   (setq ruby-deep-indent-paren nil)
   (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
@@ -460,6 +456,7 @@
 (add-to-list 'smart-compile-alist '("^Rakefile$"  . "rake -f %f")) ;
 (add-to-list 'smart-compile-alist '("\\.js$"      . "node %f"))
 (add-to-list 'smart-compile-alist '("\\.rb$"      . "ruby %f"))
+(add-to-list 'smart-compile-alist '("\\.sc$"      . "scala %f"))
 (add-to-list 'smart-compile-alist '("_spec\\.rb$" . "rspec %f"))
 (add-to-list 'smart-compile-alist '(haskell-mode  . "ghc -o %n %f")) ;
 
