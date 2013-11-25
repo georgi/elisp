@@ -1,7 +1,7 @@
 ;; ********************************************************************************
 (add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/ac-nrepl")
-(add-to-list 'load-path "~/.emacs.d/actionscript-mode")
+(add-to-list 'load-path "~/.emacs.d/ac-octave")
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
 (add-to-list 'load-path "~/.emacs.d/auto-complete-clang")
 (add-to-list 'load-path "~/.emacs.d/chuck-mode")
@@ -170,6 +170,20 @@
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
 
+;; ********************************************************************************
+;; Octave Mode
+;;
+;;
+(autoload 'octave-mode "octave-mod" nil t)
+(setq auto-mode-alist
+      (cons '("\\.m$" . octave-mode) auto-mode-alist))
+
+(defun octave-mode-on-init ()
+  (init-mode)
+  (require 'ac-octave)
+  (setq ac-sources '(ac-source-octave)))
+
+(add-hook 'octave-mode-hook 'octave-mode-on-init)
 
 ;; ********************************************************************************
 ;; Scala Mode

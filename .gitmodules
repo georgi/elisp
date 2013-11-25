@@ -130,3 +130,6 @@
 [submodule "ensime"]
 	path = ensime
 	url = git@github.com:aemoncannon/ensime.git
+[submodule "ac-octave"]
+	path = ac-octave
+	url = git@github.com:coldnew/ac-octave.git
