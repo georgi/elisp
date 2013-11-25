@@ -127,3 +127,6 @@
 [submodule "scala-mode2"]
 	path = scala-mode2
 	url = git://github.com/hvesalai/scala-mode2.git
+[submodule "ensime"]
+	path = ensime
+	url = git@github.com:aemoncannon/ensime.git
