@@ -183,9 +183,9 @@
   (init-mode)
   (setq ac-sources '(ensime-completions)))
 
-(if (file-exists-p "~/.emacs.d/ensime")
+(if (file-exists-p "~/.emacs.d/ensime/dist_2.10.2")
  (progn
-   (add-to-list 'load-path "~/.emacs.d/ensime/elisp")
+   (add-to-list 'load-path "~/.emacs.d/ensime/dist_2.10.2/elisp")
    (require 'ensime)
    (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
    (add-hook 'scala-mode-hook 'scala-mode-on-init)))
