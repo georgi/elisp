@@ -235,6 +235,8 @@
   (init-mode)
   (flymake-ruby-load)
 
+  (modify-syntax-entry ?_ "w" ruby-mode-syntax-table)
+
   (setq ruby-deep-indent-paren nil)
   (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
   (setq ac-sources '(ac-source-words-in-buffer
@@ -540,7 +542,6 @@ User buffers are those whose name does not start with *."
 (global-set-key (kbd "C-c g") 'git-grep)
 (global-set-key (kbd "C-c i") 'helm-imenu)
 (global-set-key (kbd "C-c k") 'helm-show-kill-ring)
-(global-set-key (kbd "C-c m") 'magit-status)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c o") 'helm-occur)
 (global-set-key (kbd "C-c q") 'save-buffers-kill-terminal)
