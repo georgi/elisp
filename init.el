@@ -546,12 +546,13 @@
 (global-set-key (kbd "C-c e") 'helm-c-etags-select)
 (global-set-key (kbd "C-c f") 'find-file-in-project)
 (global-set-key (kbd "C-c g") 'git-grep)
+(global-set-key (kbd "C-c m") 'magit-status)
 (global-set-key (kbd "C-c i") 'helm-imenu)
 (global-set-key (kbd "C-c k") 'helm-show-kill-ring)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c o") 'helm-occur)
 (lobal-set-key (kbd "C-c r") 'recompile)
 
-gg(global-set-key (kbd "M-RET") 'helm-mini)
+(global-set-key (kbd "M-RET") 'helm-mini)
 
 (put 'dired-find-alternate-file 'disabled nil)
