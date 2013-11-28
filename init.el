@@ -5,6 +5,7 @@
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
 (add-to-list 'load-path "~/.emacs.d/auto-complete-clang")
 (add-to-list 'load-path "~/.emacs.d/chuck-mode")
+(add-to-list 'load-path "~/.emacs.d/cl-lib")
 (add-to-list 'load-path "~/.emacs.d/clojure-mode")
 (add-to-list 'load-path "~/.emacs.d/evil")
 (add-to-list 'load-path "~/.emacs.d/flymake")
@@ -37,7 +38,7 @@
 (require 'nrepl)
 (require 'paredit)
 (require 'ac-nrepl)
-
+(require 'magit)
 (require 'mouse)
 
 (xterm-mouse-mode t)
@@ -446,6 +447,12 @@
 
 (add-hook 'objc-mode-hook 'objc-mode-init)
 
+
+
+;; ********************************************************************************
+;; Dired refresh hooks
+;;
+
 (defadvice switch-to-buffer-other-window (after auto-refresh-dired (buffer &optional norecord) activate)
   (if (equal major-mode 'dired-mode)
       (revert-buffer)))
@@ -514,24 +521,6 @@
      (file (completing-read "Find file in project: " files)))
     (find-file (concat default-directory file))))
 
-(defun next-user-buffer ()
-  "Switch to the next user buffer.
-User buffers are those whose name does not start with *."
-  (interactive)
-  (next-buffer)
-  (let ((i 0))
-    (while (and (string-match "^*" (buffer-name)) (< i 50))
-      (setq i (1+ i)) (next-buffer) )))
-
-(defun previous-user-buffer ()
-  "Switch to the previous user buffer.
-User buffers are those whose name does not start with *."
-  (interactive)
-  (previous-buffer)
-  (let ((i 0))
-    (while (and (string-match "^*" (buffer-name)) (< i 50))
-      (setq i (1+ i)) (previous-buffer) )))
-
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
 ;; Movement
@@ -546,6 +535,9 @@ User buffers are those whose name does not start with *."
 (define-key evil-motion-state-map (kbd "<right>") 'evil-forward-char)
 (define-key evil-motion-state-map (kbd "RET") 'insert-newline)
 
+(global-set-key (kbd "ESC <left>") 'evil-prev-buffer)
+(global-set-key (kbd "ESC <right>") 'evil-next-buffer)
+
 (global-set-key (kbd "C-c .") 'find-tag)
 (global-set-key (kbd "C-c /") 'helm-do-grep)
 (global-set-key (kbd "C-c b") 'ibuffer)
@@ -558,19 +550,8 @@ User buffers are those whose name does not start with *."
 (global-set-key (kbd "C-c k") 'helm-show-kill-ring)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c o") 'helm-occur)
-(global-set-key (kbd "C-c q") 'save-buffers-kill-terminal)
-(global-set-key (kbd "C-c s") 'save-buffer)
-(global-set-key (kbd "C-c r") 'recompile)
-(global-set-key (kbd "C-c v") 'spec-verify)
+(lobal-set-key (kbd "C-c r") 'recompile)
 
-(global-set-key (kbd "M-RET") 'helm-mini)
-(global-set-key (kbd "ESC <left>") 'previous-user-buffer)
-(global-set-key (kbd "ESC <right>") 'next-user-buffer)
-(global-set-key (kbd "M-k") 'kill-this-buffer)
-
-(define-key evil-insert-state-map  "\C-k" 'evil-normal-state)
-(define-key evil-normal-state-map  "\C-k" 'evil-force-normal-state)
-(define-key evil-replace-state-map "\C-k" 'evil-normal-state)
-(define-key evil-visual-state-map  "\C-k" 'evil-exit-visual-state)
+gg(global-set-key (kbd "M-RET") 'helm-mini)
 
 (put 'dired-find-alternate-file 'disabled nil)

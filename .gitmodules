@@ -133,3 +133,6 @@
 [submodule "ac-octave"]
 	path = ac-octave
 	url = git@github.com:coldnew/ac-octave.git
+[submodule "cl-lib"]
+	path = cl-lib
+	url = git@github.com:emacsmirror/cl-lib.git
