@@ -551,7 +551,7 @@
 (global-set-key (kbd "C-c k") 'helm-show-kill-ring)
 (global-set-key (kbd "C-c n") 'next-error)
 (global-set-key (kbd "C-c o") 'helm-occur)
-(lobal-set-key (kbd "C-c r") 'recompile)
+(global-set-key (kbd "C-c r") 'recompile)
 
 (global-set-key (kbd "M-RET") 'helm-mini)
 
