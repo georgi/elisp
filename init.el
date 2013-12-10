@@ -1,4 +1,4 @@
-;; ********************************************************************************
+; ********************************************************************************
 (add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/ac-nrepl")
 (add-to-list 'load-path "~/.emacs.d/ac-octave")
@@ -7,12 +7,14 @@
 (add-to-list 'load-path "~/.emacs.d/chuck-mode")
 (add-to-list 'load-path "~/.emacs.d/cl-lib")
 (add-to-list 'load-path "~/.emacs.d/clojure-mode")
+(add-to-list 'load-path "~/.emacs.d/dart-mode")
 (add-to-list 'load-path "~/.emacs.d/evil")
 (add-to-list 'load-path "~/.emacs.d/flymake")
 (add-to-list 'load-path "~/.emacs.d/flymake-ruby")
 (add-to-list 'load-path "~/.emacs.d/ghc-mod")
 (add-to-list 'load-path "~/.emacs.d/haml-mode")
 (add-to-list 'load-path "~/.emacs.d/helm")
+(add-to-list 'load-path "~/.emacs.d/inf-ruby")
 (add-to-list 'load-path "~/.emacs.d/js2-mode")
 (add-to-list 'load-path "~/.emacs.d/haskell-mode")
 (add-to-list 'load-path "~/.emacs.d/magit")
@@ -22,6 +24,7 @@
 (add-to-list 'load-path "~/.emacs.d/pig-mode")
 (add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/rhtml")
+(add-to-list 'load-path "~/.emacs.d/robe")
 (add-to-list 'load-path "~/.emacs.d/smart-compile-plus")
 (add-to-list 'load-path "~/.emacs.d/scala-mode2")
 (add-to-list 'load-path "~/.emacs.d/wgrep")
@@ -40,6 +43,8 @@
 (require 'ac-nrepl)
 (require 'magit)
 (require 'mouse)
+(require 'robe)
+(require 'robe-ac)
 
 (xterm-mouse-mode t)
 (defun track-mouse (e))
@@ -102,10 +107,10 @@
 (require 'auto-complete-clang)
 
 (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/ac-dict"))
-(ac-config-default)
+;; (ac-config-default)
 (ac-set-trigger-key "TAB")
-(setq ac-quick-help-delay 0.1)
-(setq ac-auto-start nil)
+(setq ac-quick-help-delay 0.5)
+(setq ac-auto-start t)
 (global-auto-complete-mode t)
 
 ;; ********************************************************************************
@@ -171,6 +176,14 @@
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
 
+
+;; ********************************************************************************
+;; Python Mode
+;;
+
+(autoload 'dart-mode "dart-mode" "Dart Mode." t)
+(add-to-list 'auto-mode-alist '("\\.dart\\'" . dart-mode))
+
 ;; ********************************************************************************
 ;; Octave Mode
 ;;
@@ -196,12 +209,14 @@
 
 (defun scala-mode-on-init ()
   (init-mode)
-  (setq ac-sources '(ensime-completions)))
+  (setq ac-sources '(ac-source-ensime-completions)))
 
 (if (file-exists-p "~/.emacs.d/ensime/dist_2.10.2")
  (progn
    (add-to-list 'load-path "~/.emacs.d/ensime/dist_2.10.2/elisp")
    (require 'ensime)
+   (setq ensime-ac-enable-argument-placeholders nil)
+   (setq ensime-ac-override-settings nil)
    (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
    (add-hook 'scala-mode-hook 'scala-mode-on-init)))
 
@@ -249,15 +264,16 @@
 (defun ruby-mode-on-init ()
   (init-mode)
   (flymake-ruby-load)
-
   (modify-syntax-entry ?_ "w" ruby-mode-syntax-table)
 
   (setq ruby-deep-indent-paren nil)
   (setq ruby-compilation-error-regexp "^\\([^: ]+\.rb\\):\\([0-9]+\\):")
-  (setq ac-sources '(ac-source-words-in-buffer
+  (setq ac-sources '(ac-source-robe
+                     ac-source-words-in-buffer
                      ac-source-words-in-same-mode-buffers)))
 
 (add-hook 'ruby-mode-hook 'ruby-mode-on-init) ;
+(add-hook 'ruby-mode-hook 'robe-mode)
 
 ;; ********************************************************************************
 ;; RHTML Mode

@@ -136,3 +136,12 @@
 [submodule "cl-lib"]
 	path = cl-lib
 	url = git@github.com:emacsmirror/cl-lib.git
+[submodule "dart-mode"]
+	path = dart-mode
+	url = git@github.com:nex3/dart-mode.git
+[submodule "robe"]
+	path = robe
+	url = git@github.com:dgutov/robe.git
+[submodule "inf-ruby"]
+	path = inf-ruby
+	url = git@github.com:nonsequitur/inf-ruby.git
